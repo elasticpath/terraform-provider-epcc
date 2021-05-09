@@ -1,4 +1,8 @@
-# Terraform Provider Scaffolding
+# Elastic Path Commerce Cloud Terraform Provider
+
+This repository contains a [Terraform](https://www.terraform.io) provider for the [Elastic Path Commerce Cloud API](https://documentation.elasticpath.com/commerce-cloud/docs/api/). 
+
+This project was based upon the [Terraform Provider Scaffolding Project](https://github.com/hashicorp/terraform-provider-scaffolding)
 
 This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
 
@@ -15,7 +19,7 @@ Once you've written your provider, you'll want to [publish it on the Terraform R
 
 ## Requirements
 
--	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
+-	[Terraform](https://www.terraform.io/downloads.html) >= 0.15.x
 -	[Go](https://golang.org/doc/install) >= 1.15
 
 ## Building The Provider
@@ -60,3 +64,9 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```sh
 $ make testacc
 ```
+
+### Useful Links
+
+1. [AWS SDK for Go](https://github.com/aws/aws-sdk-go-v2)
+2. [Extending Terraform](https://www.terraform.io/docs/extend/index.html)
+3. [AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws)
