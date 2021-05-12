@@ -1,4 +1,4 @@
-module gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider
+module github.com/elasticpath/epcc-terraform-provider
 
 go 1.15
 

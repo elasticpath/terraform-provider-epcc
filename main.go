@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 
+	"github.com/elasticpath/epcc-terraform-provider/internal/provider"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/internal/provider"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
