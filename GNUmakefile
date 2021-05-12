@@ -40,7 +40,7 @@ OS_ARCH=${OS}_${ARCH}
 default: install
 
 build:
-	go build -o ${BINARY}
+	go build -o bin/${BINARY}
 
 release:
 	GOOS=darwin GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_darwin_amd64
@@ -59,12 +59,24 @@ release:
 
 install: build
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mv bin/${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 
 clean:
-	rm /bin/*
+	rm bin/*
+	rm ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}
 
 # Run acceptance tests
 .PHONY: testacc
 testacc:
 	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+
+.PHONY: example
+example: install
+	(\
+		set -o allexport &&	[[ -f .env ]] && source .env && set +o allexport && \
+		pushd "examples/resources/$(EXAMPLE)_resource" && \
+		(rm .terraform.lock.hcl || true) && \
+		terraform init && \
+		terraform $(ACTION) -auto-approve && \
+		popd \
+	)
