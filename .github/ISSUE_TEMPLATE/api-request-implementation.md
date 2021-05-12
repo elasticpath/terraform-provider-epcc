@@ -15,6 +15,7 @@ We should implement the *Insert Title Of API*
 - [ ] Create Resource
 - [ ] Update Resource
 - [ ] Destroy Resource
+- [ ] Import Resource
 - [ ] Examples (Data Source & Resource)
 - [ ] Docs
 - [ ] Acceptance Tests
