@@ -7,9 +7,9 @@ import (
 	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
 )
 
-func dataSourceEpccCustomer() *schema.Resource {
+func dataSourceEpccHierarchy() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccCustomerRead,
+		ReadContext: dataSourceEpccHierarchyRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -19,7 +19,11 @@ func dataSourceEpccCustomer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"email": &schema.Schema{
+			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"slug": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -27,25 +31,25 @@ func dataSourceEpccCustomer() *schema.Resource {
 	}
 }
 
-func dataSourceEpccCustomerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccHierarchyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
 
 	var diags diag.Diagnostics
 
-	customerId := d.Get("id").(string)
+	hierarchyId := d.Get("id").(string)
 
-	customer, err := epcc.Customers.Get(client, customerId)
+	hierarchy, err := epcc.Hierarchies.Get(client, hierarchyId)
 
 	if err != nil {
 		return FromAPIError(err)
 	}
 
-	d.Set("name", customer.Data.Name)
-	d.Set("type", customer.Data.Type)
-	d.Set("email", customer.Data.Email)
+	d.Set("name", hierarchy.Data.Attributes.Name)
+	d.Set("type", hierarchy.Data.Type)
+	d.Set("slug", hierarchy.Data.Attributes.Slug)
 
-	d.SetId(customer.Data.Id)
+	d.SetId(hierarchy.Data.Id)
 
 	return diags
 }

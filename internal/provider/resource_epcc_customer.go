@@ -13,6 +13,9 @@ func resourceEpccCustomer() *schema.Resource {
 		ReadContext:   resourceEpccCustomerRead,
 		UpdateContext: resourceEpccCustomerUpdate,
 		DeleteContext: resourceEpccCustomerDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
