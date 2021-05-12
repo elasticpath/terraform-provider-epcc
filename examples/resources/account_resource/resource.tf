@@ -12,7 +12,7 @@ provider "epcc" {
 }
 
 resource "epcc_account" "hello_world_account" {
-  name = "Steve's First Terraform Account I3"
-  legal_name = "Steve's First Terraform Account LTD"
+  name            = "Steve's First Terraform Account IV"
+  legal_name      = "Steve's First Terraform Account LTD"
   registration_id = "3"
 }

@@ -25,37 +25,59 @@ func main() {
 
 	client.Authenticate()
 
-	newAccount := &epcc.Account{
-		Type:      "accunt",
-		Name:      "Steve's Account",
-		LegalName: "Legal Name",
+	newCustomer := &epcc.Customer{
+		Type:  "customer",
+		Name:  "Steve's Customer",
+		Email: "test@test4567.com",
 	}
 
-	result, err := epcc.Accounts.Create(client, newAccount)
+	result, err := epcc.Customers.Create(client, newCustomer)
+
+	log.Printf("Yay! #{result}, #{err}", result, err)
+
+	newCustomer.Name = "Foo"
+	result, err = epcc.Customers.Update(client, result.Data.Id, newCustomer)
 
 	log.Printf("Yay! %s, %s", result, err)
 
-	result4, err4 := epcc.Accounts.Create(client, newAccount)
-
-	log.Printf("Yay! %s, %s", result4, err4)
-
-	newAccount.Name = "Steve's Other Account"
-
-	result, err = epcc.Accounts.Update(client, result.Data.Id, newAccount)
+	err = epcc.Customers.Delete(client, result.Data.Id)
 
 	log.Printf("Yay! %s, %s", result, err)
 
-	result2, err2 := epcc.Accounts.GetAll(client)
+	/*
+		newAccount := &epcc.Account{
+			Type:      "accunt",
+			Name:      "Steve's Account",
+			LegalName: "Legal Name",
+		}
 
-	log.Printf("Yay! %s, %s", result2, err2)
+		result, err := epcc.Accounts.Create(client, newAccount)
 
-	err = epcc.Accounts.Delete(client, result.Data.Id)
+		log.Printf("Yay! %s, %s", result, err)
 
-	log.Printf("Yay! %s", err)
+		result4, err4 := epcc.Accounts.Create(client, newAccount)
 
-	result3, err3 := epcc.Accounts.GetAll(client)
+		log.Printf("Yay! %s, %s", result4, err4)
 
-	log.Printf("Yay! %s, %s", result3, err3)
+		newAccount.Name = "Steve's Other Account"
+
+		result, err = epcc.Accounts.Update(client, result.Data.Id, newAccount)
+
+		log.Printf("Yay! %s, %s", result, err)
+
+		result2, err2 := epcc.Accounts.GetAll(client)
+
+		log.Printf("Yay! %s, %s", result2, err2)
+
+		err = epcc.Accounts.Delete(client, result.Data.Id)
+
+		log.Printf("Yay! %s", err)
+
+		result3, err3 := epcc.Accounts.GetAll(client)
+
+		log.Printf("Yay! %s, %s", result3, err3)
+
+	*/
 
 }
 

@@ -61,10 +61,13 @@ func New(version string) func() *schema.Provider {
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"epcc_account": dataSourceEpccAccount(),
+				"epcc_account":  dataSourceEpccAccount(),
+				"epcc_customer": dataSourceEpccCustomer(),
 			},
+
 			ResourcesMap: map[string]*schema.Resource{
-				"epcc_account": resourceEpccAccount(),
+				"epcc_account":  resourceEpccAccount(),
+				"epcc_customer": resourceEpccCustomer(),
 			},
 		}
 

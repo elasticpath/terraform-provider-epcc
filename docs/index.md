@@ -1,11 +1,11 @@
 ---
-page_title: "scaffolding Provider"
+page_title: "epcc-terraform-provider Provider"
 subcategory: ""
 description: |-
   
 ---
 
-# scaffolding Provider
+# epcc-terraform-provider Provider
 
 
 
@@ -18,3 +18,10 @@ provider "scaffolding" {
 ```
 
 ## Schema
+
+### Optional
+
+- **api_base_url** (String)
+- **beta_features** (String)
+- **client_id** (String)
+- **client_secret** (String, Sensitive)
