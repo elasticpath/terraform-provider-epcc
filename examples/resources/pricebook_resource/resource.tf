@@ -8,11 +8,11 @@ terraform {
 }
 
 resource "epcc_pricebook" "my_first_terraform_pricebook" {
-  name  = "TFPricebook1"
+  name        = "TFPricebook1"
   description = "Terraform 1"
 }
 
 resource "epcc_pricebook" "my_second_terraform_pricebook" {
-  name  = "TFPricebook2"
+  name        = "TFPricebook2"
   description = "Terraform 2"
 }
