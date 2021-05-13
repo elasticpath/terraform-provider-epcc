@@ -14,5 +14,4 @@ resource "epcc_pricebook" "my_first_terraform_pricebook" {
 
 resource "epcc_pricebook" "my_second_terraform_pricebook" {
   name        = "TFPricebook2"
-  description = "Terraform 2"
 }
