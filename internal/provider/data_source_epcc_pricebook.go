@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"gitlab.elasticpath.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
+	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
 )
 
 func dataSourceEpccPricebook() *schema.Resource {
