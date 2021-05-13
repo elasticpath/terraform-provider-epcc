@@ -62,8 +62,8 @@ install: build
 	mv bin/${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 
 clean:
-	rm bin/*
-	rm ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}
+	rm -rf bin || true
+	rm -rf ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME} || true
 
 # Run acceptance tests
 .PHONY: testacc
@@ -74,9 +74,18 @@ testacc:
 example: install
 	(\
 		set -o allexport &&	[[ -f .env ]] && source .env && set +o allexport && \
-		pushd "examples/resources/$(EXAMPLE)_resource" && \
+		pushd $(EXAMPLE) && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
-		terraform $(ACTION) -auto-approve && \
+		terraform $(ACTION) && \
 		popd \
+	)
+
+.PHONY: docs
+docs: install
+	(\
+		set -o allexport &&	[[ -f .env ]] && source .env && set +o allexport && \
+		(rm .terraform.lock.hcl || true) && \
+		terraform init && \
+		go generate \
 	)

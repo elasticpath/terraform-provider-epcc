@@ -6,9 +6,3 @@ terraform {
     }
   }
 }
-
-resource "epcc_hierarchy" "my_first_hierarchy" {
-  name        = "Hierarchy"
-  description = "Foo"
-  slug        = "test"
-}
