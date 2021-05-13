@@ -40,7 +40,7 @@ OS_ARCH=${OS}_${ARCH}
 default: install
 
 build:
-	go build -o bin/${BINARY}
+	go build -o ./bin/${BINARY}
 
 release:
 	GOOS=darwin GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_darwin_amd64

@@ -65,6 +65,26 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 $ make testacc
 ```
 
+## Debugging the Provider
+
+1. Run `make build`
+   
+2. Run the following command (assuming you've installed delve)
+```bash
+dlv exec --headless ./bin/terraform-provider-my-provider -- --debug
+```
+
+3. Connect with your Debugger
+   
+4. Find the line `TF_REATTACH_PROVIDERS` in the output
+
+5. When running terraform prefix the above to the command, for example:
+
+```
+TF_REATTACH_PROVIDERS='...' terraform apply
+```
+
+[Debugging Providers](https://www.terraform.io/docs/extend/debugging.html#starting-a-provider-in-debug-mode)
 ### Useful Links
 
 1. [AWS SDK for Go](https://github.com/aws/aws-sdk-go-v2)
