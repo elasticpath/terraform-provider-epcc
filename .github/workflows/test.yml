@@ -71,9 +71,13 @@ jobs:
         
     - name: TF acceptance tests
       timeout-minutes: 10
+      concurrency: epcc-store-lock
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+        EPCC_CLIENT_ID: ${{ secrets.EPCC_CLIENT_ID }}
+        EPCC_CLIENT_SECRET: ${{ secrets.EPCC_CLIENT_SECRET }}
+        EPCC_API_BASE_URL: ${{ secrets.EPCC_CLIENT_SECRET }}
 
         # Set whatever additional acceptance test env vars here. You can
         # optionally use data from your repository secrets using the
