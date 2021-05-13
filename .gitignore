@@ -36,3 +36,5 @@ website/vendor
 .terraform.lock.hcl
 
 .env
+
+cmd/cmd
