@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
+	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
 )
 
 type TokenResponse struct {
@@ -35,7 +35,7 @@ func main() {
 
 	result, err := epcc.Pricebooks.Create(client, newPricebook)
 
-	log.Printf("Created! #{result}, #{err}", result, err)
+	log.Printf("Created! %s, %s", result, err)
 
 	// Subsequent requests need the ID included in the body
 	newPricebook.Id = result.Data.Id
@@ -73,12 +73,12 @@ func main2() {
 	foo := TokenResponse{}
 
 	err2 := json.Unmarshal(body, &foo)
-	log.Printf("%s\n", foo)
+	log.Printf("%s\n", string(body))
 	log.Printf("%s\n", foo.Access_token)
 
 	if err2 != nil {
 		log.Fatalf("Error %s %T\n", err2, err2)
 	} else {
-		log.Printf("Hrm %s\n", foo)
+		log.Printf("Hrm %s\n", string(body))
 	}
 }
