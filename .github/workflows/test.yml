@@ -44,6 +44,7 @@ jobs:
   test:
     name: Matrix Test
     needs: build
+    concurrency: epcc-store-lock
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -71,7 +72,6 @@ jobs:
         
     - name: TF acceptance tests
       timeout-minutes: 10
-      concurrency: epcc-store-lock
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
