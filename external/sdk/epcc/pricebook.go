@@ -36,13 +36,12 @@ func (pricebooks) Get(client *Client, pricebookId string) (*PricebookData, ApiEr
 		return nil, apiError
 	}
 
-	// TODO Better Manage Parent ID
-	var pricebooks PricebookData
-	if err := json.Unmarshal(body, &pricebooks); err != nil {
+	var pricebook PricebookData
+	if err := json.Unmarshal(body, &pricebook); err != nil {
 		return nil, FromError(err)
 	}
 
-	return &pricebooks, nil
+	return &pricebook, nil
 }
 
 // GetAll fetches all pricebooks
