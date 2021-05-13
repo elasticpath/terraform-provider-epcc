@@ -19,13 +19,14 @@ description: |-
 
 ### Read-only
 
-- **type** (String)
 - **code** (String)
-- **exchange_rate** (Int)
-- **format** (String)
+- **decimal_places** (Number)
 - **decimal_point** (String)
+- **default** (Boolean)
+- **enabled** (Boolean)
+- **exchange_rate** (Number)
+- **format** (String)
 - **thousand_separator** (String)
-- **decimal_places** (Int)
-- **default** (Bool)
-- **enabled** (Bool)
+- **type** (String)
+
 

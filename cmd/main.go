@@ -25,29 +25,8 @@ func main() {
 
 	client.Authenticate()
 
-	newPricebook := &epcc.Pricebook{
-		Type: "pricebook",
-		Attributes: epcc.PricebookAttributes{
-			Name:        "pricebook10",
-			Description: "My 10 pricebook",
-		},
-	}
-
-	result, err := epcc.Pricebooks.Create(client, newPricebook)
-
-	log.Printf("Created! %s, %s", result, err)
-
-	// Subsequent requests need the ID included in the body
-	newPricebook.Id = result.Data.Id
-
-	// Change the Name
-	newPricebook.Attributes.Name = "pricebook22"
-	result, err = epcc.Pricebooks.Update(client, result.Data.Id, newPricebook)
-	log.Printf("Updated! %s, %s", result, err)
-
-	// Delete
-	err = epcc.Pricebooks.Delete(client, result.Data.Id)
-	log.Printf("Deleted! %s, %s", result, err)
+	//exercisePricebook(client)
+	exerciseProduct(client)
 
 }
 
@@ -81,4 +60,60 @@ func main2() {
 	} else {
 		log.Printf("Hrm %s\n", string(body))
 	}
+}
+
+func exercisePricebook(client *epcc.Client) {
+
+	newPricebook := &epcc.Pricebook{
+		Type: "pricebook",
+		Attributes: epcc.PricebookAttributes{
+			Name:        "pricebook10",
+			Description: "My 10 pricebook",
+		},
+	}
+
+	result, err := epcc.Pricebooks.Create(client, newPricebook)
+
+	log.Printf("Created! %s, %s", result, err)
+
+	// Subsequent requests need the ID included in the body
+	newPricebook.Id = result.Data.Id
+
+	// Change the Name
+	newPricebook.Attributes.Name = "pricebook22"
+	result, err = epcc.Pricebooks.Update(client, result.Data.Id, newPricebook)
+	log.Printf("Updated! %s, %s", result, err)
+
+	// Delete
+	err = epcc.Pricebooks.Delete(client, result.Data.Id)
+	log.Printf("Deleted! %s, %s", result, err)
+}
+
+func exerciseProduct(client *epcc.Client) {
+
+	newProduct := &epcc.Product{
+		Type: "product",
+		Attributes: epcc.ProductAttributes{
+			Name:          "Product1",
+			CommodityType: "physical",
+			Sku:           "product-1",
+			Description:   "My 1 product",
+		},
+	}
+
+	result, err := epcc.Products.Create(client, newProduct)
+
+	log.Printf("Created! %s, %s", result, err)
+
+	// Subsequent requests need the ID included in the body
+	newProduct.Id = result.Data.Id
+
+	// Change the Name
+	newProduct.Attributes.Name = "Product1b"
+	result, err = epcc.Products.Update(client, result.Data.Id, newProduct)
+	log.Printf("Updated! %s, %s", result, err)
+
+	// Delete
+	err = epcc.Products.Delete(client, result.Data.Id)
+	log.Printf("Deleted! %s, %s", result, err)
 }
