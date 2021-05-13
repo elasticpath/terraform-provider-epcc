@@ -44,6 +44,7 @@ jobs:
   test:
     name: Matrix Test
     needs: build
+    concurrency: epcc-store-lock
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -74,6 +75,10 @@ jobs:
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+        EPCC_CLIENT_ID: ${{ secrets.EPCC_CLIENT_ID }}
+        EPCC_CLIENT_SECRET: ${{ secrets.EPCC_CLIENT_SECRET }}
+        EPCC_BETA_API_FEATURES: account-management
+        EPCC_API_BASE_URL: ${{ secrets.EPCC_API_BASE_URL }}
 
         # Set whatever additional acceptance test env vars here. You can
         # optionally use data from your repository secrets using the
