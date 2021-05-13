@@ -25,7 +25,7 @@ func resourceEpccPricebook() *schema.Resource {
 			},
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Required: false,
 			},
 		},
 	}
