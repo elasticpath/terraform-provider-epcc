@@ -55,9 +55,6 @@ func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m inter
 	d.Set("description", flow.Data.Description)
 	d.Set("enabled", flow.Data.Enabled)
 
-
-
-
 	d.SetId(flow.Data.Id)
 
 	return diags
