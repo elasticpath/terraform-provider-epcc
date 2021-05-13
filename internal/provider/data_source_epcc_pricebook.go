@@ -42,7 +42,6 @@ func dataSourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m 
 		return FromAPIError(err)
 	}
 
-	d.Set("type", pricebook.Data.Type)
 	d.Set("name", pricebook.Data.Attributes.Name)
 	d.Set("description", pricebook.Data.Attributes.Description)
 
