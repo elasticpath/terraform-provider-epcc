@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
-)
 
-import "net/http"
+	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
+)
 
 type TokenResponse struct {
 	Expires      int64
@@ -20,64 +20,34 @@ type TokenResponse struct {
 }
 
 func main() {
-	// Using the Config value, create the Account Client
+	// Using the Config value, create the Client
 	client := epcc.NewClient()
 
 	client.Authenticate()
 
-	newCustomer := &epcc.Customer{
-		Type:  "customer",
-		Name:  "Steve's Customer",
-		Email: "test@test4567.com",
+	newPricebook := &epcc.Pricebook{
+		Type: "pricebook",
+		Attributes: epcc.PricebookAttributes{
+			Name:        "pricebook10",
+			Description: "My 10 pricebook",
+		},
 	}
 
-	result, err := epcc.Customers.Create(client, newCustomer)
+	result, err := epcc.Pricebooks.Create(client, newPricebook)
 
-	log.Printf("Yay! #{result}, #{err}", result, err)
+	log.Printf("Created! #{result}, #{err}", result, err)
 
-	newCustomer.Name = "Foo"
-	result, err = epcc.Customers.Update(client, result.Data.Id, newCustomer)
+	// Subsequent requests need the ID included in the body
+	newPricebook.Id = result.Data.Id
 
-	log.Printf("Yay! %s, %s", result, err)
+	// Change the Name
+	newPricebook.Attributes.Name = "pricebook22"
+	result, err = epcc.Pricebooks.Update(client, result.Data.Id, newPricebook)
+	log.Printf("Updated! %s, %s", result, err)
 
-	err = epcc.Customers.Delete(client, result.Data.Id)
-
-	log.Printf("Yay! %s, %s", result, err)
-
-	/*
-		newAccount := &epcc.Account{
-			Type:      "accunt",
-			Name:      "Steve's Account",
-			LegalName: "Legal Name",
-		}
-
-		result, err := epcc.Accounts.Create(client, newAccount)
-
-		log.Printf("Yay! %s, %s", result, err)
-
-		result4, err4 := epcc.Accounts.Create(client, newAccount)
-
-		log.Printf("Yay! %s, %s", result4, err4)
-
-		newAccount.Name = "Steve's Other Account"
-
-		result, err = epcc.Accounts.Update(client, result.Data.Id, newAccount)
-
-		log.Printf("Yay! %s, %s", result, err)
-
-		result2, err2 := epcc.Accounts.GetAll(client)
-
-		log.Printf("Yay! %s, %s", result2, err2)
-
-		err = epcc.Accounts.Delete(client, result.Data.Id)
-
-		log.Printf("Yay! %s", err)
-
-		result3, err3 := epcc.Accounts.GetAll(client)
-
-		log.Printf("Yay! %s, %s", result3, err3)
-
-	*/
+	// Delete
+	err = epcc.Pricebooks.Delete(client, result.Data.Id)
+	log.Printf("Deleted! %s, %s", result, err)
 
 }
 

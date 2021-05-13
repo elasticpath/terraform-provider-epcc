@@ -3,8 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
 	"strings"
+
+	"gitlab.elasticpath.com/Steve.Ramage/epcc-terraform-provider/external/sdk/epcc"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -61,13 +62,15 @@ func New(version string) func() *schema.Provider {
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"epcc_account":  dataSourceEpccAccount(),
-				"epcc_customer": dataSourceEpccCustomer(),
+				"epcc_account":   dataSourceEpccAccount(),
+				"epcc_customer":  dataSourceEpccCustomer(),
+				"epcc_pricebook": dataSourceEpccPricebook(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
-				"epcc_account":  resourceEpccAccount(),
-				"epcc_customer": resourceEpccCustomer(),
+				"epcc_account":   resourceEpccAccount(),
+				"epcc_customer":  resourceEpccCustomer(),
+				"epcc_pricebook": resourceEpccPricebook(),
 			},
 		}
 
