@@ -73,7 +73,7 @@ testacc:
 .PHONY: example
 example: install
 	(\
-		set -o allexport &&	[[ -f .env ]] && source .env && set +o allexport && \
+		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
 		pushd $(EXAMPLE) && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \

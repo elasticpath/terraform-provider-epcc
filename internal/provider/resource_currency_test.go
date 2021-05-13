@@ -30,6 +30,7 @@ func TestAccResourceCurrency(t *testing.T) {
 	})
 }
 
+// language=HCL
 const testAccResourceCurrency = `
 resource "epcc_currency" "acc_test_currency" {
   type = "currency"

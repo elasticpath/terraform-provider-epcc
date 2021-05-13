@@ -24,6 +24,7 @@ func TestAccResourceAccount(t *testing.T) {
 	})
 }
 
+// language=HCL
 const testAccResourceAccount = `
 resource "epcc_account" "acc_test_account" {
   name            = "Account for acc tests name"

@@ -68,6 +68,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_hierarchy":   dataSourceEpccHierarchy(),
 				"epcc_integration": IntegrationDataSourceProvider{}.DataSource(),
 				"epcc_pricebook":   dataSourceEpccPricebook(),
+				"epcc_node":        dataSourceEpccNode(),
 				"epcc_product":     dataSourceEpccProduct(),
 			},
 
@@ -79,6 +80,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_integration": IntegrationResourceProvider{}.Resource(),
 				"epcc_pricebook":   resourceEpccPricebook(),
 				"epcc_product":     resourceEpccProduct(),
+				"epcc_node":        resourceEpccNode(),
 			},
 		}
 
