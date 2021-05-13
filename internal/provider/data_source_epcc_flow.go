@@ -41,24 +41,24 @@ func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	var diags diag.Diagnostics
 
-	accountId := d.Get("id").(string)
+	flowId := d.Get("id").(string)
 
-	account, err := epcc.Flows.Get(client, accountId)
+	flow, err := epcc.Flows.Get(client, flowId)
 
 	if err != nil {
 		return FromAPIError(err)
 	}
 
-	d.Set("type", account.Data.Type)
-	d.Set("name", account.Data.Name)
-	d.Set("slug", account.Data.Slug)
-	d.Set("description", account.Data.Description)
-	d.Set("enabled", account.Data.Enabled)
+	d.Set("type", flow.Data.Type)
+	d.Set("name", flow.Data.Name)
+	d.Set("slug", flow.Data.Slug)
+	d.Set("description", flow.Data.Description)
+	d.Set("enabled", flow.Data.Enabled)
 
 
 
 
-	d.SetId(account.Data.Id)
+	d.SetId(flow.Data.Id)
 
 	return diags
 }
