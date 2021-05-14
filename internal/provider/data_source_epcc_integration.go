@@ -13,7 +13,7 @@ type IntegrationDataSourceProvider struct {
 func (ds IntegrationDataSourceProvider) DataSource() *schema.Resource {
 	return &schema.Resource{
 		Description: "Allows to configure webhooks",
-		ReadContext: ds.read,
+		ReadContext: addDiagToContext(ds.read),
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:     schema.TypeString,
@@ -57,10 +57,10 @@ func (ds IntegrationDataSourceProvider) DataSource() *schema.Resource {
 	}
 }
 
-func (ds IntegrationDataSourceProvider) read(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (ds IntegrationDataSourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
-	result, err := epcc.Integrations.Get(client, data.Get("id").(string))
+	result, err := epcc.Integrations.Get(&ctx, client, data.Get("id").(string))
 	if err != nil {
 		return FromAPIError(err)
 	}

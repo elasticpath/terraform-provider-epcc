@@ -9,7 +9,7 @@ import (
 
 func dataSourceEpccCustomer() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccCustomerRead,
+		ReadContext: addDiagToContext(dataSourceEpccCustomerRead),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -30,12 +30,9 @@ func dataSourceEpccCustomer() *schema.Resource {
 func dataSourceEpccCustomerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	customerId := d.Get("id").(string)
 
-	customer, err := epcc.Customers.Get(client, customerId)
+	customer, err := epcc.Customers.Get(&ctx, client, customerId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -47,5 +44,5 @@ func dataSourceEpccCustomerRead(ctx context.Context, d *schema.ResourceData, m i
 
 	d.SetId(customer.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

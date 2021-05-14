@@ -13,10 +13,10 @@ type IntegrationResourceProvider struct {
 func (r IntegrationResourceProvider) Resource() *schema.Resource {
 	return &schema.Resource{
 		Description:   "Allows to configure webhooks",
-		CreateContext: r.create,
-		ReadContext:   r.read,
-		UpdateContext: r.update,
-		DeleteContext: r.delete,
+		CreateContext: addDiagToContext(r.create),
+		ReadContext:   addDiagToContext(r.read),
+		UpdateContext: addDiagToContext(r.update),
+		DeleteContext: addDiagToContext(r.delete),
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:     schema.TypeString,
@@ -60,7 +60,7 @@ func (r IntegrationResourceProvider) Resource() *schema.Resource {
 	}
 }
 
-func (r IntegrationResourceProvider) create(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
 	observes := data.Get("observes").([]interface{})
@@ -77,7 +77,7 @@ func (r IntegrationResourceProvider) create(_ context.Context, data *schema.Reso
 		Observes: convertToStringSlice(observes),
 	}
 
-	result, err := epcc.Integrations.Create(client, integrationObject)
+	result, err := epcc.Integrations.Create(&ctx, client, integrationObject)
 	if err != nil {
 		return FromAPIError(err)
 	}
@@ -87,10 +87,10 @@ func (r IntegrationResourceProvider) create(_ context.Context, data *schema.Reso
 	return nil
 }
 
-func (r IntegrationResourceProvider) delete(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
-	err := epcc.Integrations.Delete(client, data.Id())
+	err := epcc.Integrations.Delete(&ctx, client, data.Id())
 	if err != nil {
 		return FromAPIError(err)
 	}
@@ -102,7 +102,6 @@ func (r IntegrationResourceProvider) delete(_ context.Context, data *schema.Reso
 
 func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
 	integrationObject := &epcc.Integration{
 		Type:        epcc.IntegrationType,
 		Name:        data.Get("name").(string),
@@ -115,7 +114,7 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 		Observes: data.Get("observes").([]string),
 	}
 
-	result, apiError := epcc.Integrations.Update(client, data.Id(), integrationObject)
+	result, apiError := epcc.Integrations.Update(&ctx, client, data.Id(), integrationObject)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -126,10 +125,10 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 	return nil
 }
 
-func (r IntegrationResourceProvider) read(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
-	result, err := epcc.Integrations.Get(client, data.Id())
+	result, err := epcc.Integrations.Get(&ctx, client, data.Id())
 	if err != nil {
 		return FromAPIError(err)
 	}

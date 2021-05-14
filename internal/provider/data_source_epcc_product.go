@@ -11,7 +11,7 @@ import (
 func dataSourceEpccProduct() *schema.Resource {
 	return &schema.Resource{
 		Description: "Allows the caller to look up details of an Elastic Path Commerce Cloud PCM [product](https://documentation.elasticpath.com/commerce-cloud/docs/concepts/products-pcm.html).",
-		ReadContext: dataSourceEpccProductRead,
+		ReadContext: addDiagToContext(dataSourceEpccProductRead),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:        schema.TypeString,
@@ -72,18 +72,15 @@ func dataSourceEpccProduct() *schema.Resource {
 func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	productId := d.Get("id").(string)
 
-	product, err := epcc.Products.Get(client, productId)
+	product, err := epcc.Products.Get(&ctx, client, productId)
 
 	if err != nil {
 		return FromAPIError(err)
 	}
 
-	productFiles, err := epcc.Products.GetProductFiles(client, productId)
+	productFiles, err := epcc.Products.GetProductFiles(&ctx, client, productId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -112,5 +109,5 @@ func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m in
 		}
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

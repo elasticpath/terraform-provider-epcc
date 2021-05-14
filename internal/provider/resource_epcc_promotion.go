@@ -9,10 +9,10 @@ import (
 
 func resourceEpccPromotion() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceEpccPromotionCreate,
-		ReadContext:   resourceEpccPromotionRead,
-		UpdateContext: resourceEpccPromotionUpdate,
-		DeleteContext: resourceEpccPromotionDelete,
+		CreateContext: addDiagToContext(resourceEpccPromotionCreate),
+		ReadContext:   addDiagToContext(resourceEpccPromotionRead),
+		UpdateContext: addDiagToContext(resourceEpccPromotionUpdate),
+		DeleteContext: addDiagToContext(resourceEpccPromotionDelete),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -49,14 +49,11 @@ func resourceEpccPromotion() *schema.Resource {
 
 }
 
-func resourceEpccPromotionDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPromotionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	promotionID := d.Id()
 
-	err := epcc.Promotions.Delete(client, promotionID)
+	err := epcc.Promotions.Delete(&ctx, client, promotionID)
 
 	if err != nil {
 		FromAPIError(err)
@@ -64,7 +61,7 @@ func resourceEpccPromotionDelete(_ context.Context, d *schema.ResourceData, m in
 
 	d.SetId("")
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccPromotionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -88,7 +85,7 @@ func resourceEpccPromotionUpdate(ctx context.Context, d *schema.ResourceData, m 
 		MaxDiscountValue: d.Get("max_discount_value").(interface{}),
 	}
 
-	updatedPromotionData, apiError := epcc.Promotions.Update(client, promotionId, promotion)
+	updatedPromotionData, apiError := epcc.Promotions.Update(&ctx, client, promotionId, promotion)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -99,14 +96,12 @@ func resourceEpccPromotionUpdate(ctx context.Context, d *schema.ResourceData, m 
 	return resourceEpccPromotionRead(ctx, d, m)
 }
 
-func resourceEpccPromotionRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
 
 	promotionId := d.Id()
 
-	promotion, err := epcc.Promotions.Get(client, promotionId)
+	promotion, err := epcc.Promotions.Get(&ctx, client, promotionId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -146,14 +141,11 @@ func resourceEpccPromotionRead(_ context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccPromotionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	schemas := d.Get("schema").([]interface{})
 	singleSchema := schemas[0]
 	promotion := &epcc.Promotion{
@@ -169,7 +161,7 @@ func resourceEpccPromotionCreate(ctx context.Context, d *schema.ResourceData, m 
 		MinCartValue:     d.Get("min_cart_value").(interface{}),
 		MaxDiscountValue: d.Get("max_discount_value").(interface{}),
 	}
-	createdPromotionData, apiError := epcc.Promotions.Create(client, promotion)
+	createdPromotionData, apiError := epcc.Promotions.Create(&ctx, client, promotion)
 	if apiError != nil {
 		return FromAPIError(apiError)
 	}
@@ -178,5 +170,5 @@ func resourceEpccPromotionCreate(ctx context.Context, d *schema.ResourceData, m 
 
 	resourceEpccPromotionRead(ctx, d, m)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

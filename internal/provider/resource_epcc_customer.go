@@ -9,10 +9,10 @@ import (
 
 func resourceEpccCustomer() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceEpccCustomerCreate,
-		ReadContext:   resourceEpccCustomerRead,
-		UpdateContext: resourceEpccCustomerUpdate,
-		DeleteContext: resourceEpccCustomerDelete,
+		CreateContext: addDiagToContext(resourceEpccCustomerCreate),
+		ReadContext:   addDiagToContext(resourceEpccCustomerRead),
+		UpdateContext: addDiagToContext(resourceEpccCustomerUpdate),
+		DeleteContext: addDiagToContext(resourceEpccCustomerDelete),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -34,14 +34,11 @@ func resourceEpccCustomer() *schema.Resource {
 
 }
 
-func resourceEpccCustomerDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCustomerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	customerID := d.Id()
 
-	err := epcc.Customers.Delete(client, customerID)
+	err := epcc.Customers.Delete(&ctx, client, customerID)
 
 	if err != nil {
 		FromAPIError(err)
@@ -49,7 +46,7 @@ func resourceEpccCustomerDelete(_ context.Context, d *schema.ResourceData, m int
 
 	d.SetId("")
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -63,7 +60,7 @@ func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m i
 		Email: d.Get("email").(string),
 	}
 
-	updatedCustomerData, apiError := epcc.Customers.Update(client, customerId, customer)
+	updatedCustomerData, apiError := epcc.Customers.Update(&ctx, client, customerId, customer)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -74,14 +71,11 @@ func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m i
 	return resourceEpccCustomerRead(ctx, d, m)
 }
 
-func resourceEpccCustomerRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCustomerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	customerId := d.Id()
 
-	customer, err := epcc.Customers.Get(client, customerId)
+	customer, err := epcc.Customers.Get(&ctx, client, customerId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -95,21 +89,18 @@ func resourceEpccCustomerRead(_ context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccCustomerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	customer := &epcc.Customer{
 		Type:  "customer",
 		Name:  d.Get("name").(string),
 		Email: d.Get("email").(string),
 	}
 
-	createdCustomerData, apiError := epcc.Customers.Create(client, customer)
+	createdCustomerData, apiError := epcc.Customers.Create(&ctx, client, customer)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -119,5 +110,5 @@ func resourceEpccCustomerCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceEpccCustomerRead(ctx, d, m)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

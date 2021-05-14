@@ -10,9 +10,9 @@ provider "epcc" {
   beta_features = "account-management"
 }
 
-resource "epcc_currency" "gbp" {
+resource "epcc_currency" "chf" {
   type               = "currency"
-  code               = "GBP"
+  code               = "CHF"
   exchange_rate      = 1
   format             = "£{price}"
   decimal_point      = "."
@@ -30,17 +30,17 @@ resource "epcc_promotion" "acc_test_promotion" {
   promotion_type = "fixed_discount"
   schema {
     currencies {
-      currency = epcc_currency.gbp.code
+      currency = epcc_currency.chf.code
       amount   = 900
     }
   }
 
   max_discount_value {
-    currency = epcc_currency.gbp.code
+    currency = epcc_currency.chf.code
     amount   = 960
   }
   min_cart_value {
-    currency = epcc_currency.gbp.code
+    currency = epcc_currency.chf.code
     amount   = 100
   }
   start = "2019-05-12T00:00:00Z"

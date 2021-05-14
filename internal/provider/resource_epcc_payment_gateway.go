@@ -16,10 +16,10 @@ type PaymentGatewayResourceProvider struct {
 func (r PaymentGatewayResourceProvider) Resource() *schema.Resource {
 	return &schema.Resource{
 		Description:   "Payment gateway connectivity configuration",
-		CreateContext: r.update,
-		ReadContext:   r.read,
-		UpdateContext: r.update,
-		DeleteContext: r.delete,
+		CreateContext: addDiagToContext(r.update),
+		ReadContext:   addDiagToContext(r.read),
+		UpdateContext: addDiagToContext(r.update),
+		DeleteContext: addDiagToContext(r.delete),
 		Schema: map[string]*schema.Schema{
 			"slug": {
 				Type:     schema.TypeString,
@@ -53,15 +53,15 @@ func (r PaymentGatewayResourceProvider) Resource() *schema.Resource {
 	}
 }
 
-func (r PaymentGatewayResourceProvider) update(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
-	result, diagErr := r.updatePaymentGateway(client, data)
+	result, diagErr := r.updatePaymentGateway(ctx, client, data)
 	if diagErr != nil {
 		return diagErr
 	}
 
-	diagErr = r.parseResourceData(result, data)
+	diagErr = r.parseResourceData(ctx, result, data)
 	if diagErr != nil {
 		return diagErr
 	}
@@ -71,7 +71,7 @@ func (r PaymentGatewayResourceProvider) update(_ context.Context, data *schema.R
 	return nil
 }
 
-func (r PaymentGatewayResourceProvider) parseResourceData(result *epcc.PaymentGatewayData, data *schema.ResourceData) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) parseResourceData(ctx context.Context, result *epcc.PaymentGatewayData, data *schema.ResourceData) diag.Diagnostics {
 	base := result.Data.Base()
 	if err := data.Set("enabled", base.Enabled); err != nil {
 		return diag.FromErr(err)
@@ -98,7 +98,8 @@ func (r PaymentGatewayResourceProvider) parseResourceData(result *epcc.PaymentGa
 	return nil
 }
 
-func (r PaymentGatewayResourceProvider) updatePaymentGateway(client *epcc.Client, data *schema.ResourceData) (*epcc.PaymentGatewayData, diag.Diagnostics) {
+func (r PaymentGatewayResourceProvider) updatePaymentGateway(ctx context.Context, client *epcc.Client, data *schema.ResourceData) (*epcc.PaymentGatewayData, diag.Diagnostics) {
+
 	base := epcc.PaymentGatewayBase{
 		Slug:    data.Get("slug").(string),
 		Enabled: data.Get("enabled").(bool),
@@ -172,7 +173,7 @@ func (r PaymentGatewayResourceProvider) updatePaymentGateway(client *epcc.Client
 		}
 	}
 
-	result, apiError := epcc.PaymentGateways.Update(client, obj.Type(), &obj)
+	result, apiError := epcc.PaymentGateways.Update(&ctx, client, obj.Type(), &obj)
 	if apiError != nil {
 		return nil, FromAPIError(apiError)
 	}
@@ -188,11 +189,11 @@ func mapStringValue(m map[string]interface{}, key string) string {
 	return value.(string)
 }
 
-func (r PaymentGatewayResourceProvider) read(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
 	slug := payment_gateway.Slug(data.Get("slug").(string))
-	result, err := epcc.PaymentGateways.Get(client, slug)
+	result, err := epcc.PaymentGateways.Get(&ctx, client, slug)
 	if err != nil {
 		return FromAPIError(err)
 	}
@@ -210,7 +211,7 @@ func (r PaymentGatewayResourceProvider) read(_ context.Context, data *schema.Res
 	return nil
 }
 
-func (r PaymentGatewayResourceProvider) delete(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
 	if err := data.Set("options", map[string]interface{}{}); err != nil {
@@ -223,7 +224,7 @@ func (r PaymentGatewayResourceProvider) delete(_ context.Context, data *schema.R
 		return diag.FromErr(err)
 	}
 
-	_, diagErr := r.updatePaymentGateway(client, data)
+	_, diagErr := r.updatePaymentGateway(ctx, client, data)
 	if diagErr != nil {
 		return diagErr
 	}

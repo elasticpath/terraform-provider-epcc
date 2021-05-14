@@ -38,12 +38,9 @@ func dataSourceEpccFlow() *schema.Resource {
 func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	flowId := d.Get("id").(string)
 
-	flow, err := epcc.Flows.Get(client, flowId)
+	flow, err := epcc.Flows.Get(&ctx, client, flowId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -57,5 +54,5 @@ func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	d.SetId(flow.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

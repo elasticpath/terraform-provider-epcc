@@ -9,10 +9,10 @@ import (
 
 func resourceEpccField() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceEpccFieldCreate,
-		ReadContext:   resourceEpccFieldRead,
-		UpdateContext: resourceEpccFieldUpdate,
-		DeleteContext: resourceEpccFieldDelete,
+		CreateContext: addDiagToContext(resourceEpccFieldCreate),
+		ReadContext:   addDiagToContext(resourceEpccFieldRead),
+		UpdateContext: addDiagToContext(resourceEpccFieldUpdate),
+		DeleteContext: addDiagToContext(resourceEpccFieldDelete),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -61,14 +61,12 @@ func resourceEpccField() *schema.Resource {
 	}
 }
 
-func resourceEpccFieldDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFieldDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
 
 	fieldID := d.Id()
 
-	err := epcc.Fields.Delete(client, fieldID)
+	err := epcc.Fields.Delete(&ctx, client, fieldID)
 
 	if err != nil {
 		FromAPIError(err)
@@ -76,7 +74,7 @@ func resourceEpccFieldDelete(_ context.Context, d *schema.ResourceData, m interf
 
 	d.SetId("")
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccFieldUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -85,7 +83,7 @@ func resourceEpccFieldUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	fieldID := d.Id()
 	field := constructField(d)
 
-	createdFieldData, apiError := epcc.Fields.Update(client, fieldID, field)
+	createdFieldData, apiError := epcc.Fields.Update(&ctx, client, fieldID, field)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -96,14 +94,11 @@ func resourceEpccFieldUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	return resourceEpccFieldRead(ctx, d, m)
 }
 
-func resourceEpccFieldRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	fieldID := d.Id()
 
-	field, err := epcc.Fields.Get(client, fieldID)
+	field, err := epcc.Fields.Get(&ctx, client, fieldID)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -137,17 +132,15 @@ func resourceEpccFieldRead(_ context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccFieldCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
-	var diags diag.Diagnostics
-
 	field := constructField(d)
 
-	createdFieldData, apiError := epcc.Fields.Create(client, field)
+	createdFieldData, apiError := epcc.Fields.Create(&ctx, client, field)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -157,7 +150,7 @@ func resourceEpccFieldCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	resourceEpccFieldRead(ctx, d, m)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func constructField(d *schema.ResourceData) *epcc.Field {

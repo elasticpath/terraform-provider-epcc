@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -21,10 +22,10 @@ type PricebookAttributes struct {
 	Description string `json:"description,omitempty"`
 }
 
-func (pricebooks) Get(client *Client, pricebookId string) (*PricebookData, ApiErrors) {
+func (pricebooks) Get(ctx *context.Context, client *Client, pricebookId string) (*PricebookData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/pricebooks/%s", pricebookId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -38,10 +39,10 @@ func (pricebooks) Get(client *Client, pricebookId string) (*PricebookData, ApiEr
 }
 
 // GetAll fetches all pricebooks
-func (pricebooks) GetAll(client *Client) (*PricebookList, ApiErrors) {
+func (pricebooks) GetAll(ctx *context.Context, client *Client) (*PricebookList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/pricebooks")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -55,7 +56,7 @@ func (pricebooks) GetAll(client *Client) (*PricebookList, ApiErrors) {
 }
 
 // Create creates a pricebook
-func (pricebooks) Create(client *Client, pricebook *Pricebook) (*PricebookData, ApiErrors) {
+func (pricebooks) Create(ctx *context.Context, client *Client, pricebook *Pricebook) (*PricebookData, ApiErrors) {
 	pricebookData := PricebookData{
 		Data: *pricebook,
 	}
@@ -67,7 +68,7 @@ func (pricebooks) Create(client *Client, pricebook *Pricebook) (*PricebookData, 
 
 	path := fmt.Sprintf("/pcm/pricebooks")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -81,10 +82,10 @@ func (pricebooks) Create(client *Client, pricebook *Pricebook) (*PricebookData, 
 }
 
 // Delete deletes a pricebook.
-func (pricebooks) Delete(client *Client, pricebookID string) ApiErrors {
+func (pricebooks) Delete(ctx *context.Context, client *Client, pricebookID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/pricebooks/%s", pricebookID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -92,7 +93,7 @@ func (pricebooks) Delete(client *Client, pricebookID string) ApiErrors {
 }
 
 // Update updates a pricebook.
-func (pricebooks) Update(client *Client, pricebookID string, pricebook *Pricebook) (*PricebookData, ApiErrors) {
+func (pricebooks) Update(ctx *context.Context, client *Client, pricebookID string, pricebook *Pricebook) (*PricebookData, ApiErrors) {
 
 	pricebookData := PricebookData{
 		Data: *pricebook,
@@ -105,7 +106,7 @@ func (pricebooks) Update(client *Client, pricebookID string, pricebook *Priceboo
 
 	path := fmt.Sprintf("/pcm/pricebooks/%s", pricebookID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

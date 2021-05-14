@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -19,10 +20,10 @@ type Account struct {
 	ParentId       string `json:"parent_id,omitempty"`
 }
 
-func (accounts) Get(client *Client, accountId string) (*AccountData, ApiErrors) {
+func (accounts) Get(ctx *context.Context, client *Client, accountId string) (*AccountData, ApiErrors) {
 	path := fmt.Sprintf("/v2/accounts/%s", accountId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -37,10 +38,10 @@ func (accounts) Get(client *Client, accountId string) (*AccountData, ApiErrors) 
 }
 
 // GetAll fetches all accounts
-func (accounts) GetAll(client *Client) (*AccountList, ApiErrors) {
+func (accounts) GetAll(ctx *context.Context, client *Client) (*AccountList, ApiErrors) {
 	path := fmt.Sprintf("/v2/accounts")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -54,7 +55,7 @@ func (accounts) GetAll(client *Client) (*AccountList, ApiErrors) {
 }
 
 // Create creates a account
-func (accounts) Create(client *Client, account *Account) (*AccountData, ApiErrors) {
+func (accounts) Create(ctx *context.Context, client *Client, account *Account) (*AccountData, ApiErrors) {
 	accountData := AccountData{
 		Data: *account,
 	}
@@ -66,7 +67,7 @@ func (accounts) Create(client *Client, account *Account) (*AccountData, ApiError
 
 	path := fmt.Sprintf("/v2/accounts")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -80,10 +81,10 @@ func (accounts) Create(client *Client, account *Account) (*AccountData, ApiError
 }
 
 // Delete deletes a account.
-func (accounts) Delete(client *Client, accountID string) ApiErrors {
+func (accounts) Delete(ctx *context.Context, client *Client, accountID string) ApiErrors {
 	path := fmt.Sprintf("/v2/accounts/%s", accountID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -91,7 +92,7 @@ func (accounts) Delete(client *Client, accountID string) ApiErrors {
 }
 
 // Update updates a account.
-func (accounts) Update(client *Client, accountID string, account *Account) (*AccountData, ApiErrors) {
+func (accounts) Update(ctx *context.Context, client *Client, accountID string, account *Account) (*AccountData, ApiErrors) {
 
 	accountData := AccountData{
 		Data: *account,
@@ -104,7 +105,7 @@ func (accounts) Update(client *Client, accountID string, account *Account) (*Acc
 
 	path := fmt.Sprintf("/v2/accounts/%s", accountID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

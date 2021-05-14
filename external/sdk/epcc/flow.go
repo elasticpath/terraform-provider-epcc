@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -19,10 +20,10 @@ type Flow struct {
 	Enabled     bool   `json:"enabled"`
 }
 
-func (flows) Get(client *Client, flowId string) (*FlowData, ApiErrors) {
+func (flows) Get(ctx *context.Context, client *Client, flowId string) (*FlowData, ApiErrors) {
 	path := fmt.Sprintf("/v2/flows/%s", flowId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -37,10 +38,10 @@ func (flows) Get(client *Client, flowId string) (*FlowData, ApiErrors) {
 }
 
 // GetAll fetches all flows
-func (flows) GetAll(client *Client) (*FlowList, ApiErrors) {
+func (flows) GetAll(ctx *context.Context, client *Client) (*FlowList, ApiErrors) {
 	path := fmt.Sprintf("/v2/flows")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -54,7 +55,7 @@ func (flows) GetAll(client *Client) (*FlowList, ApiErrors) {
 }
 
 // Create creates a flow
-func (flows) Create(client *Client, flow *Flow) (*FlowData, ApiErrors) {
+func (flows) Create(ctx *context.Context, client *Client, flow *Flow) (*FlowData, ApiErrors) {
 	flowData := FlowData{
 		Data: *flow,
 	}
@@ -66,7 +67,7 @@ func (flows) Create(client *Client, flow *Flow) (*FlowData, ApiErrors) {
 
 	path := fmt.Sprintf("/v2/flows")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -80,10 +81,10 @@ func (flows) Create(client *Client, flow *Flow) (*FlowData, ApiErrors) {
 }
 
 // Delete deletes a flow.
-func (flows) Delete(client *Client, flowID string) ApiErrors {
+func (flows) Delete(ctx *context.Context, client *Client, flowID string) ApiErrors {
 	path := fmt.Sprintf("/v2/flows/%s", flowID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -91,7 +92,7 @@ func (flows) Delete(client *Client, flowID string) ApiErrors {
 }
 
 // Update updates a flow.
-func (flows) Update(client *Client, flowID string, flow *Flow) (*FlowData, ApiErrors) {
+func (flows) Update(ctx *context.Context, client *Client, flowID string, flow *Flow) (*FlowData, ApiErrors) {
 
 	flowData := FlowData{
 		Data: *flow,
@@ -104,7 +105,7 @@ func (flows) Update(client *Client, flowID string, flow *Flow) (*FlowData, ApiEr
 
 	path := fmt.Sprintf("/v2/flows/%s", flowID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

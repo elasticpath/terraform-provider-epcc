@@ -12,7 +12,7 @@ provider "epcc" {
 data "epcc_currency" "example" {
   id                 = "99915f2a-1b74-4860-b8df-325cb44a9f63"
   type               = "currency"
-  code               = "GBP"
+  code               = "CHF"
   exchange_rate      = 2
   format             = "£{price}"
   decimal_point      = "."

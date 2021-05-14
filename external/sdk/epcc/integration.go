@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -49,10 +50,10 @@ type IntegrationList struct {
 }
 
 // Get fetches one Integration by id
-func (integrations) Get(client *Client, id string) (*IntegrationData, ApiErrors) {
+func (integrations) Get(ctx *context.Context, client *Client, id string) (*IntegrationData, ApiErrors) {
 	path := fmt.Sprintf("/v2/integrations/%s", id)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -66,10 +67,10 @@ func (integrations) Get(client *Client, id string) (*IntegrationData, ApiErrors)
 }
 
 // GetAll fetches IntegrationList
-func (integrations) GetAll(client *Client) (*IntegrationList, ApiErrors) {
+func (integrations) GetAll(ctx *context.Context, client *Client) (*IntegrationList, ApiErrors) {
 	path := fmt.Sprintf("/v2/integrations")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -83,7 +84,7 @@ func (integrations) GetAll(client *Client) (*IntegrationList, ApiErrors) {
 }
 
 // Create creates an Integration
-func (integrations) Create(client *Client, integration *Integration) (*IntegrationData, ApiErrors) {
+func (integrations) Create(ctx *context.Context, client *Client, integration *Integration) (*IntegrationData, ApiErrors) {
 	data := IntegrationData{
 		Data: *integration,
 	}
@@ -95,7 +96,7 @@ func (integrations) Create(client *Client, integration *Integration) (*Integrati
 
 	path := fmt.Sprintf("/v2/integrations")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -109,10 +110,10 @@ func (integrations) Create(client *Client, integration *Integration) (*Integrati
 }
 
 // Delete deletes an Integration by id
-func (integrations) Delete(client *Client, id string) ApiErrors {
+func (integrations) Delete(ctx *context.Context, client *Client, id string) ApiErrors {
 	path := fmt.Sprintf("/v2/integrations/%s", id)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -120,7 +121,7 @@ func (integrations) Delete(client *Client, id string) ApiErrors {
 }
 
 // Update updates a Integration.
-func (integrations) Update(client *Client, id string, integration *Integration) (*IntegrationData, ApiErrors) {
+func (integrations) Update(ctx *context.Context, client *Client, id string, integration *Integration) (*IntegrationData, ApiErrors) {
 
 	data := IntegrationData{
 		Data: *integration,
@@ -133,7 +134,7 @@ func (integrations) Update(client *Client, id string, integration *Integration) 
 
 	path := fmt.Sprintf("/v2/integrations/%s", id)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

@@ -9,10 +9,10 @@ import (
 
 func resourceEpccCurrency() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceEpccCurrencyCreate,
-		ReadContext:   resourceEpccCurrencyRead,
-		UpdateContext: resourceEpccCurrencyUpdate,
-		DeleteContext: resourceEpccCurrencyDelete,
+		CreateContext: addDiagToContext(resourceEpccCurrencyCreate),
+		ReadContext:   addDiagToContext(resourceEpccCurrencyRead),
+		UpdateContext: addDiagToContext(resourceEpccCurrencyUpdate),
+		DeleteContext: addDiagToContext(resourceEpccCurrencyDelete),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -32,14 +32,11 @@ func resourceEpccCurrency() *schema.Resource {
 
 }
 
-func resourceEpccCurrencyDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCurrencyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	currencyID := d.Id()
 
-	err := epcc.Currencies.Delete(client, currencyID)
+	err := epcc.Currencies.Delete(&ctx, client, currencyID)
 
 	if err != nil {
 		FromAPIError(err)
@@ -47,13 +44,14 @@ func resourceEpccCurrencyDelete(_ context.Context, d *schema.ResourceData, m int
 
 	d.SetId("")
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
 	currencyId := d.Id()
+	
 
 	currency := &epcc.Currency{
 		Id:                currencyId,
@@ -68,7 +66,7 @@ func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m i
 		Enabled:           d.Get("enabled").(bool),
 	}
 
-	updatedCurrencyData, apiError := epcc.Currencies.Update(client, currencyId, currency)
+	updatedCurrencyData, apiError := epcc.Currencies.Update(&ctx, client, currencyId, currency)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -79,14 +77,11 @@ func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m i
 	return resourceEpccCurrencyRead(ctx, d, m)
 }
 
-func resourceEpccCurrencyRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	currencyId := d.Id()
 
-	currency, err := epcc.Currencies.Get(client, currencyId)
+	currency, err := epcc.Currencies.Get(&ctx, client, currencyId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -120,14 +115,11 @@ func resourceEpccCurrencyRead(_ context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccCurrencyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	currency := &epcc.Currency{
 		Type:              "currency",
 		Code:              d.Get("code").(string),
@@ -139,7 +131,7 @@ func resourceEpccCurrencyCreate(ctx context.Context, d *schema.ResourceData, m i
 		Default:           d.Get("default").(bool),
 		Enabled:           d.Get("enabled").(bool),
 	}
-	createdCurrencyData, apiError := epcc.Currencies.Create(client, currency)
+	createdCurrencyData, apiError := epcc.Currencies.Create(&ctx, client, currency)
 	if apiError != nil {
 		return FromAPIError(apiError)
 	}
@@ -148,5 +140,5 @@ func resourceEpccCurrencyCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	resourceEpccCurrencyRead(ctx, d, m)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

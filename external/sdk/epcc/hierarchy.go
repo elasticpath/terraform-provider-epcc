@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -22,10 +23,10 @@ type HierarchyAttributes struct {
 	Slug        string `json:"slug,omitempty"`
 }
 
-func (hierarchies) Get(client *Client, hierarchyId string) (*HierarchyData, ApiErrors) {
+func (hierarchies) Get(ctx *context.Context, client *Client, hierarchyId string) (*HierarchyData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/hierarchies/%s", hierarchyId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -39,10 +40,10 @@ func (hierarchies) Get(client *Client, hierarchyId string) (*HierarchyData, ApiE
 }
 
 // GetAll fetches all hierarchies
-func (hierarchies) GetAll(client *Client) (*HierarchyList, ApiErrors) {
+func (hierarchies) GetAll(ctx *context.Context, client *Client) (*HierarchyList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/hierarchies")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -56,7 +57,7 @@ func (hierarchies) GetAll(client *Client) (*HierarchyList, ApiErrors) {
 }
 
 // Create creates a hierarchy
-func (hierarchies) Create(client *Client, hierarchy *Hierarchy) (*HierarchyData, ApiErrors) {
+func (hierarchies) Create(ctx *context.Context, client *Client, hierarchy *Hierarchy) (*HierarchyData, ApiErrors) {
 	hierarchyData := HierarchyData{
 		Data: *hierarchy,
 	}
@@ -68,7 +69,7 @@ func (hierarchies) Create(client *Client, hierarchy *Hierarchy) (*HierarchyData,
 
 	path := fmt.Sprintf("/pcm/hierarchies")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -82,10 +83,10 @@ func (hierarchies) Create(client *Client, hierarchy *Hierarchy) (*HierarchyData,
 }
 
 // Delete deletes a hierarchy.
-func (hierarchies) Delete(client *Client, hierarchyID string) ApiErrors {
+func (hierarchies) Delete(ctx *context.Context, client *Client, hierarchyID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/hierarchies/%s", hierarchyID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -93,7 +94,7 @@ func (hierarchies) Delete(client *Client, hierarchyID string) ApiErrors {
 }
 
 // Update updates a hierarchy.
-func (hierarchies) Update(client *Client, hierarchyID string, hierarchy *Hierarchy) (*HierarchyData, ApiErrors) {
+func (hierarchies) Update(ctx *context.Context, client *Client, hierarchyID string, hierarchy *Hierarchy) (*HierarchyData, ApiErrors) {
 
 	hierarchyData := HierarchyData{
 		Data: *hierarchy,
@@ -106,7 +107,7 @@ func (hierarchies) Update(client *Client, hierarchyID string, hierarchy *Hierarc
 
 	path := fmt.Sprintf("/pcm/hierarchies/%s", hierarchyID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

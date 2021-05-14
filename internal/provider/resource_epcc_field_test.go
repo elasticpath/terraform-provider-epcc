@@ -52,5 +52,3 @@ resource "epcc_field" "sports_season_field" {
   flow_id = epcc_flow.sports_flow.id
 }
 `
-
-
