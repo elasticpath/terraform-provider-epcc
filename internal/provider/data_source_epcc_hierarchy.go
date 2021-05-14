@@ -9,7 +9,7 @@ import (
 
 func dataSourceEpccHierarchy() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccHierarchyRead,
+		ReadContext: addDiagToContext(dataSourceEpccHierarchyRead),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -34,12 +34,9 @@ func dataSourceEpccHierarchy() *schema.Resource {
 func dataSourceEpccHierarchyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	hierarchyId := d.Get("id").(string)
 
-	hierarchy, err := epcc.Hierarchies.Get(client, hierarchyId)
+	hierarchy, err := epcc.Hierarchies.Get(&ctx, client, hierarchyId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -51,5 +48,5 @@ func dataSourceEpccHierarchyRead(ctx context.Context, d *schema.ResourceData, m 
 
 	d.SetId(hierarchy.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

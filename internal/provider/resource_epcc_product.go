@@ -12,10 +12,10 @@ import (
 func resourceEpccProduct() *schema.Resource {
 	return &schema.Resource{
 		Description:   "Allows the caller to create, update or delete an Elastic Path Commerce Cloud PCM [product](https://documentation.elasticpath.com/commerce-cloud/docs/concepts/products-pcm.html).",
-		CreateContext: resourceEpccProductCreate,
-		ReadContext:   resourceEpccProductRead,
-		UpdateContext: resourceEpccProductUpdate,
-		DeleteContext: resourceEpccProductDelete,
+		CreateContext: addDiagToContext(resourceEpccProductCreate),
+		ReadContext:   addDiagToContext(resourceEpccProductRead),
+		UpdateContext: addDiagToContext(resourceEpccProductUpdate),
+		DeleteContext: addDiagToContext(resourceEpccProductDelete),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:        schema.TypeString,
@@ -88,14 +88,11 @@ func resourceEpccProduct() *schema.Resource {
 
 }
 
-func resourceEpccProductDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	productId := d.Id()
 
-	err := epcc.Products.Delete(client, productId)
+	err := epcc.Products.Delete(&ctx, client, productId)
 
 	if err != nil {
 		FromAPIError(err)
@@ -103,7 +100,7 @@ func resourceEpccProductDelete(_ context.Context, d *schema.ResourceData, m inte
 
 	d.SetId("")
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -126,7 +123,7 @@ func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m in
 		},
 	}
 
-	updatedProductData, apiError := epcc.Products.Update(client, productId, product)
+	updatedProductData, apiError := epcc.Products.Update(&ctx, client, productId, product)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -135,7 +132,7 @@ func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m in
 	newFiles := convertIdsToTypeIdRelationship("file", convertSetToStringSlice(d.Get("files").(*schema.Set)))
 
 	// Update Product Files Replaces the entire current set of files
-	apiError = epcc.Products.UpdateProductFile(client, productId, epcc.DataForTypeIdRelationshipList{Data: &newFiles})
+	apiError = epcc.Products.UpdateProductFile(&ctx, client, productId, epcc.DataForTypeIdRelationshipList{Data: &newFiles})
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -146,20 +143,17 @@ func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m in
 	return resourceEpccProductRead(ctx, d, m)
 }
 
-func resourceEpccProductRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	productId := d.Id()
 
-	product, err := epcc.Products.Get(client, productId)
+	product, err := epcc.Products.Get(&ctx, client, productId)
 
 	if err != nil {
 		return FromAPIError(err)
 	}
 
-	productFiles, err := epcc.Products.GetProductFiles(client, productId)
+	productFiles, err := epcc.Products.GetProductFiles(&ctx, client, productId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -185,14 +179,11 @@ func resourceEpccProductRead(_ context.Context, d *schema.ResourceData, m interf
 		}
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	product := &epcc.Product{
 		Type: "product",
 		Attributes: epcc.ProductAttributes{
@@ -207,7 +198,7 @@ func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m in
 		},
 	}
 
-	createdProductData, apiError := epcc.Products.Create(client, product)
+	createdProductData, apiError := epcc.Products.Create(&ctx, client, product)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -219,7 +210,7 @@ func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m in
 
 	relationships := convertIdsToTypeIdRelationship("file", convertSetToStringSlice(files))
 
-	apiError = epcc.Products.CreateProductFile(client, createdProductData.Data.Id, epcc.DataForTypeIdRelationshipList{
+	apiError = epcc.Products.CreateProductFile(&ctx, client, createdProductData.Data.Id, epcc.DataForTypeIdRelationshipList{
 		Data: &relationships,
 	})
 
@@ -229,5 +220,5 @@ func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m in
 
 	resourceEpccProductRead(ctx, d, m)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

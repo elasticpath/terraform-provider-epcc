@@ -14,7 +14,7 @@ type PaymentGatewayDataSourceProvider struct {
 func (r PaymentGatewayDataSourceProvider) DataSource() *schema.Resource {
 	return &schema.Resource{
 		Description: "Payment gateway connectivity configuration",
-		ReadContext: r.read,
+		ReadContext: addDiagToContext(r.read),
 		Schema: map[string]*schema.Schema{
 			"slug": {
 				Type:     schema.TypeString,
@@ -40,11 +40,11 @@ func (r PaymentGatewayDataSourceProvider) DataSource() *schema.Resource {
 	}
 }
 
-func (r PaymentGatewayDataSourceProvider) read(_ context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayDataSourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
 	slug := payment_gateway.Slug(data.Get("slug").(string))
-	result, err := epcc.PaymentGateways.Get(client, slug)
+	result, err := epcc.PaymentGateways.Get(&ctx, client, slug)
 	if err != nil {
 		return FromAPIError(err)
 	}

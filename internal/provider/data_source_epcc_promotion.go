@@ -9,7 +9,7 @@ import (
 
 func dataSourceEpccPromotion() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccPromotionRead,
+		ReadContext: addDiagToContext(dataSourceEpccPromotionRead),
 		Schema: map[string]*schema.Schema{
 			"id":             {Type: schema.TypeString, Required: true},
 			"type":           {Type: schema.TypeString, Computed: true},
@@ -18,9 +18,17 @@ func dataSourceEpccPromotion() *schema.Resource {
 			"enabled":        {Type: schema.TypeBool, Computed: true},
 			"automatic":      {Type: schema.TypeBool, Optional: true},
 			"promotion_type": {Type: schema.TypeString, Computed: true},
-			"schema":         {Type: schema.TypeList, Computed: true, Elem: &schema.Resource{}},
-			"start":          {Type: schema.TypeString, Computed: true},
-			"end":            {Type: schema.TypeString, Computed: true},
+			"schema": {Type: schema.TypeList, Required: true,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"currencies":
+					{Type: schema.TypeList, Optional: true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"currency": {Type: schema.TypeString, Optional: true},
+							"amount":   {Type: schema.TypeInt, Optional: true},
+						}}},
+				}}},
+			"start": {Type: schema.TypeString, Computed: true},
+			"end":   {Type: schema.TypeString, Computed: true},
 			"min_cart_value": {Type: schema.TypeList, Optional: true,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"promotion": {Type: schema.TypeString, Optional: true},
@@ -37,9 +45,9 @@ func dataSourceEpccPromotion() *schema.Resource {
 
 func dataSourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-	var diags diag.Diagnostics
+
 	promotionId := d.Get("id").(string)
-	promotion, err := epcc.Promotions.Get(client, promotionId)
+	promotion, err := epcc.Promotions.Get(&ctx, client, promotionId)
 	if err != nil {
 		return FromAPIError(err)
 	}
@@ -58,5 +66,5 @@ func dataSourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m 
 
 	d.SetId(promotion.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

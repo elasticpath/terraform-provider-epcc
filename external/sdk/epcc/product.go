@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -37,10 +38,10 @@ type ProductRelationshipsChild struct {
 	Data string `json:"files"`
 }
 
-func (products) Get(client *Client, productId string) (*ProductData, ApiErrors) {
+func (products) Get(ctx *context.Context, client *Client, productId string) (*ProductData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/products/%s", productId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -54,10 +55,10 @@ func (products) Get(client *Client, productId string) (*ProductData, ApiErrors) 
 }
 
 // GetAll fetches all products
-func (products) GetAll(client *Client) (*ProductList, ApiErrors) {
+func (products) GetAll(ctx *context.Context, client *Client) (*ProductList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/products")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -71,7 +72,7 @@ func (products) GetAll(client *Client) (*ProductList, ApiErrors) {
 }
 
 // Create creates a product
-func (products) Create(client *Client, product *Product) (*ProductData, ApiErrors) {
+func (products) Create(ctx *context.Context, client *Client, product *Product) (*ProductData, ApiErrors) {
 	productData := ProductData{
 		Data: *product,
 	}
@@ -84,7 +85,7 @@ func (products) Create(client *Client, product *Product) (*ProductData, ApiError
 
 	path := fmt.Sprintf("/pcm/products")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -98,10 +99,10 @@ func (products) Create(client *Client, product *Product) (*ProductData, ApiError
 }
 
 // Delete deletes a product.
-func (products) Delete(client *Client, productID string) ApiErrors {
+func (products) Delete(ctx *context.Context, client *Client, productID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/products/%s", productID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -109,7 +110,7 @@ func (products) Delete(client *Client, productID string) ApiErrors {
 }
 
 // Update updates a product.
-func (products) Update(client *Client, productID string, product *Product) (*ProductData, ApiErrors) {
+func (products) Update(ctx *context.Context, client *Client, productID string, product *Product) (*ProductData, ApiErrors) {
 
 	productData := ProductData{
 		Data: *product,
@@ -122,7 +123,7 @@ func (products) Update(client *Client, productID string, product *Product) (*Pro
 
 	path := fmt.Sprintf("/pcm/products/%s", productID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -136,7 +137,7 @@ func (products) Update(client *Client, productID string, product *Product) (*Pro
 }
 
 // Create Product Files creates file relationships for products
-func (products) CreateProductFile(client *Client, productId string, reference DataForTypeIdRelationshipList) ApiErrors {
+func (products) CreateProductFile(ctx *context.Context, client *Client, productId string, reference DataForTypeIdRelationshipList) ApiErrors {
 
 	jsonPayload, err := json.Marshal(reference)
 	if err != nil {
@@ -146,13 +147,13 @@ func (products) CreateProductFile(client *Client, productId string, reference Da
 
 	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
 
-	_, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
 
 // Update Product Files creates file relationships for products
-func (products) UpdateProductFile(client *Client, productId string, reference DataForTypeIdRelationshipList) ApiErrors {
+func (products) UpdateProductFile(ctx *context.Context, client *Client, productId string, reference DataForTypeIdRelationshipList) ApiErrors {
 
 	jsonPayload, err := json.Marshal(reference)
 	if err != nil {
@@ -162,15 +163,15 @@ func (products) UpdateProductFile(client *Client, productId string, reference Da
 
 	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
 
-	_, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
 
-func (products) GetProductFiles(client *Client, productId string) (*DataForTypeIdRelationshipList, ApiErrors) {
+func (products) GetProductFiles(ctx *context.Context, client *Client, productId string) (*DataForTypeIdRelationshipList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}

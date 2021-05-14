@@ -45,11 +45,9 @@ func dataSourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	client := m.(*epcc.Client)
 
-	var diags diag.Diagnostics
-
 	FileId := d.Get("id").(string)
 
-	File, err := epcc.Files.Get(client, FileId)
+	File, err := epcc.Files.Get(&ctx, client, FileId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -69,5 +67,5 @@ func dataSourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	d.SetId(File.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc/payment_gateway"
@@ -97,10 +98,10 @@ type PaymentGatewayList struct {
 }
 
 // Get fetches one PaymentGateway by id
-func (paymentGateways) Get(client *Client, slug payment_gateway.Slug) (*PaymentGatewayData, ApiErrors) {
+func (paymentGateways) Get(ctx *context.Context, client *Client, slug payment_gateway.Slug) (*PaymentGatewayData, ApiErrors) {
 	path := fmt.Sprintf("/v2/gateways/%s", slug)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -114,10 +115,10 @@ func (paymentGateways) Get(client *Client, slug payment_gateway.Slug) (*PaymentG
 }
 
 // GetAll fetches PaymentGatewayList
-func (paymentGateways) GetAll(client *Client) (*PaymentGatewayList, ApiErrors) {
+func (paymentGateways) GetAll(ctx *context.Context, client *Client) (*PaymentGatewayList, ApiErrors) {
 	path := fmt.Sprintf("/v2/gateways")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -131,7 +132,7 @@ func (paymentGateways) GetAll(client *Client) (*PaymentGatewayList, ApiErrors) {
 }
 
 // Update updates a Integration.
-func (paymentGateways) Update(client *Client, slug payment_gateway.Slug, obj *PaymentGateway) (*PaymentGatewayData, ApiErrors) {
+func (paymentGateways) Update(ctx *context.Context, client *Client, slug payment_gateway.Slug, obj *PaymentGateway) (*PaymentGatewayData, ApiErrors) {
 	data := PaymentGatewayData{
 		Data: *obj,
 	}
@@ -143,7 +144,7 @@ func (paymentGateways) Update(client *Client, slug payment_gateway.Slug, obj *Pa
 
 	path := fmt.Sprintf("/v2/gateways/%s", slug)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

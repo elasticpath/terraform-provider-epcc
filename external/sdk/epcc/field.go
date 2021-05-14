@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -35,14 +36,14 @@ type RelationshipsAttributeFlow struct {
 }
 
 type RelationshipsAttributeFlowData struct {
-	Id              string `json:"id,omitempty"`
-	Type            string `json:"type,omitempty"`
+	Id   string `json:"id,omitempty"`
+	Type string `json:"type,omitempty"`
 }
 
-func (fields) Get(client *Client, fieldId string) (*FieldData, ApiErrors) {
+func (fields) Get(ctx *context.Context, client *Client, fieldId string) (*FieldData, ApiErrors) {
 	path := fmt.Sprintf("/v2/fields/%s", fieldId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -56,10 +57,10 @@ func (fields) Get(client *Client, fieldId string) (*FieldData, ApiErrors) {
 	return &field, nil
 }
 
-func (fields) GetAll(client *Client) (*FieldList, ApiErrors) {
+func (fields) GetAll(ctx *context.Context, client *Client) (*FieldList, ApiErrors) {
 	path := fmt.Sprintf("/v2/fields")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -73,10 +74,10 @@ func (fields) GetAll(client *Client) (*FieldList, ApiErrors) {
 }
 
 // Get all the fields that extend flow slug (slug is a resource name)
-func (fields) GetAllFromFlowSlug(client *Client, flowSlug string) (*FieldList, ApiErrors) {
+func (fields) GetAllFromFlowSlug(ctx *context.Context, client *Client, flowSlug string) (*FieldList, ApiErrors) {
 	path := fmt.Sprintf("/v2/flows/%s/fields", flowSlug)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -89,7 +90,7 @@ func (fields) GetAllFromFlowSlug(client *Client, flowSlug string) (*FieldList, A
 	return &fields, nil
 }
 
-func (fields) Create(client *Client, field *Field) (*FieldData, ApiErrors) {
+func (fields) Create(ctx *context.Context, client *Client, field *Field) (*FieldData, ApiErrors) {
 	fieldsData := FieldData{
 		Data: *field,
 	}
@@ -101,7 +102,7 @@ func (fields) Create(client *Client, field *Field) (*FieldData, ApiErrors) {
 
 	path := fmt.Sprintf("/v2/fields")
 
-	body, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -114,17 +115,17 @@ func (fields) Create(client *Client, field *Field) (*FieldData, ApiErrors) {
 	return &newField, nil
 }
 
-func (fields) Delete(client *Client, fieldID string) ApiErrors {
+func (fields) Delete(ctx *context.Context, client *Client, fieldID string) ApiErrors {
 	path := fmt.Sprintf("/v2/fields/%s", fieldID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (fields) Update(client *Client, fieldID string, field *Field) (*FieldData, ApiErrors) {
+func (fields) Update(ctx *context.Context, client *Client, fieldID string, field *Field) (*FieldData, ApiErrors) {
 
 	fieldData := FieldData{
 		Data: *field,
@@ -137,7 +138,7 @@ func (fields) Update(client *Client, fieldID string, field *Field) (*FieldData, 
 
 	path := fmt.Sprintf("/v2/fields/%s", fieldID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -162,5 +163,5 @@ type FiledDataList struct {
 }
 
 type FieldList struct {
-	Data [] Field
+	Data []Field
 }

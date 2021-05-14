@@ -9,7 +9,7 @@ import (
 
 func dataSourceEpccCurrency() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccCurrencyRead,
+		ReadContext: addDiagToContext(dataSourceEpccCurrencyRead),
 		Schema: map[string]*schema.Schema{
 			"id":                 {Type: schema.TypeString, Required: true},
 			"type":               {Type: schema.TypeString, Computed: true},
@@ -27,9 +27,9 @@ func dataSourceEpccCurrency() *schema.Resource {
 
 func dataSourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-	var diags diag.Diagnostics
+
 	currencyId := d.Get("id").(string)
-	currency, err := epcc.Currencies.Get(client, currencyId)
+	currency, err := epcc.Currencies.Get(&ctx, client, currencyId)
 	if err != nil {
 		return FromAPIError(err)
 	}
@@ -46,5 +46,5 @@ func dataSourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m i
 
 	d.SetId(currency.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

@@ -9,10 +9,10 @@ import (
 
 func resourceEpccNode() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceEpccNodeCreate,
-		ReadContext:   resourceEpccNodeRead,
-		UpdateContext: resourceEpccNodeUpdate,
-		DeleteContext: resourceEpccNodeDelete,
+		CreateContext: addDiagToContext(resourceEpccNodeCreate),
+		ReadContext:   addDiagToContext(resourceEpccNodeRead),
+		UpdateContext: addDiagToContext(resourceEpccNodeUpdate),
+		DeleteContext: addDiagToContext(resourceEpccNodeDelete),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -54,12 +54,9 @@ func resourceEpccNode() *schema.Resource {
 
 }
 
-func resourceEpccNodeDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
-	err := epcc.Nodes.Delete(client, d.Get("hierarchy_id").(string), d.Id())
+	err := epcc.Nodes.Delete(&ctx, client, d.Get("hierarchy_id").(string), d.Id())
 
 	if err != nil {
 		FromAPIError(err)
@@ -67,7 +64,7 @@ func resourceEpccNodeDelete(_ context.Context, d *schema.ResourceData, m interfa
 
 	d.SetId("")
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -97,7 +94,7 @@ func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		}
 	}
 
-	updatedNodeData, apiError := epcc.Nodes.Update(client, hierarchyId, d.Id(), node)
+	updatedNodeData, apiError := epcc.Nodes.Update(&ctx, client, hierarchyId, d.Id(), node)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -106,28 +103,26 @@ func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	newProducts := convertIdsToTypeIdRelationship("product", convertSetToStringSlice(d.Get("products").(*schema.Set)))
 
 	// Update Node Products Updates All the Products on the Node
-	apiError = epcc.Nodes.UpdateNodeProducts(client, hierarchyId, d.Id(), epcc.DataForTypeIdRelationshipList{Data: &newProducts})
+	apiError = epcc.Nodes.UpdateNodeProducts(&ctx, client, hierarchyId, d.Id(), epcc.DataForTypeIdRelationshipList{Data: &newProducts})
 
 	d.SetId(updatedNodeData.Data.Id)
 
 	return resourceEpccNodeRead(ctx, d, m)
 }
 
-func resourceEpccNodeRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
 
 	hierarchyId := d.Get("hierarchy_id").(string)
 
 	nodeId := d.Id()
-	node, err := epcc.Nodes.Get(client, hierarchyId, nodeId)
+	node, err := epcc.Nodes.Get(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
 		return FromAPIError(err)
 	}
 
-	nodeProducts, err := epcc.Nodes.GetNodeProducts(client, hierarchyId, nodeId)
+	nodeProducts, err := epcc.Nodes.GetNodeProducts(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -163,14 +158,11 @@ func resourceEpccNodeRead(_ context.Context, d *schema.ResourceData, m interface
 		}
 	}
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	node := &epcc.Node{
 		Type: "node",
 		Attributes: epcc.NodeAttributes{
@@ -183,7 +175,7 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	hierarchyId := d.Get("hierarchy_id").(string)
 
-	createdNodeData, apiError := epcc.Nodes.Create(client, hierarchyId, node)
+	createdNodeData, apiError := epcc.Nodes.Create(&ctx, client, hierarchyId, node)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -197,7 +189,7 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 	relationships := convertIdsToTypeIdRelationship("product", convertSetToStringSlice(files))
 
 	if len(relationships) > 0 {
-		apiError = epcc.Nodes.CreateNodeProducts(client, hierarchyId, createdNodeData.Data.Id, epcc.DataForTypeIdRelationshipList{
+		apiError = epcc.Nodes.CreateNodeProducts(&ctx, client, hierarchyId, createdNodeData.Data.Id, epcc.DataForTypeIdRelationshipList{
 			Data: &relationships,
 		})
 
@@ -208,5 +200,5 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	resourceEpccNodeRead(ctx, d, m)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

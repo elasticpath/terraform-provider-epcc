@@ -10,7 +10,7 @@ import (
 
 func dataSourceEpccPricebook() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccPricebookRead,
+		ReadContext: addDiagToContext(dataSourceEpccPricebookRead),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -31,12 +31,9 @@ func dataSourceEpccPricebook() *schema.Resource {
 func dataSourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	pricebookId := d.Get("id").(string)
 
-	pricebook, err := epcc.Pricebooks.Get(client, pricebookId)
+	pricebook, err := epcc.Pricebooks.Get(&ctx, client, pricebookId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -47,5 +44,5 @@ func dataSourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m 
 
 	d.SetId(pricebook.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

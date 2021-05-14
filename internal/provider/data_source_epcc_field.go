@@ -62,12 +62,9 @@ func dataSourceEpccField() *schema.Resource {
 func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	client := m.(*epcc.Client)
-
-	var diags diag.Diagnostics
-
 	fieldId := d.Get("id").(string)
 
-	field, err := epcc.Fields.Get(client, fieldId)
+	field, err := epcc.Fields.Get(&ctx, client, fieldId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -85,8 +82,7 @@ func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m inte
 	d.Set("omit_null", field.Data.OmitNull)
 	d.Set("flow_id", field.Data.Relationships.Flow.Data.Id)
 
-
 	d.SetId(field.Data.Id)
 
-	return diags
+	return *ctx.Value("diags").(*diag.Diagnostics)
 }

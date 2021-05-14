@@ -2,6 +2,7 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,10 +28,10 @@ type FileLink struct {
 	Href string `json:"href,omitempty"`
 }
 
-func (files) Get(client *Client, fileId string) (*FileData, ApiErrors) {
+func (files) Get(ctx *context.Context, client *Client, fileId string) (*FileData, ApiErrors) {
 	path := fmt.Sprintf("/v2/files/%s", fileId)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -44,10 +45,10 @@ func (files) Get(client *Client, fileId string) (*FileData, ApiErrors) {
 }
 
 // GetAll fetches all files
-func (files) GetAll(client *Client) (*FileList, ApiErrors) {
+func (files) GetAll(ctx *context.Context, client *Client) (*FileList, ApiErrors) {
 	path := fmt.Sprintf("/v2/files")
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -61,7 +62,7 @@ func (files) GetAll(client *Client) (*FileList, ApiErrors) {
 }
 
 // Create creates a file
-func (files) CreateFromFile(client *Client, filename string, public bool, reader io.Reader) (*FileData, ApiErrors) {
+func (files) CreateFromFile(ctx *context.Context, client *Client, filename string, public bool, reader io.Reader) (*FileData, ApiErrors) {
 
 	path := fmt.Sprintf("/v2/files")
 
@@ -82,7 +83,7 @@ func (files) CreateFromFile(client *Client, filename string, public bool, reader
 		return nil, FromError(err)
 	}
 
-	body, apiError := client.DoFileRequest(path, byteBuf, contentType)
+	body, apiError := client.DoFileRequest(ctx, path, byteBuf, contentType)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -95,7 +96,7 @@ func (files) CreateFromFile(client *Client, filename string, public bool, reader
 }
 
 // Create creates a file
-func (files) CreateFromFileLocation(client *Client, fileLocation string) (*FileData, ApiErrors) {
+func (files) CreateFromFileLocation(ctx *context.Context, client *Client, fileLocation string) (*FileData, ApiErrors) {
 
 	path := fmt.Sprintf("/v2/files")
 
@@ -110,7 +111,7 @@ func (files) CreateFromFileLocation(client *Client, fileLocation string) (*FileD
 		return nil, FromError(err)
 	}
 
-	body, apiError := client.DoFileRequest(path, byteBuf, contentType)
+	body, apiError := client.DoFileRequest(ctx, path, byteBuf, contentType)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -123,10 +124,10 @@ func (files) CreateFromFileLocation(client *Client, fileLocation string) (*FileD
 }
 
 // Delete deletes a file.
-func (files) Delete(client *Client, fileID string) ApiErrors {
+func (files) Delete(ctx *context.Context, client *Client, fileID string) ApiErrors {
 	path := fmt.Sprintf("/v2/files/%s", fileID)
 
-	if _, err := client.DoRequest("DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
 		return err
 	}
 
@@ -134,7 +135,7 @@ func (files) Delete(client *Client, fileID string) ApiErrors {
 }
 
 // Update updates a file.
-func (files) Update(client *Client, fileID string, file *File) (*FileData, ApiErrors) {
+func (files) Update(ctx *context.Context, client *Client, fileID string, file *File) (*FileData, ApiErrors) {
 
 	fileData := FileData{
 		Data: *file,
@@ -147,7 +148,7 @@ func (files) Update(client *Client, fileID string, file *File) (*FileData, ApiEr
 
 	path := fmt.Sprintf("/v2/files/%s", fileID)
 
-	body, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 
 	if apiError != nil {
 		return nil, apiError

@@ -2,14 +2,18 @@ package epcc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"gopkg.in/retry.v1"
@@ -123,23 +127,37 @@ func (c *Client) Authenticate() error {
 }
 
 // DoRequest makes a html request to the EPCC API and handles the response.
-func (c *Client) DoRequest(method string, path string, payload io.Reader) (body []byte, error ApiErrors) {
-	return c.doRequestInternal(method, "application/json", path, payload)
+func (c *Client) DoRequest(ctx *context.Context, method string, path string, payload io.Reader) (body []byte, error ApiErrors) {
+	var teeBuf bytes.Buffer
+	tee := io.TeeReader(payload, &teeBuf)
+	var requestBody = "(n/a)"
+	if payload != nil {
+		requestBodyBytes, _ := ioutil.ReadAll(tee)
+		requestBody = string(requestBodyBytes)
+	}
+	return c.doRequestInternal(ctx, method, "application/json", path, bytes.NewReader(teeBuf.Bytes()), requestBody)
 }
 
-func (c *Client) DoFileRequest(path string, payload io.Reader, contentType string) (body []byte, error ApiErrors) {
-	return c.doRequestInternal("POST", contentType, path, payload)
+func (c *Client) DoFileRequest(ctx *context.Context, path string, payload io.Reader, contentType string) (body []byte, error ApiErrors) {
+	return c.doRequestInternal(ctx, "POST", contentType, path, payload, "(multipart data)")
 }
 
 // DoRequest makes a html request to the EPCC API and handles the response.
-func (c *Client) doRequestInternal(method string, contentType string, path string, payload io.Reader) (body []byte, error ApiErrors) {
+func (c *Client) doRequestInternal(ctx *context.Context, method string, contentType string, path string, payload io.Reader, requestBody string) (body []byte, error ApiErrors) {
 	reqURL, err := url.Parse(c.BaseURL)
 	if err != nil {
 		return nil, FromError(err)
 	}
 
 	reqURL.Path = path
+	diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
 
+	diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
+		Severity: diag.Warning,
+		Summary:  "HTTP Request Details",
+		Detail:   fmt.Sprintf("Method: %s, Path:%s, Body: %s", method, path, requestBody)})
+
+	*diagnostics = diagnosticsAppended
 	req, err := http.NewRequest(method, reqURL.String(), payload)
 	if err != nil {
 		return nil, FromError(err)
@@ -171,7 +189,11 @@ func (c *Client) doRequestInternal(method string, contentType string, path strin
 			if _, err := buffer.ReadFrom(resp.Body); err != nil {
 				return nil, FromError(err)
 			}
-
+			diagnosticsAppended = append(diagnosticsAppended, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "HTTP Response Details",
+				Detail:   fmt.Sprintf("Status Code: %s, Body:%s", strconv.Itoa(resp.StatusCode), buffer.String())})
+			*diagnostics = diagnosticsAppended
 			return buffer.Bytes(), nil
 
 		case 204:
