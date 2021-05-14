@@ -57,7 +57,7 @@ func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m inter
 		return FromAPIError(err)
 	}
 
-	nodeProducts, err := epcc.Nodes.GetNodeProducts(client, hierarchyId, nodeId)
+	nodeProducts, err := epcc.Nodes.GetNodeProducts(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
 		return FromAPIError(err)

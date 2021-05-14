@@ -146,9 +146,7 @@ func (nodes) Update(ctx *context.Context, client *Client, hierarchyId string, no
 	return &updatedNode, nil
 }
 
-
-
-func (nodes) CreateNodeProducts(client *Client,  hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
+func (nodes) CreateNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
 
 	jsonPayload, err := json.Marshal(reference)
 	if err != nil {
@@ -156,15 +154,14 @@ func (nodes) CreateNodeProducts(client *Client,  hierarchyId string, nodeID stri
 	}
 	log.Printf("jsonPayload: " + string(jsonPayload))
 
-	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID )
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID)
 
-	_, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
 
-
-func (nodes) UpdateNodeProducts(client *Client,  hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
+func (nodes) UpdateNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
 
 	jsonPayload, err := json.Marshal(reference)
 	if err != nil {
@@ -172,17 +169,17 @@ func (nodes) UpdateNodeProducts(client *Client,  hierarchyId string, nodeID stri
 	}
 	log.Printf("jsonPayload: " + string(jsonPayload))
 
-	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID )
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID)
 
-	_, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
 
-func (nodes) GetNodeProducts(client *Client,  hierarchyId string, nodeID string,) (*DataForTypeIdRelationshipList, ApiErrors) {
-	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/products", hierarchyId, nodeID )
+func (nodes) GetNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string, ) (*DataForTypeIdRelationshipList, ApiErrors) {
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/products", hierarchyId, nodeID)
 
-	body, apiError := client.DoRequest("GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, nil)
 	if apiError != nil {
 		return nil, apiError
 	}

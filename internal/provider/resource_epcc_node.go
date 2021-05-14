@@ -103,7 +103,7 @@ func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	newProducts := convertIdsToTypeIdRelationship("product", convertSetToStringSlice(d.Get("products").(*schema.Set)))
 
 	// Update Node Products Updates All the Products on the Node
-	apiError = epcc.Nodes.UpdateNodeProducts(client, hierarchyId, d.Id(), epcc.DataForTypeIdRelationshipList{Data: &newProducts})
+	apiError = epcc.Nodes.UpdateNodeProducts(&ctx, client, hierarchyId, d.Id(), epcc.DataForTypeIdRelationshipList{Data: &newProducts})
 
 	d.SetId(updatedNodeData.Data.Id)
 
@@ -122,7 +122,7 @@ func resourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return FromAPIError(err)
 	}
 
-	nodeProducts, err := epcc.Nodes.GetNodeProducts(client, hierarchyId, nodeId)
+	nodeProducts, err := epcc.Nodes.GetNodeProducts(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -189,7 +189,7 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 	relationships := convertIdsToTypeIdRelationship("product", convertSetToStringSlice(files))
 
 	if len(relationships) > 0 {
-		apiError = epcc.Nodes.CreateNodeProducts(client, hierarchyId, createdNodeData.Data.Id, epcc.DataForTypeIdRelationshipList{
+		apiError = epcc.Nodes.CreateNodeProducts(&ctx, client, hierarchyId, createdNodeData.Data.Id, epcc.DataForTypeIdRelationshipList{
 			Data: &relationships,
 		})
 
