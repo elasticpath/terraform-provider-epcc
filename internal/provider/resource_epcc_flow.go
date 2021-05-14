@@ -35,7 +35,7 @@ func resourceEpccFlow() *schema.Resource {
 				Required: true,
 			},
 			"enabled": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Required: true,
 			},
 		},
