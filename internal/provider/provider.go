@@ -82,7 +82,6 @@ func New(version string) func() *schema.Provider {
 				"epcc_file":            resourceEpccFile(),
 				"epcc_hierarchy":       resourceEpccHierarchy(),
 				"epcc_integration":     IntegrationResourceProvider{}.Resource(),
-				"epcc_node":            resourceEpccNode(),
 				"epcc_payment_gateway": PaymentGatewayResourceProvider{}.Resource(),
 				"epcc_pricebook":       resourceEpccPricebook(),
 				"epcc_product":         resourceEpccProduct(),
