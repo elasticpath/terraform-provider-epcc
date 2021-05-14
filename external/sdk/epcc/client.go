@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"time"
@@ -123,6 +124,15 @@ func (c *Client) Authenticate() error {
 
 // DoRequest makes a html request to the EPCC API and handles the response.
 func (c *Client) DoRequest(method string, path string, payload io.Reader) (body []byte, error ApiErrors) {
+	return c.doRequestInternal(method, "application/json", path, payload)
+}
+
+func (c *Client) DoFileRequest(path string, payload io.Reader, contentType string) (body []byte, error ApiErrors) {
+	return c.doRequestInternal("POST", contentType, path, payload)
+}
+
+// DoRequest makes a html request to the EPCC API and handles the response.
+func (c *Client) doRequestInternal(method string, contentType string, path string, payload io.Reader) (body []byte, error ApiErrors) {
 	reqURL, err := url.Parse(c.BaseURL)
 	if err != nil {
 		return nil, FromError(err)
@@ -136,7 +146,7 @@ func (c *Client) DoRequest(method string, path string, payload io.Reader) (body 
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("User-Agent", c.UserAgent)
 
 	if len(c.BetaFeatures) > 0 {
@@ -173,8 +183,6 @@ func (c *Client) DoRequest(method string, path string, payload io.Reader) (body 
 				return nil, FromError(err)
 			}
 
-			// TODO Better Manage Parent ID
-
 			var jsonApiError ErrorList
 
 			bytes := buffer.Bytes()
@@ -198,4 +206,32 @@ func (c *Client) DoRequest(method string, path string, payload io.Reader) (body 
 
 	err = errors.New("retry timeout error")
 	return nil, FromError(err)
+}
+
+// https://stackoverflow.com/questions/20205796/post-data-using-the-content-type-multipart-form-data
+func EncodeForm(values map[string]string, filename string, paramName string, fileContents []byte) (byteBuf *bytes.Buffer, contentType string, err error) {
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+
+	for key, val := range values {
+		_ = writer.WriteField(key, val)
+	}
+
+	if len(paramName) > 0 {
+		part, err := writer.CreateFormFile(paramName, filename)
+
+		if err != nil {
+			return nil, "", err
+		}
+
+		part.Write(fileContents)
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return body, writer.FormDataContentType(), nil
 }
