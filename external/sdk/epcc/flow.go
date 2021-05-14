@@ -16,7 +16,7 @@ type Flow struct {
 	Name        string `json:"name,omitempty"`
 	Slug        string `json:"slug,omitempty"`
 	Description string `json:"description,omitempty"`
-	Enabled     bool   `json:"enabled,omitempty"`
+	Enabled     bool   `json:"enabled"`
 }
 
 func (flows) Get(client *Client, flowId string) (*FlowData, ApiErrors) {

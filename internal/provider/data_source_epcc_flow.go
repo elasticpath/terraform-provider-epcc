@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
