@@ -73,6 +73,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	mpn            = "mfg-acc_test_epcc_product_1"
 	status         = "draft"
   }`, timestamp),
+
 	// language=HCL
 	fmt.Sprintf(`
  resource "epcc_product" "acc_test_epcc_product_1_physical_live" {

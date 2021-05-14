@@ -42,6 +42,13 @@ func resourceEpccNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"products": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 
@@ -66,6 +73,8 @@ func resourceEpccNodeDelete(_ context.Context, d *schema.ResourceData, m interfa
 func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
+	hierarchyId :=  d.Get("hierarchy_id").(string)
+
 	node := &epcc.Node{
 		Type: "node",
 		Id:   d.Id(),
@@ -88,11 +97,16 @@ func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		}
 	}
 
-	updatedNodeData, apiError := epcc.Nodes.Update(client, d.Get("hierarchy_id").(string), d.Id(), node)
+	updatedNodeData, apiError := epcc.Nodes.Update(client, hierarchyId, d.Id(), node)
 
 	if apiError != nil {
 		return FromAPIError(apiError)
 	}
+
+	newProducts := convertIdsToTypeIdRelationship("product", convertSetToStringSlice(d.Get("products").(*schema.Set)))
+
+	// Update Node Products Updates All the Products on the Node
+	apiError = epcc.Nodes.UpdateNodeProducts(client, hierarchyId, d.Id(), epcc.DataForTypeIdRelationshipList{Data: &newProducts})
 
 	d.SetId(updatedNodeData.Data.Id)
 
@@ -104,7 +118,16 @@ func resourceEpccNodeRead(_ context.Context, d *schema.ResourceData, m interface
 
 	var diags diag.Diagnostics
 
-	node, err := epcc.Nodes.Get(client, d.Get("hierarchy_id").(string), d.Id())
+	hierarchyId := d.Get("hierarchy_id").(string)
+
+	nodeId := d.Id()
+	node, err := epcc.Nodes.Get(client, hierarchyId, nodeId)
+
+	if err != nil {
+		return FromAPIError(err)
+	}
+
+	nodeProducts, err := epcc.Nodes.GetNodeProducts(client, hierarchyId, nodeId)
 
 	if err != nil {
 		return FromAPIError(err)
@@ -124,6 +147,18 @@ func resourceEpccNodeRead(_ context.Context, d *schema.ResourceData, m interface
 
 	if node.Data.Relationships != nil && node.Data.Relationships.Parent != nil && node.Data.Relationships.Parent.Data != nil {
 		if err := d.Set("parent_id", node.Data.Relationships.Parent.Data.Id); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if nodeProducts != nil && nodeProducts.Data != nil {
+		fileIds := convertJsonTypesToIds(nodeProducts.Data)
+
+		if err := d.Set("products", fileIds); err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		if err := d.Set("products", [0]string{}); err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -155,6 +190,21 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 	}
 
 	d.SetId(createdNodeData.Data.Id)
+
+
+	files := d.Get("products").(*schema.Set)
+
+	relationships := convertIdsToTypeIdRelationship("product", convertSetToStringSlice(files))
+
+	if len(relationships) > 0 {
+		apiError = epcc.Nodes.CreateNodeProducts(client, hierarchyId, createdNodeData.Data.Id, epcc.DataForTypeIdRelationshipList{
+			Data: &relationships,
+		})
+
+		if apiError != nil {
+			return FromAPIError(apiError)
+		}
+	}
 
 	resourceEpccNodeRead(ctx, d, m)
 

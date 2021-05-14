@@ -35,6 +35,13 @@ func dataSourceEpccNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"products": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -53,6 +60,12 @@ func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m inter
 		return FromAPIError(err)
 	}
 
+	nodeProducts, err := epcc.Nodes.GetNodeProducts(client, hierarchyId, nodeId)
+
+	if err != nil {
+		return FromAPIError(err)
+	}
+
 	d.Set("name", node.Data.Attributes.Name)
 	d.Set("type", node.Data.Type)
 	d.Set("slug", node.Data.Attributes.Slug)
@@ -64,6 +77,18 @@ func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m inter
 	}
 
 	d.SetId(node.Data.Id)
+
+	if nodeProducts != nil && nodeProducts.Data != nil {
+		fileIds := convertJsonTypesToIds(nodeProducts.Data)
+
+		if err := d.Set("products", fileIds); err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		if err := d.Set("products", [0]string{}); err != nil {
+			return diag.FromErr(err)
+		}
+	}
 
 	return diags
 }
