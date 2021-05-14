@@ -15,15 +15,15 @@ func TestAccResourceField(t *testing.T) {
 			{
 				Config: testAccResourceField,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "name", regexp.MustCompile("Customer Hobby")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "slug", regexp.MustCompile("hobby")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "field_type", regexp.MustCompile("string")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "description", regexp.MustCompile("Activity the customer is fond of")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "required", regexp.MustCompile("false")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "default", regexp.MustCompile("biking")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "omit_null", regexp.MustCompile("false")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "enabled", regexp.MustCompile("true")),
-					resource.TestMatchResourceAttr("epcc_field.customer_hobby_field", "flow_id", regexp.MustCompile("cf47328b-e80e-42e4-9428-11cae225ce3d")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "name", regexp.MustCompile("Sport season")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "slug", regexp.MustCompile("season")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "field_type", regexp.MustCompile("string")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "description", regexp.MustCompile("Season the sport is played in")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "required", regexp.MustCompile("false")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "default", regexp.MustCompile("summer")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "omit_null", regexp.MustCompile("false")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "enabled", regexp.MustCompile("true")),
+					resource.TestMatchResourceAttr("epcc_field.sports_season_field", "flow_id", regexp.MustCompile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$")),
 				),
 			},
 		},
@@ -33,16 +33,23 @@ func TestAccResourceField(t *testing.T) {
 const testAccResourceField =
 // language=HCL
 `
-resource "epcc_field" "customer_hobby_field" {
-  name = "Customer Hobby"
-  slug = "hobby"
+resource "epcc_flow" "sports_flow" {
+  name        = "Flow for sports"
+  slug        = "hockey"
+  description = "This is a Terraform test"
+  enabled     = true
+}
+
+resource "epcc_field" "sports_season_field" {
+  name = "Sport season"
+  slug = "season"
   field_type = "string"
-  description = "Activity the customer is fond of"
+  description = "Season the sport is played in"
   required = false
-  default = "biking"
+  default = "summer"
   omit_null = false
   enabled = true
-  flow_id = "cf47328b-e80e-42e4-9428-11cae225ce3d"
+  flow_id = epcc_flow.sports_flow.id
 }
 `
 
