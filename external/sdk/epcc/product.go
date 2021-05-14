@@ -34,12 +34,8 @@ type ProductRelationships struct {
 }
 
 type ProductRelationshipsChild struct {
-	Data  string                         `json:"files"`
-	Links ProductRelationshipsChildLinks `json:"links,omitempty"`
-}
-
-type ProductRelationshipsChildLinks struct {
-	Self string `json:"self,omitempty"`
+	Data  string `json:"files"`
+	Links Links  `json:"links,omitempty"`
 }
 
 func (products) Get(client *Client, productId string) (*ProductData, ApiErrors) {
