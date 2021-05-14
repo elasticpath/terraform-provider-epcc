@@ -6,12 +6,11 @@ terraform {
     }
   }
 }
-
 provider "epcc" {
   beta_features = "account-management"
 }
-
-resource "epcc_currency" "british_pound_currency" {
+data "epcc_currency" "example" {
+  id                 = "99915f2a-1b74-4860-b8df-325cb44a9f63"
   type               = "currency"
   code               = "GBP"
   exchange_rate      = 2
@@ -22,3 +21,8 @@ resource "epcc_currency" "british_pound_currency" {
   default            = false
   enabled            = true
 }
+
+output "currency_code" {
+  value = data.epcc_currency.example.code
+}
+

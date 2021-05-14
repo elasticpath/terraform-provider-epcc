@@ -3,8 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
 	"strings"
+
+	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -61,21 +62,27 @@ func New(version string) func() *schema.Provider {
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"epcc_account":     dataSourceEpccAccount(),
-				"epcc_customer":    dataSourceEpccCustomer(),
-				"epcc_currency":    dataSourceEpccCurrency(),
-				"epcc_hierarchy":   dataSourceEpccHierarchy(),
-				"epcc_integration": IntegrationDataSourceProvider{}.DataSource(),
-				"epcc_pricebook":   dataSourceEpccPricebook(),
+				"epcc_account":         dataSourceEpccAccount(),
+				"epcc_customer":        dataSourceEpccCustomer(),
+				"epcc_currency":        dataSourceEpccCurrency(),
+				"epcc_hierarchy":       dataSourceEpccHierarchy(),
+				"epcc_integration":     IntegrationDataSourceProvider{}.DataSource(),
+				"epcc_pricebook":       dataSourceEpccPricebook(),
+				"epcc_payment_gateway": PaymentGatewayDataSourceProvider{}.DataSource(),
+				"epcc_node":            dataSourceEpccNode(),
+				"epcc_product":         dataSourceEpccProduct(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
-				"epcc_account":     resourceEpccAccount(),
-				"epcc_customer":    resourceEpccCustomer(),
-				"epcc_currency":    resourceEpccCurrency(),
-				"epcc_hierarchy":   resourceEpccHierarchy(),
-				"epcc_integration": IntegrationResourceProvider{}.Resource(),
-				"epcc_pricebook":   resourceEpccPricebook(),
+				"epcc_account":         resourceEpccAccount(),
+				"epcc_customer":        resourceEpccCustomer(),
+				"epcc_currency":        resourceEpccCurrency(),
+				"epcc_hierarchy":       resourceEpccHierarchy(),
+				"epcc_integration":     IntegrationResourceProvider{}.Resource(),
+				"epcc_pricebook":       resourceEpccPricebook(),
+				"epcc_payment_gateway": PaymentGatewayResourceProvider{}.Resource(),
+				"epcc_product":         resourceEpccProduct(),
+				"epcc_node":            resourceEpccNode(),
 			},
 		}
 

@@ -23,7 +23,9 @@ func TestAccResourcePricebook(t *testing.T) {
 	})
 }
 
-const testAccResourcePricebook = `
+const testAccResourcePricebook =
+// language=HCL
+`
 resource "epcc_pricebook" "acc_test_epcc_pricebook" {
   name            = "Pricebook for acc tests name"
   description      = "Pricebook for acc tests description"

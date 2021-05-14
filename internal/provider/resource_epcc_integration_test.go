@@ -11,6 +11,7 @@ func TestAccResourceIntegration(t *testing.T) {
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
+				// language=HCL
 				Config: `
                    resource "epcc_integration" "test" {
                      name = "Test Integration"

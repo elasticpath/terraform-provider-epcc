@@ -68,12 +68,15 @@ clean:
 # Run acceptance tests
 .PHONY: testacc
 testacc:
-	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+	(\
+		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m \
+	)
 
 .PHONY: example
 example: install
 	(\
-		set -o allexport &&	[[ -f .env ]] && source .env && set +o allexport && \
+		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
 		pushd $(EXAMPLE) && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \

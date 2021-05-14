@@ -8,12 +8,11 @@ terraform {
 }
 
 resource "epcc_customer" "my_first_terraform_customer" {
-  name  = "A customer not an account"
-  email = "steve@ramage.com"
+  name  = "Jon Smith"
+  email = "jon@smith.com"
 }
 
-
 resource "epcc_customer" "my_second_terraform_customer" {
-  name  = "A second customer not an account"
-  email = "ste4e@ramage.com"
+  name  = "Jane Smith"
+  email = "jane@smith.com"
 }

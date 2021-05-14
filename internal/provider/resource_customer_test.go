@@ -23,6 +23,7 @@ func TestAccResourceCustomer(t *testing.T) {
 	})
 }
 
+// language=HCL
 const testAccResourceCustomer = `
 resource "epcc_customer" "acc_test_customer" {
   name  = "Customer for acc tests"

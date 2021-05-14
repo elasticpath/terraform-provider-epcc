@@ -1,11 +1,11 @@
 ---
-page_title: "epcc_pricebook Resource - epcc-terraform-provider"
+page_title: "epcc_node Resource - epcc-terraform-provider"
 subcategory: ""
 description: |-
   
 ---
 
-# Resource `epcc_pricebook`
+# Resource `epcc_node`
 
 
 
@@ -15,11 +15,14 @@ description: |-
 
 ### Required
 
+- **hierarchy_id** (String)
 - **name** (String)
 
 ### Optional
 
 - **description** (String)
+- **parent_id** (String)
+- **slug** (String)
 
 ### Read-only
 

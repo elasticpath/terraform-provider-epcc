@@ -7,11 +7,10 @@ terraform {
   }
 }
 
-data "epcc_hierarchy" "example" {
+data "epcc_hierarchy" "example_hierarchy" {
   id = "c996cd23-bca1-48e0-9e1c-1d9186bd8a24"
 }
 
 output "hierarchy_name" {
-  value = data.epcc_hierarchy.example.name
+  value = data.epcc_hierarchy.example_hierarchy.name
 }
-
