@@ -25,3 +25,11 @@ resource "epcc_field" "customer_age_field" {
   enabled = true
   flow_id = epcc_flow.customer_flow.id
 }
+
+resource "epcc_customer" "awesome_user_1" {
+  name  = "John"
+  email = "john@gmail.com"
+  flows = {
+    age = "55"
+  }
+}

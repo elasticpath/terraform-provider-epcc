@@ -29,6 +29,13 @@ func resourceEpccCustomer() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"flows": &schema.Schema{
+				Type:     schema.TypeMap,
+				Required: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 
@@ -63,7 +70,7 @@ func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m i
 		Email: d.Get("email").(string),
 	}
 
-	updatedCustomerData, apiError := epcc.Customers.Update(client, customerId, customer)
+	updatedCustomerData, apiError := epcc.Customers.Update(client, customerId, customer, d.Get("flows").(map[string]interface{}))
 
 	if apiError != nil {
 		return FromAPIError(apiError)
@@ -109,7 +116,8 @@ func resourceEpccCustomerCreate(ctx context.Context, d *schema.ResourceData, m i
 		Email: d.Get("email").(string),
 	}
 
-	createdCustomerData, apiError := epcc.Customers.Create(client, customer)
+	flowsExtension := d.Get("flows").(map[string]interface{})
+	createdCustomerData, apiError := epcc.Customers.Create(client, customer, flowsExtension)
 
 	if apiError != nil {
 		return FromAPIError(apiError)

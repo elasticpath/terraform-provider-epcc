@@ -53,12 +53,12 @@ func (customers) GetAll(client *Client) (*CustomerList, ApiErrors) {
 }
 
 // Create creates a customer
-func (customers) Create(client *Client, customer *Customer) (*CustomerData, ApiErrors) {
+func (customers) Create(client *Client, customer *Customer, flowsExtension map[string]interface{}) (*CustomerData, ApiErrors) {
 	customerData := CustomerData{
 		Data: *customer,
 	}
 
-	jsonPayload, err := json.Marshal(customerData)
+	jsonPayload, err := ToJSON(customerData, flowsExtension)
 	if err != nil {
 		return nil, FromError(err)
 	}
@@ -90,13 +90,13 @@ func (customers) Delete(client *Client, customerID string) ApiErrors {
 }
 
 // Update updates a customer.
-func (customers) Update(client *Client, customerID string, customer *Customer) (*CustomerData, ApiErrors) {
+func (customers) Update(client *Client, customerID string, customer *Customer, flowsExtension map[string]interface{}) (*CustomerData, ApiErrors) {
 
 	customerData := CustomerData{
 		Data: *customer,
 	}
 
-	jsonPayload, err := json.Marshal(customerData)
+	jsonPayload, err := ToJSON(customerData, flowsExtension)
 	if err != nil {
 		return nil, FromError(err)
 	}
