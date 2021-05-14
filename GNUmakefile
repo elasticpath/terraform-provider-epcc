@@ -84,6 +84,29 @@ example: install
 		popd \
 	)
 
+.PHONY: example
+resource: install
+	(\
+		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		pushd examples/resources/$(TYPE)_resource && \
+		(rm .terraform.lock.hcl || true) && \
+		terraform init && \
+		terraform $(ACTION) && \
+		popd \
+	)
+
+.PHONY: example
+data-source: install
+	(\
+		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		pushd examples/data-sources/$(TYPE)_data_source && \
+		(rm .terraform.lock.hcl || true) && \
+		terraform init && \
+		terraform $(ACTION) && \
+		popd \
+	)
+
+
 .PHONY: docs
 docs: install
 	(\
@@ -92,3 +115,4 @@ docs: install
 		terraform init && \
 		go generate \
 	)
+
