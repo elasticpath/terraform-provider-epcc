@@ -58,16 +58,3 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	status         = "live"
   }`,
 }
-
-/*
-const testAccResourceProduct = `
-resource "epcc_product" "acc_test_epcc_product_1_physical_live" {
-	sku            = "acc_test_epcc_product_1"
-	name           = "TestAccResourceProduct1"
-	commodity_type = "physical"
-	description    = "acc_test_epcc_product_1_physical_live"
-	mpn            = "mfg-acc_test_epcc_product_1"
-	status         = "live"
-  }
-`
-*/

@@ -14,18 +14,13 @@ type Pricebook struct {
 	Id         string              `json:"id,omitempty"`
 	Type       string              `json:"type"`
 	Attributes PricebookAttributes `json:"attributes"`
-	Links      PricebookLinks      `json:"links,omitempty"`
+	Links      Links               `json:"links,omitempty"`
 }
 
 type PricebookAttributes struct {
-	CreatedAt   string `json:"created_at,omitempty"`
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	UpdatedAt   string `json:"updated_at,omitempty"`
-}
-
-type PricebookLinks struct {
-	Self string `json:"self,omitempty"`
+	Name        string     `json:"name"`
+	Description string     `json:"description,omitempty"`
+	Timestamps  Timestamps `json:"timestamps,omitempty"`
 }
 
 func (pricebooks) Get(client *Client, pricebookId string) (*PricebookData, ApiErrors) {
