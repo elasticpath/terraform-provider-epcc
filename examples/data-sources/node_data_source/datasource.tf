@@ -8,14 +8,18 @@ terraform {
 }
 
 data "epcc_hierarchy" "example_hierarchy" {
-  id = "d9bde721-e30b-489d-bb35-1fca6aa0810e"
+  id = "8d5ba73f-f44e-429d-b427-5dddbcaa6430"
 }
 
 data "epcc_node" "example_node" {
-  id           = "d056d40e-86d0-4081-a23d-5d190531d9a1"
+  id           = "a609e1df-f64a-454d-b321-645d9d9a2834"
   hierarchy_id = data.epcc_hierarchy.example_hierarchy.id
 }
 
 output "node_name" {
   value = data.epcc_node.example_node.name
+}
+
+output "node_products" {
+  value = data.epcc_node.example_node.products
 }

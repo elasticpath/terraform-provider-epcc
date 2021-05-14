@@ -145,6 +145,55 @@ func (nodes) Update(client *Client, hierarchyId string, nodeID string, node *Nod
 	return &updatedNode, nil
 }
 
+
+
+func (nodes) CreateNodeProducts(client *Client,  hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
+
+	jsonPayload, err := json.Marshal(reference)
+	if err != nil {
+		return FromError(err)
+	}
+	log.Printf("jsonPayload: " + string(jsonPayload))
+
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID )
+
+	_, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+
+	return apiError
+}
+
+
+func (nodes) UpdateNodeProducts(client *Client,  hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
+
+	jsonPayload, err := json.Marshal(reference)
+	if err != nil {
+		return FromError(err)
+	}
+	log.Printf("jsonPayload: " + string(jsonPayload))
+
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID )
+
+	_, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+
+	return apiError
+}
+
+func (nodes) GetNodeProducts(client *Client,  hierarchyId string, nodeID string,) (*DataForTypeIdRelationshipList, ApiErrors) {
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/products", hierarchyId, nodeID )
+
+	body, apiError := client.DoRequest("GET", path, nil)
+	if apiError != nil {
+		return nil, apiError
+	}
+
+	var fileRelationships DataForTypeIdRelationshipList
+	if err := json.Unmarshal(body, &fileRelationships); err != nil {
+		return nil, FromError(err)
+	}
+
+	return &fileRelationships, nil
+}
+
 type NodeData struct {
 	Data Node `json:"data"`
 }

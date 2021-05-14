@@ -30,3 +30,6 @@ do
     fi
   done
 done
+
+
+find -iname "terraform.tfstate*" -delete
