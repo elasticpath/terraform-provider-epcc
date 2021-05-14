@@ -14,13 +14,11 @@ type Pricebook struct {
 	Id         string              `json:"id,omitempty"`
 	Type       string              `json:"type"`
 	Attributes PricebookAttributes `json:"attributes"`
-	Links      Links               `json:"links,omitempty"`
 }
 
 type PricebookAttributes struct {
-	Name        string     `json:"name"`
-	Description string     `json:"description,omitempty"`
-	Timestamps  Timestamps `json:"timestamps,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
 }
 
 func (pricebooks) Get(client *Client, pricebookId string) (*PricebookData, ApiErrors) {

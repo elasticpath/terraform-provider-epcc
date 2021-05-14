@@ -37,4 +37,4 @@ website/vendor
 
 .env
 
-cmd/cmd
+cmd/
