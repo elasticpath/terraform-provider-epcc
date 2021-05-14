@@ -26,11 +26,11 @@ func TestAccResourceFile(t *testing.T) {
 			},
 			{
 				Config: fileTestSteps[2],
-				Check: resource.ComposeTestCheckFunc(),
+				Check:  resource.ComposeTestCheckFunc(),
 			},
 			{
 				Config: fileTestSteps[3],
-				Check: resource.ComposeTestCheckFunc(),
+				Check:  resource.ComposeTestCheckFunc(),
 			},
 		},
 	})

@@ -135,6 +135,54 @@ func (products) Update(client *Client, productID string, product *Product) (*Pro
 	return &updatedProduct, nil
 }
 
+// Create Product Files creates file relationships for products
+func (products) CreateProductFile(client *Client, productId string, reference DataForTypeIdRelationshipList) ApiErrors {
+
+	jsonPayload, err := json.Marshal(reference)
+	if err != nil {
+		return FromError(err)
+	}
+	log.Printf("jsonPayload: " + string(jsonPayload))
+
+	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
+
+	_, apiError := client.DoRequest("POST", path, bytes.NewBuffer(jsonPayload))
+
+	return apiError
+}
+
+// Update Product Files creates file relationships for products
+func (products) UpdateProductFile(client *Client, productId string, reference DataForTypeIdRelationshipList) ApiErrors {
+
+	jsonPayload, err := json.Marshal(reference)
+	if err != nil {
+		return FromError(err)
+	}
+	log.Printf("jsonPayload: " + string(jsonPayload))
+
+	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
+
+	_, apiError := client.DoRequest("PUT", path, bytes.NewBuffer(jsonPayload))
+
+	return apiError
+}
+
+func (products) GetProductFiles(client *Client, productId string) (*DataForTypeIdRelationshipList, ApiErrors) {
+	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
+
+	body, apiError := client.DoRequest("GET", path, nil)
+	if apiError != nil {
+		return nil, apiError
+	}
+
+	var fileRelationships DataForTypeIdRelationshipList
+	if err := json.Unmarshal(body, &fileRelationships); err != nil {
+		return nil, FromError(err)
+	}
+
+	return &fileRelationships, nil
+}
+
 type ProductData struct {
 	Data Product `json:"data"`
 }

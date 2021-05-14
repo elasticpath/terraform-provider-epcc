@@ -1,10 +1,9 @@
 package provider
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"os"
 	"testing"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // providerFactories are used to instantiate a provider during acceptance testing.

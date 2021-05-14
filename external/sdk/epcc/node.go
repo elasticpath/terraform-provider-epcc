@@ -25,12 +25,17 @@ type NodeAttributes struct {
 }
 
 type NodesRelationships struct {
-	Parent *DataForTypeId `json:"parent,omitempty"`
+	Parent *DataForTypeIdRelationship `json:"parent,omitempty"`
 }
 
-type DataForTypeId struct {
+type DataForTypeIdRelationship struct {
 	Data *TypeIdRelationship `json:"data"`
 }
+
+type DataForTypeIdRelationshipList struct {
+	Data *[]TypeIdRelationship `json:"data"`
+}
+
 type TypeIdRelationship struct {
 	Id   string `json:"id,omitempty"`
 	Type string `json:"type,omitempty"`
