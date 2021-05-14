@@ -12,7 +12,7 @@ data "epcc_hierarchy" "example_hierarchy" {
 }
 
 data "epcc_node" "example_node" {
-  id = "d056d40e-86d0-4081-a23d-5d190531d9a1"
+  id           = "d056d40e-86d0-4081-a23d-5d190531d9a1"
   hierarchy_id = data.epcc_hierarchy.example_hierarchy.id
 }
 
