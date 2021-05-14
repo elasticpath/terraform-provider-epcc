@@ -58,6 +58,13 @@ func dataSourceEpccProduct() *schema.Resource {
 				Description: "The _universal product code_ or _european article number_ of the product.",
 				Computed:    true,
 			},
+			"files": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -76,6 +83,12 @@ func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m in
 		return FromAPIError(err)
 	}
 
+	productFiles, err := epcc.Products.GetProductFiles(client, productId)
+
+	if err != nil {
+		return FromAPIError(err)
+	}
+
 	d.Set("name", product.Data.Attributes.Name)
 	d.Set("commodity_type", product.Data.Attributes.CommodityType)
 	d.Set("sku", product.Data.Attributes.Sku)
@@ -86,6 +99,18 @@ func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m in
 	d.Set("upc_ean", product.Data.Attributes.UpcEan)
 
 	d.SetId(product.Data.Id)
+
+	if productFiles != nil && productFiles.Data != nil {
+		fileIds := convertJsonTypesToIds(productFiles.Data)
+
+		if err := d.Set("files", fileIds); err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		if err := d.Set("files", [0]string{}); err != nil {
+			return diag.FromErr(err)
+		}
+	}
 
 	return diags
 }

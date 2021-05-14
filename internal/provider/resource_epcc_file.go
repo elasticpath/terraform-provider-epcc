@@ -46,10 +46,10 @@ func resourceEpccFile() *schema.Resource {
 				ForceNew: true,
 			},
 			"public": &schema.Schema{
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "TBD - But remember the behaviour of this differs from the API, in that terraform ignores this setting if you specify it for file_location.",
-				Optional: true,
-				ForceNew: true,
+				Optional:    true,
+				ForceNew:    true,
 			},
 			"file_location": &schema.Schema{
 				Type:     schema.TypeString,

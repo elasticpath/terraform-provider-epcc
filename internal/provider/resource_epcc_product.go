@@ -76,6 +76,13 @@ func resourceEpccProduct() *schema.Resource {
 				Description: "The _universal product code_ or _european article number_ of the product.",
 				Optional:    true,
 			},
+			"files": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 
@@ -125,6 +132,15 @@ func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m in
 		return FromAPIError(apiError)
 	}
 
+	newFiles := convertIdsToTypeIdRelationship("file", convertSetToStringSlice(d.Get("files").(*schema.Set)))
+
+	// Update Product Files Replaces the entire current set of files
+	apiError = epcc.Products.UpdateProductFile(client, productId, epcc.DataForTypeIdRelationshipList{Data: &newFiles})
+
+	if apiError != nil {
+		return FromAPIError(apiError)
+	}
+
 	d.SetId(updatedProductData.Data.Id)
 
 	return resourceEpccProductRead(ctx, d, m)
@@ -143,12 +159,30 @@ func resourceEpccProductRead(_ context.Context, d *schema.ResourceData, m interf
 		return FromAPIError(err)
 	}
 
+	productFiles, err := epcc.Products.GetProductFiles(client, productId)
+
+	if err != nil {
+		return FromAPIError(err)
+	}
+
 	if err := d.Set("name", product.Data.Attributes.Name); err != nil {
 		return diag.FromErr(err)
 	}
 
 	if err := d.Set("description", product.Data.Attributes.Description); err != nil {
 		return diag.FromErr(err)
+	}
+
+	if productFiles != nil && productFiles.Data != nil {
+		fileIds := convertJsonTypesToIds(productFiles.Data)
+
+		if err := d.Set("files", fileIds); err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		if err := d.Set("files", [0]string{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return diags
@@ -180,6 +214,18 @@ func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	d.SetId(createdProductData.Data.Id)
+
+	files := d.Get("files").(*schema.Set)
+
+	relationships := convertIdsToTypeIdRelationship("file", convertSetToStringSlice(files))
+
+	apiError = epcc.Products.CreateProductFile(client, createdProductData.Data.Id, epcc.DataForTypeIdRelationshipList{
+		Data: &relationships,
+	})
+
+	if apiError != nil {
+		return FromAPIError(apiError)
+	}
 
 	resourceEpccProductRead(ctx, d, m)
 

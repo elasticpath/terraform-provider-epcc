@@ -79,7 +79,7 @@ func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 	if len(d.Get("parent_id").(string)) > 0 {
 		node.Relationships = &epcc.NodesRelationships{
-			Parent: &epcc.DataForTypeId{
+			Parent: &epcc.DataForTypeIdRelationship{
 				Data: &epcc.TypeIdRelationship{
 					Id:   d.Get("parent_id").(string),
 					Type: "node",
