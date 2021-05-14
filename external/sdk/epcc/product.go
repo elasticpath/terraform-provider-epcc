@@ -19,7 +19,7 @@ type Product struct {
 
 type ProductAttributes struct {
 	Name          string `json:"name"`
-	CommodityType string `json:"commodity_type"` // Valid values: physical or digital
+	CommodityType string `json:"commodity_type"`
 	Sku           string `json:"sku"`
 	Slug          string `json:"slug,omitempty"`
 	Description   string `json:"description,omitempty"`
