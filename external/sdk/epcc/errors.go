@@ -1,6 +1,8 @@
 package epcc
 
 import (
+	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -9,6 +11,33 @@ type APIError struct {
 	Status string
 	Title  string
 	Detail string
+}
+
+func (e *APIError) UnmarshalJSON(data []byte) error {
+	var objmap map[string]json.RawMessage
+	err := json.Unmarshal(data, &objmap)
+
+	if err != nil {
+		return err
+	}
+
+	if val, ok := objmap["code"]; ok {
+		e.Code = fmt.Sprintf("%s", val)
+	}
+
+	if val, ok := objmap["status"]; ok {
+		e.Status = fmt.Sprintf("%s", val)
+	}
+
+	if val, ok := objmap["title"]; ok {
+		e.Title = fmt.Sprintf("%s", val)
+	}
+
+	if val, ok := objmap["detail"]; ok {
+		e.Detail = fmt.Sprintf("%s", val)
+	}
+
+	return nil
 }
 
 type ErrorList struct {
