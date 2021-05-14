@@ -72,6 +72,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_payment_gateway": PaymentGatewayDataSourceProvider{}.DataSource(),
 				"epcc_pricebook":       dataSourceEpccPricebook(),
 				"epcc_product":         dataSourceEpccProduct(),
+				"epcc_promotion":       dataSourceEpccPromotion(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
@@ -85,6 +86,8 @@ func New(version string) func() *schema.Provider {
 				"epcc_payment_gateway": PaymentGatewayResourceProvider{}.Resource(),
 				"epcc_pricebook":       resourceEpccPricebook(),
 				"epcc_product":         resourceEpccProduct(),
+				"epcc_node":            resourceEpccNode(),
+				"epcc_promotion":       resourceEpccPromotion(),
 			},
 		}
 
