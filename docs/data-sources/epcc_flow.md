@@ -20,7 +20,7 @@ description: |-
 ### Read-only
 
 - **description** (String)
-- **enabled** (String)
+- **enabled** (Boolean)
 - **name** (String)
 - **slug** (String)
 
