@@ -22,5 +22,6 @@ resource "epcc_field" "customer_age_field" {
   required = false
   default = 18
   omit_null = false
+  enabled = true
   flow_id = epcc_flow.customer_flow.id
 }

@@ -17,11 +17,11 @@ type Field struct {
 	Slug        string `json:"slug,omitempty"`
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
-	Required    bool   `json:"required,omitempty"`
+	Required    bool   `json:"required"`
 	Default     string `json:"default,omitempty"`
-	Enabled     bool   `json:"enabled,omitempty"`
+	Enabled     bool   `json:"enabled"`
 	Order       int    `json:"order,omitempty"`
-	OmitNull    bool   `json:"omit_null,omitempty"`
+	OmitNull    bool   `json:"omit_null"`
 	//ValidationRules ValidationRulesAttribute    `json:"validation_rules,omitempty"` // TODO support at some point
 	Relationships *RelationshipsAttribute `json:"relationships,omitempty"`
 }

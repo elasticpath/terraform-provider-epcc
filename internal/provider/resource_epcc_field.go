@@ -45,6 +45,10 @@ func resourceEpccField() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"enabled": &schema.Schema{
+				Type:     schema.TypeBool,
+				Required: true,
+			},
 			"omit_null": &schema.Schema{
 				Type:     schema.TypeBool,
 				Required: true,
@@ -55,7 +59,6 @@ func resourceEpccField() *schema.Resource {
 			},
 		},
 	}
-
 }
 
 func resourceEpccFieldDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -127,16 +130,10 @@ func resourceEpccFieldRead(_ context.Context, d *schema.ResourceData, m interfac
 	if err := d.Set("enabled", field.Data.Enabled); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("order", field.Data.Order); err != nil {
-		return diag.FromErr(err)
-	}
 	if err := d.Set("omit_null", field.Data.OmitNull); err != nil {
 		return diag.FromErr(err)
 	}
 	if err := d.Set("flow_id", field.Data.Relationships.Flow.Data.Id); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("type", field.Data.Type); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -181,10 +178,10 @@ func constructField(d *schema.ResourceData) *epcc.Field {
 		Description:   d.Get("description").(string),
 		Required:      d.Get("required").(bool),
 		Default:       d.Get("default").(string),
-		Enabled:       true,
-		Order:         1,
+		Enabled:       d.Get("enabled").(bool),
 		OmitNull:      d.Get("omit_null").(bool),
 		Relationships: flowRelationship,
+		Order:         1,
 	}
 	return field
 }
