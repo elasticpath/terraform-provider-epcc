@@ -40,7 +40,7 @@ func TestAccResourcePromotion(t *testing.T) {
 // language=HCL
 const testAccResourcePromotion = `
 
-resource "epcc_currency" "gbp_currency" {
+resource "epcc_currency" "gbp" {
   type = "currency"
   code = "GBP"
   exchange_rate = 1
@@ -60,17 +60,17 @@ resource "epcc_promotion" "acc_test_promotion" {
   promotion_type = "fixed_discount"
   schema {
     currencies {
-      currency = epcc_currency.gbp_currency.code
+      currency = epcc_currency.gbp.code
       amount = 900
     }
   }
 
   max_discount_value {
-    currency = epcc_currency.gbp_currency.code
+    currency = epcc_currency.gbp.code
     amount = 960
   }
   min_cart_value {
-    currency = epcc_currency.gbp_currency.code
+    currency = epcc_currency.gbp.code
     amount = 100
   }
   start = "2019-05-12T00:00:00Z"
