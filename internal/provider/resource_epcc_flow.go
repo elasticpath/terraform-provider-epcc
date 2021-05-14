@@ -5,7 +5,6 @@ import (
 	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"strconv"
 )
 
 func resourceEpccFlow() *schema.Resource {
@@ -65,16 +64,12 @@ func resourceEpccFlowUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	client := m.(*epcc.Client)
 
 	flowId := d.Id()
-	enabled, err := strconv.ParseBool(d.Get("enabled").(string))
-	if err != nil {
-		return diag.FromErr(err)
-	}
 	flow := &epcc.Flow{
 		Type:        "flow",
 		Name:        d.Get("name").(string),
 		Slug:        d.Get("slug").(string),
 		Description: d.Get("description").(string),
-		Enabled:     enabled,
+		Enabled:     d.Get("enabled").(bool),
 	}
 
 	createdFlowData, apiError := epcc.Flows.Update(client, flowId, flow)
@@ -124,16 +119,12 @@ func resourceEpccFlowCreate(ctx context.Context, d *schema.ResourceData, m inter
 	client := m.(*epcc.Client)
 
 	var diags diag.Diagnostics
-	enabled, err := strconv.ParseBool(d.Get("enabled").(string))
-	if err != nil {
-		return diag.FromErr(err)
-	}
 	flow := &epcc.Flow{
 		Type:        "flow",
 		Name:        d.Get("name").(string),
 		Slug:        d.Get("slug").(string),
 		Description: d.Get("description").(string),
-		Enabled:     enabled,
+		Enabled:     d.Get("enabled").(bool),
 	}
 
 	createdFlowData, apiError := epcc.Flows.Create(client, flow)
