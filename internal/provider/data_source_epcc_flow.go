@@ -28,7 +28,7 @@ func dataSourceEpccFlow() *schema.Resource {
 				Computed: true,
 			},
 			"enabled": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Computed: true,
 			},
 		},
