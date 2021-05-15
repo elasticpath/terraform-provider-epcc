@@ -2,7 +2,7 @@ package provider
 
 import (
 	"context"
-	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
+	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -40,7 +40,7 @@ func resourceEpccCatalog() *schema.Resource {
 			"pricebook": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				},
+			},
 		},
 	}
 
@@ -67,8 +67,8 @@ func resourceEpccCatalogUpdate(ctx context.Context, d *schema.ResourceData, m in
 	catalogId := d.Id()
 
 	catalog := &epcc.Catalog{
-		Id: catalogId,
-		Type:  "catalog",
+		Id:   catalogId,
+		Type: "catalog",
 		Attributes: epcc.CatalogAttributes{
 			Name:        d.Get("name").(string),
 			Description: d.Get("description").(string),
@@ -120,7 +120,7 @@ func resourceEpccCatalogRead(ctx context.Context, d *schema.ResourceData, m inte
 func resourceEpccCatalogCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 	catalog := &epcc.Catalog{
-		Type:  "catalog",
+		Type: "catalog",
 		Attributes: epcc.CatalogAttributes{
 			Name:        d.Get("name").(string),
 			Description: d.Get("description").(string),

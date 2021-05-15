@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
+	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -63,7 +63,7 @@ func New(version string) func() *schema.Provider {
 			},
 			DataSourcesMap: map[string]*schema.Resource{
 				"epcc_account":         dataSourceEpccAccount(),
-				"epcc_catalog": 		dataSourceEpccCatalog(),
+				"epcc_catalog":         dataSourceEpccCatalog(),
 				"epcc_currency":        dataSourceEpccCurrency(),
 				"epcc_customer":        dataSourceEpccCustomer(),
 				"epcc_field":           dataSourceEpccField(),
@@ -80,7 +80,7 @@ func New(version string) func() *schema.Provider {
 
 			ResourcesMap: map[string]*schema.Resource{
 				"epcc_account":         resourceEpccAccount(),
-				"epcc_catalog": 		resourceEpccCatalog(),
+				"epcc_catalog":         resourceEpccCatalog(),
 				"epcc_currency":        resourceEpccCurrency(),
 				"epcc_customer":        resourceEpccCustomer(),
 				"epcc_field":           resourceEpccField(),

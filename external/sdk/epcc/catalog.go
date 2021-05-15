@@ -12,8 +12,8 @@ var Catalogs catalogs
 type catalogs struct{}
 
 type Catalog struct {
-	Id          string   `json:"id,omitempty"`
-	Type        string   `json:"type"`
+	Id         string            `json:"id,omitempty"`
+	Type       string            `json:"type"`
 	Attributes CatalogAttributes `json:"attributes"`
 }
 

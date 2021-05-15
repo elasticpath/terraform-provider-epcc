@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc/field"
+	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc/field"
 )
 
 var Fields fields
