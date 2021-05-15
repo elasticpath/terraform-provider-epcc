@@ -9,7 +9,7 @@ import (
 
 func resourceEpccCurrency() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/currencies/index.html#the-currency-object).",
+		Description:   "Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/currencies/index.html#the-currency-object).",
 		CreateContext: addDiagToContext(resourceEpccCurrencyCreate),
 		ReadContext:   addDiagToContext(resourceEpccCurrencyRead),
 		UpdateContext: addDiagToContext(resourceEpccCurrencyUpdate),
@@ -52,7 +52,6 @@ func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m i
 	client := m.(*epcc.Client)
 
 	currencyId := d.Id()
-
 
 	currency := &epcc.Currency{
 		Id:                currencyId,

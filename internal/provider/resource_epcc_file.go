@@ -12,7 +12,7 @@ import (
 
 func resourceEpccFile() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API [File Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html#the-file-object).",
+		Description:   "Represents the EPCC API [File Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html#the-file-object).",
 		CreateContext: addDiagToContext(resourceEpccFileCreate),
 		ReadContext:   addDiagToContext(resourceEpccFileRead),
 		DeleteContext: addDiagToContext(resourceEpccFileDelete),

@@ -10,7 +10,7 @@ import (
 
 func resourceEpccPricebook() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API [PriceBook Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/pricebooks/index.html#the-pricebook-object).",
+		Description:   "Represents the EPCC API [PriceBook Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/pricebooks/index.html#the-pricebook-object).",
 		CreateContext: addDiagToContext(resourceEpccPricebookCreate),
 		ReadContext:   addDiagToContext(resourceEpccPricebookRead),
 		UpdateContext: addDiagToContext(resourceEpccPricebookUpdate),

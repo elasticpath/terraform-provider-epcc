@@ -9,7 +9,7 @@ import (
 
 func resourceEpccNode() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API [Node Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object).",
+		Description:   "Represents the EPCC API [Node Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object).",
 		CreateContext: addDiagToContext(resourceEpccNodeCreate),
 		ReadContext:   addDiagToContext(resourceEpccNodeRead),
 		UpdateContext: addDiagToContext(resourceEpccNodeUpdate),
@@ -71,7 +71,7 @@ func resourceEpccNodeDelete(ctx context.Context, d *schema.ResourceData, m inter
 func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*epcc.Client)
 
-	hierarchyId :=  d.Get("hierarchy_id").(string)
+	hierarchyId := d.Get("hierarchy_id").(string)
 
 	node := &epcc.Node{
 		Type: "node",
@@ -183,7 +183,6 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 	}
 
 	d.SetId(createdNodeData.Data.Id)
-
 
 	files := d.Get("products").(*schema.Set)
 
