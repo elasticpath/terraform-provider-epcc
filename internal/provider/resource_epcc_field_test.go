@@ -226,7 +226,7 @@ func TestAccResourceField_IntRange(t *testing.T) {
 					  required = false
 					  enabled  = true
 					  flow_id = epcc_flow.float_test.id
-					  valid_float_enum = [1, 2, 3]
+					  valid_int_enum = [1, 2, 3]
 					  valid_int_range = [
 					  	{
 							from = 10
