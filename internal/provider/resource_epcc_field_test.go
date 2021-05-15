@@ -218,7 +218,7 @@ func TestAccResourceField_IntRange(t *testing.T) {
 					  enabled     = true
 					}
 
-					resource "epcc_field" "float_field" {
+					resource "epcc_field" "int_field" {
 					  name = "Int Field"
 					  slug = "int_field"
 					  field_type = "integer"
