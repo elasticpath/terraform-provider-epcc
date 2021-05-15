@@ -5,7 +5,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/elasticpath/epcc-terraform-provider/internal/provider"
+	"github.com/elasticpath/terraform-provider-epcc/internal/provider"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 )
 

@@ -30,10 +30,9 @@ func TestAccResourceCatalog(t *testing.T) {
 	})
 }
 
-
 var testAccResourceCatalog = [...]string{
 	// language=HCL
-fmt.Sprintf(`
+	fmt.Sprintf(`
 resource "epcc_product" "my_first_terraform_physical_product" {
   sku            = "%[1]d"
   name           = "TFProduct1Physical"

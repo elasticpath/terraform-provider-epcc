@@ -23,7 +23,6 @@ Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/
 - **exchange_rate** (Number)
 - **format** (String)
 - **thousand_separator** (String)
-- **type** (String)
 
 ### Read-only
 

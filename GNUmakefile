@@ -117,4 +117,4 @@ docs: install
 	)
 
 prepare:
-	( terraform fmt -recursive && go fmt ./... )
+	( terraform fmt -recursive && go fmt ./... && go generate)

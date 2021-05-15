@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/elasticpath/epcc-terraform-provider/external/sdk/epcc"
+	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 

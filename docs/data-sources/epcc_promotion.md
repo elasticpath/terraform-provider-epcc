@@ -16,6 +16,7 @@ Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com
 ### Required
 
 - **id** (String) The ID of this resource.
+- **schema** (Block List, Min: 1) (see [below for nested schema](#nestedblock--schema))
 
 ### Optional
 
@@ -30,9 +31,25 @@ Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com
 - **end** (String)
 - **name** (String)
 - **promotion_type** (String)
-- **schema** (List of Object) (see [below for nested schema](#nestedatt--schema))
 - **start** (String)
 - **type** (String)
+
+<a id="nestedblock--schema"></a>
+### Nested Schema for `schema`
+
+Optional:
+
+- **currencies** (Block List) (see [below for nested schema](#nestedblock--schema--currencies))
+
+<a id="nestedblock--schema--currencies"></a>
+### Nested Schema for `schema.currencies`
+
+Optional:
+
+- **amount** (Number)
+- **currency** (String)
+
+
 
 <a id="nestedblock--max_discount_value"></a>
 ### Nested Schema for `max_discount_value`
@@ -50,11 +67,5 @@ Optional:
 
 - **amount** (Number)
 - **promotion** (String)
-
-
-<a id="nestedatt--schema"></a>
-### Nested Schema for `schema`
-
-Read-only:
 
 

@@ -27,7 +27,15 @@ Represents the EPCC API [Fields Object](https://documentation.elasticpath.com/co
 - **name** (String)
 - **omit_null** (Boolean)
 - **order** (Number)
+- **relationship_to_many** (String)
+- **relationship_to_one** (String)
 - **required** (Boolean)
 - **slug** (String)
+- **valid_float_enum** (List of Number)
+- **valid_float_range** (List of Map of Number)
+- **valid_int_enum** (List of Number)
+- **valid_int_range** (List of Map of Number)
+- **valid_string_enum** (List of String)
+- **valid_string_format** (String)
 
 
