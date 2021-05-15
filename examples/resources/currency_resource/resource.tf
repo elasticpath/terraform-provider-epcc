@@ -12,7 +12,6 @@ provider "epcc" {
 }
 
 resource "epcc_currency" "british_pound_currency" {
-  type               = "currency"
   code               = "CHF"
   exchange_rate      = 2
   format             = "£{price}"
