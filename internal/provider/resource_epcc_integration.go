@@ -74,7 +74,7 @@ func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.Re
 			Url:       data.Get("url").(string),
 			SecretKey: data.Get("secret_key").(string),
 		},
-		Observes: convertToStringSlice(observes),
+		Observes: convertArrayToStringSlice(observes),
 	}
 
 	result, err := epcc.Integrations.Create(&ctx, client, integrationObject)
@@ -158,12 +158,4 @@ func (r IntegrationResourceProvider) read(ctx context.Context, data *schema.Reso
 	}
 
 	return nil
-}
-
-func convertToStringSlice(arr []interface{}) []string {
-	var result []string
-	for _, param := range arr {
-		result = append(result, param.(string))
-	}
-	return result
 }

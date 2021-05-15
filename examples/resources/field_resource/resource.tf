@@ -24,4 +24,6 @@ resource "epcc_field" "sports_season_field" {
   omit_null = false
   enabled = true
   flow_id = epcc_flow.sports_flow.id
+  valid_string_format = "slug"
+  valid_string_enum = ["spring", "summer", "winter", "autumn"]
 }

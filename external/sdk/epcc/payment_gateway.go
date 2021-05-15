@@ -242,7 +242,7 @@ func (d *PaymentGatewayData) UnmarshalJSON(body []byte) error {
 		}
 		d.Data = &concrete
 	default:
-		panic("unknown payment gateway type " + base.Type())
+		return fmt.Errorf("unknown payment gateway type %v", base.Type())
 	}
 
 	return nil
