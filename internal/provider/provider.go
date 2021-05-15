@@ -63,9 +63,12 @@ func New(version string) func() *schema.Provider {
 			},
 			DataSourcesMap: map[string]*schema.Resource{
 				"epcc_account":         dataSourceEpccAccount(),
+				"epcc_catalog": 		dataSourceEpccCatalog(),
 				"epcc_currency":        dataSourceEpccCurrency(),
 				"epcc_customer":        dataSourceEpccCustomer(),
+				"epcc_field":           dataSourceEpccField(),
 				"epcc_file":            dataSourceEpccFile(),
+				"epcc_flow":            dataSourceEpccFlow(),
 				"epcc_hierarchy":       dataSourceEpccHierarchy(),
 				"epcc_integration":     IntegrationDataSourceProvider{}.DataSource(),
 				"epcc_node":            dataSourceEpccNode(),
@@ -73,24 +76,23 @@ func New(version string) func() *schema.Provider {
 				"epcc_pricebook":       dataSourceEpccPricebook(),
 				"epcc_product":         dataSourceEpccProduct(),
 				"epcc_promotion":       dataSourceEpccPromotion(),
-				"epcc_flow":            dataSourceEpccFlow(),
-				"epcc_field":           dataSourceEpccField(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
 				"epcc_account":         resourceEpccAccount(),
+				"epcc_catalog": 		resourceEpccCatalog(),
 				"epcc_currency":        resourceEpccCurrency(),
 				"epcc_customer":        resourceEpccCustomer(),
+				"epcc_field":           resourceEpccField(),
 				"epcc_file":            resourceEpccFile(),
+				"epcc_flow":            resourceEpccFlow(),
 				"epcc_hierarchy":       resourceEpccHierarchy(),
 				"epcc_integration":     IntegrationResourceProvider{}.Resource(),
+				"epcc_node":            resourceEpccNode(),
 				"epcc_payment_gateway": PaymentGatewayResourceProvider{}.Resource(),
 				"epcc_pricebook":       resourceEpccPricebook(),
 				"epcc_product":         resourceEpccProduct(),
-				"epcc_node":            resourceEpccNode(),
 				"epcc_promotion":       resourceEpccPromotion(),
-				"epcc_flow":            resourceEpccFlow(),
-				"epcc_field":           resourceEpccField(),
 			},
 		}
 
@@ -98,10 +100,10 @@ func New(version string) func() *schema.Provider {
 
 		for key, dataSource := range p.DataSourcesMap {
 
-			if (dataSource.Description == "") {
-				resource :=	p.ResourcesMap[key]
+			if dataSource.Description == "" {
+				resource := p.ResourcesMap[key]
 
-				if (resource != nil) {
+				if resource != nil {
 					dataSource.Description = resource.Description
 				}
 			}

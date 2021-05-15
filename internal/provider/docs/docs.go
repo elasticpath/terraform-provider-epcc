@@ -1,6 +1,6 @@
 package epcc_docs
 
-var DOCS_CSV=`
+var DOCS_CSV = `
 './build/documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html','id','string','The unique identifier for this file.'
 './build/documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html','type','string','The type represents the object being returned.'
 './build/documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html','The file ','link object','.'

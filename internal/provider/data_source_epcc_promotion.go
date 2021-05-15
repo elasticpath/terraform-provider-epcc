@@ -20,8 +20,7 @@ func dataSourceEpccPromotion() *schema.Resource {
 			"promotion_type": {Type: schema.TypeString, Computed: true},
 			"schema": {Type: schema.TypeList, Required: true,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
-					"currencies":
-					{Type: schema.TypeList, Optional: true,
+					"currencies": {Type: schema.TypeList, Optional: true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"currency": {Type: schema.TypeString, Optional: true},
 							"amount":   {Type: schema.TypeInt, Optional: true},

@@ -9,7 +9,7 @@ import (
 
 func resourceEpccFlow() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API [Flow Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/flows/index.html#the-flow-object).",
+		Description:   "Represents the EPCC API [Flow Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/flows/index.html#the-flow-object).",
 		CreateContext: addDiagToContext(resourceEpccFlowCreate),
 		ReadContext:   addDiagToContext(resourceEpccFlowRead),
 		UpdateContext: addDiagToContext(resourceEpccFlowUpdate),

@@ -176,7 +176,7 @@ func (nodes) UpdateNodeProducts(ctx *context.Context, client *Client, hierarchyI
 	return apiError
 }
 
-func (nodes) GetNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string, ) (*DataForTypeIdRelationshipList, ApiErrors) {
+func (nodes) GetNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string) (*DataForTypeIdRelationshipList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/products", hierarchyId, nodeID)
 
 	body, apiError := client.DoRequest(ctx, "GET", path, nil)

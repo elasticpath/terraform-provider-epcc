@@ -40,7 +40,7 @@ func TestAccResourceNode(t *testing.T) {
 			},*/
 			{
 				Config: nodeTestSteps[3],
-				Check: resource.ComposeTestCheckFunc(),
+				Check:  resource.ComposeTestCheckFunc(),
 			},
 		},
 	})
@@ -116,8 +116,8 @@ resource "epcc_node" "my_test_node" {
 }
 `,
 	fmt.Sprintf(
-// language=HCL
-`resource "epcc_hierarchy" "my_test_hierarchy" {
+		// language=HCL
+		`resource "epcc_hierarchy" "my_test_hierarchy" {
 		name = "Test Hierarchy"
 		description = "Hierarchy Description"
 		slug = "hierarchy-slug"

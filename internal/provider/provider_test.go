@@ -42,7 +42,7 @@ func TestProvider(t *testing.T) {
 
 	if len(resourcesWithNoDescription) > 0 || len(dataSourcesWithNoDescription) > 0 {
 
-		badObjects := len(resourcesWithNoDescription) +  len(dataSourcesWithNoDescription)
+		badObjects := len(resourcesWithNoDescription) + len(dataSourcesWithNoDescription)
 		t.Fatalf("%d object's don't have descriptions:\n\tResources:%s\nData Sources:%s\n", badObjects, resourcesWithNoDescription, dataSourcesWithNoDescription)
 	}
 

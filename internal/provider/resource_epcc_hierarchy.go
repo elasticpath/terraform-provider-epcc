@@ -9,7 +9,7 @@ import (
 
 func resourceEpccHierarchy() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API [Hierarchy Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-hierarchy-object).",
+		Description:   "Represents the EPCC API [Hierarchy Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-hierarchy-object).",
 		CreateContext: addDiagToContext(resourceEpccHierarchyCreate),
 		ReadContext:   addDiagToContext(resourceEpccHierarchyRead),
 		UpdateContext: addDiagToContext(resourceEpccHierarchyUpdate),
