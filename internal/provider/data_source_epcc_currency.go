@@ -8,7 +8,7 @@ import (
 )
 
 func dataSourceEpccCurrency() *schema.Resource {
-	return &schema.Resource{
+	return &schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccCurrencyRead),
 		Schema: map[string]*schema.Schema{
 			"id":                 {Type: schema.TypeString, Required: true},

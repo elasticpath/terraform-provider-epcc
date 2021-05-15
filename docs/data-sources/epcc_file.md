@@ -2,12 +2,12 @@
 page_title: "epcc_file Data Source - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API File Object https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html#the-file-object.
 ---
 
 # Data Source `epcc_file`
 
-
+Represents the EPCC API [File Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/files/index.html#the-file-object).
 
 
 

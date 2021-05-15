@@ -9,6 +9,7 @@ import (
 
 func resourceEpccAccount() *schema.Resource {
 	return &schema.Resource{
+		Description: "Represents the EPCC API [Account resource](https://documentation.elasticpath.com/commerce-cloud/docs/api/account-management/accounts/index.html#the-account-object).",
 		CreateContext: addDiagToContext(resourceEpccAccountCreate),
 		ReadContext:   addDiagToContext(resourceEpccAccountRead),
 		UpdateContext: addDiagToContext(resourceEpccAccountUpdate),

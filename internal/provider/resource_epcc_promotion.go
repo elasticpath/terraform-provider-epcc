@@ -9,6 +9,7 @@ import (
 
 func resourceEpccPromotion() *schema.Resource {
 	return &schema.Resource{
+		Description:  "Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object).",
 		CreateContext: addDiagToContext(resourceEpccPromotionCreate),
 		ReadContext:   addDiagToContext(resourceEpccPromotionRead),
 		UpdateContext: addDiagToContext(resourceEpccPromotionUpdate),

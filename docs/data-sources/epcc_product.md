@@ -17,6 +17,10 @@ Allows the caller to look up details of an Elastic Path Commerce Cloud PCM [prod
 
 - **id** (String) The unique identifier of the product.
 
+### Optional
+
+- **files** (Set of String)
+
 ### Read-only
 
 - **commodity_type** (String) The type of the product; either `physical` or `digital`.

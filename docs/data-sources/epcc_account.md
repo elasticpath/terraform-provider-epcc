@@ -2,12 +2,12 @@
 page_title: "epcc_account Data Source - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Account resource https://documentation.elasticpath.com/commerce-cloud/docs/api/account-management/accounts/index.html#the-account-object.
 ---
 
 # Data Source `epcc_account`
 
-
+Represents the EPCC API [Account resource](https://documentation.elasticpath.com/commerce-cloud/docs/api/account-management/accounts/index.html#the-account-object).
 
 
 

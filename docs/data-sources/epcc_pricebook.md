@@ -2,12 +2,12 @@
 page_title: "epcc_pricebook Data Source - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API PriceBook Object https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/pricebooks/index.html#the-pricebook-object.
 ---
 
 # Data Source `epcc_pricebook`
 
-
+Represents the EPCC API [PriceBook Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/pricebooks/index.html#the-pricebook-object).
 
 
 

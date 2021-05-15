@@ -2,12 +2,12 @@
 page_title: "epcc_currency Resource - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Currency Object https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/currencies/index.html#the-currency-object.
 ---
 
 # Resource `epcc_currency`
 
-
+Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/currencies/index.html#the-currency-object).
 
 
 
