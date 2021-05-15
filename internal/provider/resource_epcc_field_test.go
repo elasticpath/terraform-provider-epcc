@@ -246,7 +246,7 @@ func TestAccResourceField_IntRange(t *testing.T) {
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.0.from", "10"),
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.0.to", "16"),
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.1.from", "74"),
-					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.2.to", "75"),
+					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.1.to", "75"),
 				),
 			},
 			{
