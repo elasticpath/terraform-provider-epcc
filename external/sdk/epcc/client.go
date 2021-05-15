@@ -6,14 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 
 	"gopkg.in/retry.v1"
@@ -150,14 +148,14 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 	}
 
 	reqURL.Path = path
-	diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
-
-	diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
-		Severity: diag.Warning,
-		Summary:  "HTTP Request Details",
-		Detail:   fmt.Sprintf("Method: %s, Path:%s, Body: %s", method, path, requestBody)})
-
-	*diagnostics = diagnosticsAppended
+	//diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
+	//
+	//diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
+	//	Severity: diag.Warning,
+	//	Summary:  "HTTP Request Details",
+	//	Detail:   fmt.Sprintf("Method: %s, Path:%s, Body: %s", method, path, requestBody)})
+	//
+	//*diagnostics = diagnosticsAppended
 	req, err := http.NewRequest(method, reqURL.String(), payload)
 	if err != nil {
 		return nil, FromError(err)
@@ -189,11 +187,11 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 			if _, err := buffer.ReadFrom(resp.Body); err != nil {
 				return nil, FromError(err)
 			}
-			diagnosticsAppended = append(diagnosticsAppended, diag.Diagnostic{
-				Severity: diag.Warning,
-				Summary:  "HTTP Response Details",
-				Detail:   fmt.Sprintf("Status Code: %s, Body:%s", strconv.Itoa(resp.StatusCode), buffer.String())})
-			*diagnostics = diagnosticsAppended
+			//diagnosticsAppended = append(diagnosticsAppended, diag.Diagnostic{
+			//	Severity: diag.Warning,
+			//	Summary:  "HTTP Response Details",
+			//	Detail:   fmt.Sprintf("Status Code: %s, Body:%s", strconv.Itoa(resp.StatusCode), buffer.String())})
+			//*diagnostics = diagnosticsAppended
 			return buffer.Bytes(), nil
 
 		case 204:
