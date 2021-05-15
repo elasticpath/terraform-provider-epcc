@@ -33,6 +33,14 @@ jobs:
       run: |
         go mod download
 
+    - name: Check Terraform Style
+      run: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt install terraform
+        echo "If this fails you should run \"terraform fmt -recursive\""
+        terraform fmt -recursive -check
+
     - name: Build
       run: |
         go build -v .
