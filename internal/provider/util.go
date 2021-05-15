@@ -5,6 +5,64 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+func convertArrayToStringSlice(arr []interface{}) []string {
+	var result []string
+	for _, param := range arr {
+		result = append(result, param.(string))
+	}
+	return result
+}
+
+func convertArrayToIntSlice(arr []interface{}) []int {
+	var result []int
+	for _, param := range arr {
+		result = append(result, param.(int))
+	}
+	return result
+}
+
+func convertMapToIntMap(m map[string]interface{}) map[string]int {
+	result := make(map[string]int, len(m))
+	for k, v := range m {
+		result[k] = v.(int)
+	}
+	return result
+}
+
+func convertArrayToIntMaps(arr []interface{}) []map[string]int {
+	var result []map[string]int
+	for _, param := range arr {
+		intMap := convertMapToIntMap(param.(map[string]interface{}))
+		result = append(result, intMap)
+	}
+	return result
+}
+
+func convertArrayToFloatSlice(arr []interface{}) []float64 {
+	var result []float64
+	for _, param := range arr {
+		result = append(result, param.(float64))
+	}
+	return result
+}
+
+func convertMapToFloatMap(m map[string]interface{}) map[string]float64 {
+	result := make(map[string]float64, len(m))
+	for k, v := range m {
+		result[k] = v.(float64)
+	}
+	return result
+}
+
+func convertArrayToFloatMaps(arr []interface{}) []map[string]float64 {
+	var result []map[string]float64
+	for _, param := range arr {
+		floatMap := convertMapToFloatMap(param.(map[string]interface{}))
+		result = append(result, floatMap)
+	}
+	return result
+}
+
 func convertSetToStringSlice(s *schema.Set) []string {
 	strings := make([]string, 0, s.Len())
 
