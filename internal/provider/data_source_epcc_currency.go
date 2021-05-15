@@ -12,7 +12,6 @@ func dataSourceEpccCurrency() *schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccCurrencyRead),
 		Schema: map[string]*schema.Schema{
 			"id":                 {Type: schema.TypeString, Required: true},
-			"type":               {Type: schema.TypeString, Computed: true},
 			"code":               {Type: schema.TypeString, Computed: true},
 			"exchange_rate":      {Type: schema.TypeInt, Computed: true},
 			"format":             {Type: schema.TypeString, Computed: true},
@@ -34,7 +33,6 @@ func dataSourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m i
 		return FromAPIError(err)
 	}
 
-	d.Set("type", currency.Data.Type)
 	d.Set("code", currency.Data.Code)
 	d.Set("exchange_rate", currency.Data.ExchangeRate)
 	d.Set("format", currency.Data.Format)

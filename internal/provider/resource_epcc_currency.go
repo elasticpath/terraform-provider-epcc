@@ -19,7 +19,6 @@ func resourceEpccCurrency() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"id":                 {Type: schema.TypeString, Computed: true},
-			"type":               {Type: schema.TypeString, Required: true},
 			"code":               {Type: schema.TypeString, Required: true},
 			"exchange_rate":      {Type: schema.TypeInt, Required: true},
 			"format":             {Type: schema.TypeString, Required: true},
@@ -87,9 +86,6 @@ func resourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m int
 		return FromAPIError(err)
 	}
 
-	if err := d.Set("type", currency.Data.Type); err != nil {
-		return diag.FromErr(err)
-	}
 	if err := d.Set("code", currency.Data.Code); err != nil {
 		return diag.FromErr(err)
 	}

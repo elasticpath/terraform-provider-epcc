@@ -11,7 +11,6 @@ provider "epcc" {
 }
 
 resource "epcc_currency" "chf" {
-  type               = "currency"
   code               = "CHF"
   exchange_rate      = 1
   format             = "£{price}"

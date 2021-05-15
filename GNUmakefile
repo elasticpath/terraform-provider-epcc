@@ -116,3 +116,5 @@ docs: install
 		go generate \
 	)
 
+prepare:
+	( terraform fmt -recursive && go fmt ./... )

@@ -10,16 +10,7 @@ provider "epcc" {
   beta_features = "account-management"
 }
 data "epcc_currency" "example" {
-  id                 = "99915f2a-1b74-4860-b8df-325cb44a9f63"
-  type               = "currency"
-  code               = "CHF"
-  exchange_rate      = 2
-  format             = "£{price}"
-  decimal_point      = "."
-  thousand_separator = ","
-  decimal_places     = 0
-  default            = false
-  enabled            = true
+  id = "d8339926-3ee0-4d69-acd5-af107f7da42f"
 }
 
 output "currency_code" {
