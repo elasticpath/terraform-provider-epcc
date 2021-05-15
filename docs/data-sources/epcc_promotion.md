@@ -2,12 +2,12 @@
 page_title: "epcc_promotion Data Source - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Promotion Object https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object.
 ---
 
 # Data Source `epcc_promotion`
 
-
+Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object).
 
 
 

@@ -2,12 +2,12 @@
 page_title: "epcc_node Data Source - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Node Object https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object.
 ---
 
 # Data Source `epcc_node`
 
-
+Represents the EPCC API [Node Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object).
 
 
 
@@ -21,6 +21,7 @@ description: |-
 ### Optional
 
 - **parent_id** (String)
+- **products** (Set of String)
 
 ### Read-only
 

@@ -2,12 +2,12 @@
 page_title: "epcc_flow Resource - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Flow Object https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/flows/index.html#the-flow-object.
 ---
 
 # Resource `epcc_flow`
 
-
+Represents the EPCC API [Flow Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/flows/index.html#the-flow-object).
 
 
 

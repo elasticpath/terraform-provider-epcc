@@ -9,6 +9,7 @@ import (
 
 func resourceEpccNode() *schema.Resource {
 	return &schema.Resource{
+		Description: "Represents the EPCC API [Node Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object).",
 		CreateContext: addDiagToContext(resourceEpccNodeCreate),
 		ReadContext:   addDiagToContext(resourceEpccNodeRead),
 		UpdateContext: addDiagToContext(resourceEpccNodeUpdate),

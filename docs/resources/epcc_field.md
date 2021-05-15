@@ -2,12 +2,12 @@
 page_title: "epcc_field Resource - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Fields Object https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/fields/index.html.
 ---
 
 # Resource `epcc_field`
 
-
+Represents the EPCC API [Fields Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/fields/index.html).
 
 
 

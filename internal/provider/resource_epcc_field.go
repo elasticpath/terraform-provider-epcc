@@ -11,6 +11,7 @@ import (
 
 func resourceEpccField() *schema.Resource {
 	return &schema.Resource{
+		Description: "Represents the EPCC API [Fields Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/fields/index.html).",
 		CreateContext: addDiagToContext(resourceEpccFieldCreate),
 		ReadContext:   addDiagToContext(resourceEpccFieldRead),
 		UpdateContext: addDiagToContext(resourceEpccFieldUpdate),

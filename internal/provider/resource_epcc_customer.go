@@ -9,6 +9,7 @@ import (
 
 func resourceEpccCustomer() *schema.Resource {
 	return &schema.Resource{
+		Description: "Represents the EPCC API [Customer Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/orders-and-customers/customers/index.html#the-customer-object).",
 		CreateContext: addDiagToContext(resourceEpccCustomerCreate),
 		ReadContext:   addDiagToContext(resourceEpccCustomerRead),
 		UpdateContext: addDiagToContext(resourceEpccCustomerUpdate),

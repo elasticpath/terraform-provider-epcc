@@ -2,12 +2,12 @@
 page_title: "epcc_node Resource - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  
+  Represents the EPCC API Node Object https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object.
 ---
 
 # Resource `epcc_node`
 
-
+Represents the EPCC API [Node Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/pcm/hierarchies/index.html#the-node-object).
 
 
 
@@ -22,6 +22,7 @@ description: |-
 
 - **description** (String)
 - **parent_id** (String)
+- **products** (Set of String)
 - **slug** (String)
 
 ### Read-only

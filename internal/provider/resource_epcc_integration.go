@@ -12,7 +12,7 @@ type IntegrationResourceProvider struct {
 
 func (r IntegrationResourceProvider) Resource() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Allows to configure webhooks",
+		Description:   "Allows to configure webhooks, and corresponds to EPCC API [Event (Webhooks) Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/events/index.html#event-object)",
 		CreateContext: addDiagToContext(r.create),
 		ReadContext:   addDiagToContext(r.read),
 		UpdateContext: addDiagToContext(r.update),

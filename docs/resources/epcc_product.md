@@ -22,6 +22,7 @@ Allows the caller to create, update or delete an Elastic Path Commerce Cloud PCM
 ### Optional
 
 - **description** (String) The product description to display to customers.
+- **files** (Set of String)
 - **mpn** (String) The _manufacturer part number_ of the product.
 - **slug** (String) The unique slug of the product.
 - **status** (String) Valid values: `draft` or `live`. Default is `draft`.

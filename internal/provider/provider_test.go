@@ -16,9 +16,36 @@ var providerFactories = map[string]func() (*schema.Provider, error){
 }
 
 func TestProvider(t *testing.T) {
-	if err := New("dev")().InternalValidate(); err != nil {
+
+	provider := New("dev")()
+
+	if err := provider.InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
 	}
+
+	resourcesWithNoDescription := make([]string, 0)
+	for key, resource := range provider.ResourcesMap {
+
+		if resource.Description == "" {
+			resourcesWithNoDescription = append(resourcesWithNoDescription, key)
+		}
+
+	}
+
+	dataSourcesWithNoDescription := make([]string, 0)
+	for key, dataSource := range provider.DataSourcesMap {
+		if dataSource.Description == "" {
+			dataSourcesWithNoDescription = append(dataSourcesWithNoDescription, key)
+		}
+
+	}
+
+	if len(resourcesWithNoDescription) > 0 || len(dataSourcesWithNoDescription) > 0 {
+
+		badObjects := len(resourcesWithNoDescription) +  len(dataSourcesWithNoDescription)
+		t.Fatalf("%d object's don't have descriptions:\n\tResources:%s\nData Sources:%s\n", badObjects, resourcesWithNoDescription, dataSourcesWithNoDescription)
+	}
+
 }
 
 func testAccPreCheck(t *testing.T) {

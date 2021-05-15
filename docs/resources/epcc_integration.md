@@ -2,12 +2,12 @@
 page_title: "epcc_integration Resource - epcc-terraform-provider"
 subcategory: ""
 description: |-
-  Allows to configure webhooks
+  Allows to configure webhooks, and corresponds to EPCC API Event (Webhooks) Object https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/events/index.html#event-object
 ---
 
 # Resource `epcc_integration`
 
-Allows to configure webhooks
+Allows to configure webhooks, and corresponds to EPCC API [Event (Webhooks) Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/events/index.html#event-object)
 
 
 

@@ -96,6 +96,16 @@ func New(version string) func() *schema.Provider {
 
 		p.ConfigureContextFunc = configure(version, p)
 
+		for key, dataSource := range p.DataSourcesMap {
+
+			if (dataSource.Description == "") {
+				resource :=	p.ResourcesMap[key]
+
+				if (resource != nil) {
+					dataSource.Description = resource.Description
+				}
+			}
+		}
 		return p
 	}
 }
