@@ -242,7 +242,7 @@ func TestAccResourceField_IntRange(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_enum.0", "1"),
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_enum.1", "2"),
-					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_enum.1", "3"),
+					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_enum.2", "3"),
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.0.from", "10"),
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.0.to", "16"),
 					resource.TestCheckResourceAttr("epcc_field.int_field", "valid_int_range.1.from", "74"),
