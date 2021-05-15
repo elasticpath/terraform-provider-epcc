@@ -15,7 +15,6 @@ func TestAccResourceCurrency(t *testing.T) {
 			{
 				Config: testAccResourceCurrency,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_currency.acc_test_currency", "type", regexp.MustCompile("currency")),
 					resource.TestMatchResourceAttr("epcc_currency.acc_test_currency", "code", regexp.MustCompile("CHF")),
 					resource.TestMatchResourceAttr("epcc_currency.acc_test_currency", "exchange_rate", regexp.MustCompile("1")),
 					resource.TestMatchResourceAttr("epcc_currency.acc_test_currency", "format", regexp.MustCompile("£{price}")),
@@ -33,7 +32,6 @@ func TestAccResourceCurrency(t *testing.T) {
 // language=HCL
 const testAccResourceCurrency = `
 resource "epcc_currency" "acc_test_currency" {
-  type = "currency"
   code = "CHF"
   exchange_rate = 1
   format = "£{price}"
