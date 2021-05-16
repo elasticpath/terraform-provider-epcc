@@ -3,6 +3,7 @@
 RESOURCES=(
   v2/currencies
   v2/accounts
+  pcm/pricebooks
   pcm/hierarchies
   pcm/products
   v2/customers
