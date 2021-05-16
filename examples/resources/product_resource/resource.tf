@@ -39,6 +39,14 @@ resource "epcc_product" "product_with_file" {
   name           = "Product With File"
   commodity_type = "physical"
   files          = [epcc_file.product_logo.id]
+  prices = {
+    yo   = "bar"
+    five = 3
+    USD = {
+      attributes = "foo"
+
+    }
+  }
 }
 
 /* Intentionally invalid - status is set to an invalid value to test the validator

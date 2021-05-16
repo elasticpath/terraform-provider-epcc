@@ -1,11 +1,11 @@
 ---
-page_title: "epcc-terraform-provider Provider"
+page_title: "epcc Provider"
 subcategory: ""
 description: |-
   
 ---
 
-# epcc-terraform-provider Provider
+# epcc Provider
 
 
 
