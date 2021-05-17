@@ -176,6 +176,20 @@ func (nodes) UpdateNodeProducts(ctx *context.Context, client *Client, hierarchyI
 	return apiError
 }
 
+func (nodes) DeleteNodeProduct(ctx *context.Context, client *Client, hierarchyId string, nodeID string, reference DataForTypeIdRelationshipList) ApiErrors {
+
+	jsonPayload, err := json.Marshal(reference)
+	if err != nil {
+		return FromError(err)
+	}
+
+	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID)
+
+	_, apiError := client.DoRequest(ctx, "DELETE", path, bytes.NewBuffer(jsonPayload))
+
+	return apiError
+}
+
 func (nodes) GetNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string) (*DataForTypeIdRelationshipList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/products", hierarchyId, nodeID)
 

@@ -20,7 +20,7 @@ Represents the EPCC API [Price Object](https://documentation.elasticpath.com/com
 
 ### Read-only
 
-- **currency** (List of Object) (see [below for nested schema](#nestedatt--currency))
+- **currency** (Set of Object) (see [below for nested schema](#nestedatt--currency))
 - **sku** (String)
 
 <a id="nestedatt--currency"></a>

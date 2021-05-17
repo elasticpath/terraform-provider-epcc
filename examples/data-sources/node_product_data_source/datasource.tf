@@ -10,38 +10,31 @@ terraform {
 resource "epcc_hierarchy" "my_first_hierarchy" {
   name        = "Node Hierarchy"
   description = "Foo"
-  slug        = "test-node-hierarchy"
+  slug        = "test-node-hierarchy-7"
 }
 
 resource "epcc_node" "my_parent_node" {
   name         = "Node #2"
   description  = "Node"
-  slug         = "node-3"
+  slug         = "node-6"
   hierarchy_id = epcc_hierarchy.my_first_hierarchy.id
 }
-
-
 
 resource "epcc_product" "simple_product" {
-  sku            = "12345567"
+  sku            = "457"
   name           = "Product With File"
   commodity_type = "physical"
 }
 
-
-resource "epcc_product" "simple_product_2" {
-  sku            = "123455678"
-  name           = "Product With File"
-  commodity_type = "physical"
-}
-
-
-// TODO Docs say node name is unique amoung siblings
-// But the API errors if the name is the same between this and parent node.
-resource "epcc_node" "my_child_node" {
-  name         = "Node #3"
-  description  = "Node"
-  slug         = "node-4"
+resource "epcc_node_product" "simple_product_node_relationship" {
+  node_id      = epcc_node.my_parent_node.id
   hierarchy_id = epcc_hierarchy.my_first_hierarchy.id
-  parent_id    = epcc_node.my_parent_node.id
+  product_id   = epcc_product.simple_product.id
+}
+
+data "epcc_node_product" "data_simple_product_node_relationship" {
+  id           = epcc_node_product.simple_product_node_relationship.id
+  node_id      = epcc_node.my_parent_node.id
+  hierarchy_id = epcc_hierarchy.my_first_hierarchy.id
+  product_id   = epcc_product.simple_product.id
 }

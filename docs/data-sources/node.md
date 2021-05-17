@@ -21,7 +21,6 @@ Represents the EPCC API [Node Object](https://documentation.elasticpath.com/comm
 ### Optional
 
 - **parent_id** (String)
-- **products** (Set of String)
 
 ### Read-only
 
