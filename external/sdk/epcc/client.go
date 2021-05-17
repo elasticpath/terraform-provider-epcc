@@ -8,11 +8,14 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"io"
-	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
+	"path"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -29,6 +32,7 @@ type Client struct {
 	Credentials       *Credentials
 	UserAgent         string
 	AdditionalHeaders *map[string]string
+	LogDirectory      *url.URL
 }
 
 // ClientOptions can be used to configure a new client.
@@ -49,6 +53,11 @@ type Credentials struct {
 
 // NewClient creates a new instance of a Client.
 func NewClient(options ...ClientOptions) *Client {
+
+	logDirectory := getLogDirectory()
+
+	log.Printf("Log directory path: %s", logDirectory.Path)
+
 	exp := retry.Exponential{
 		Initial: 10 * time.Millisecond,
 		Factor:  1.5,
@@ -70,6 +79,7 @@ func NewClient(options ...ClientOptions) *Client {
 		},
 		UserAgent:         "go-epcc-client",
 		AdditionalHeaders: &map[string]string{},
+		LogDirectory:      logDirectory,
 	}
 
 	// If no configuration options are provided, return the default client.
@@ -94,6 +104,7 @@ func NewClient(options ...ClientOptions) *Client {
 				},
 				UserAgent:         options[i].UserAgent,
 				AdditionalHeaders: options[i].AdditionalHeaders,
+				LogDirectory:      logDirectory,
 			}
 
 			if len(customClient.BaseURL) == 0 {
@@ -119,6 +130,29 @@ func NewClient(options ...ClientOptions) *Client {
 	return nil
 }
 
+func getLogDirectory() *url.URL {
+	logRootDirectory := os.Getenv("EPCC_LOG_DIR")
+	if len(logRootDirectory) == 0 {
+		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			log.Fatal(err)
+		}
+		logRootDirectory = dir
+	}
+	logDirUrl, err := url.Parse(logRootDirectory)
+	if err != nil {
+		log.Fatal(err)
+	}
+	logDirUrl.Path = path.Join(logDirUrl.Path, "logs")
+	baseUrl, err := url.Parse(cfg.BaseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logDirUrl.Path = path.Join(logDirUrl.Path, baseUrl.Host)
+	return logDirUrl
+}
+
 //Authenticate attempts to generate an access token and save it on the client.
 func (c *Client) Authenticate() error {
 	token, err := auth(*c)
@@ -132,40 +166,40 @@ func (c *Client) Authenticate() error {
 
 // DoRequest makes a html request to the EPCC API and handles the response.
 func (c *Client) DoRequest(ctx *context.Context, method string, path string, query string, payload io.Reader) (body []byte, error ApiErrors) {
-	var teeBuf bytes.Buffer
-	tee := io.TeeReader(payload, &teeBuf)
-	var requestBody = "(n/a)"
-	if payload != nil {
-		requestBodyBytes, _ := ioutil.ReadAll(tee)
-		requestBody = string(requestBodyBytes)
-	}
-	return c.doRequestInternal(ctx, method, "application/json", path, query, bytes.NewReader(teeBuf.Bytes()), requestBody)
+	return c.doRequestInternal(ctx, method, "application/json", path, query, payload)
 }
 
 func (c *Client) DoFileRequest(ctx *context.Context, path string, payload io.Reader, contentType string) (body []byte, error ApiErrors) {
-	return c.doRequestInternal(ctx, "POST", contentType, path, "", payload, "(multipart data)")
+	return c.doRequestInternal(ctx, "POST", contentType, path, "", payload)
 }
 
-func (c *Client) logToDisk(method string, path string, requestBytes []byte, responseBytes []byte) {
+func (c *Client) logToDisk(requestMethod string, requestPath string, requestBytes []byte, responseBytes []byte, responseCode int) {
 
+	logDirectory, _ := url.Parse(c.LogDirectory.Path)
+	logDirectory.Path = path.Join(logDirectory.Path, requestPath, requestMethod, strconv.Itoa(responseCode))
+	filename := time.Now().UnixNano()
+	if err := os.MkdirAll(logDirectory.Path, 0755); err != nil {
+		return
+	}
+	if f, err2 := os.Create(fmt.Sprintf("%s/%d", logDirectory.Path, filename)); err2 == nil {
+		defer f.Close()
+		f.Write(requestBytes)
+		f.Write(responseBytes)
+	}
 }
-func (c *Client) logErrorToDiag(ctx *context.Context, resp *http.Response, method string, path string, requestBody string) {
+func (c *Client) logErrorToDiag(ctx *context.Context, reqDump []byte, resDump []byte) {
 
-	var buffer bytes.Buffer
-	_, _ = buffer.ReadFrom(resp.Body)
 	diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
 	diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
 		Severity: diag.Error,
 		Summary:  "HTTP Request Failure",
-		Detail: fmt.Sprintf("Request Method:%s\nRequest Path:%s\nRequest Body:%s\nResponse Status:%s\nResponse Body:%s",
-			method, path, requestBody, strconv.Itoa(resp.StatusCode), buffer.String())})
-
+		Detail: fmt.Sprintf("Request Dump:\n%s\n\nResponse Dump:\n%s",
+			string(reqDump), string(resDump))})
 	*diagnostics = diagnosticsAppended
-
 }
 
 // DoRequest makes a html request to the EPCC API and handles the response.
-func (c *Client) doRequestInternal(ctx *context.Context, method string, contentType string, path string, query string, payload io.Reader, requestBody string) (body []byte, error ApiErrors) {
+func (c *Client) doRequestInternal(ctx *context.Context, method string, contentType string, path string, query string, payload io.Reader) (body []byte, error ApiErrors) {
 	reqURL, err := url.Parse(c.BaseURL)
 	if err != nil {
 		return nil, FromError(err)
@@ -200,17 +234,18 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 
 		resp, err := c.HTTPClient.Do(req)
 
-		respDump, _ := httputil.DumpResponse(resp, true)
-
-		c.logToDisk(method, path, reqDump, respDump)
 		if err != nil {
+			c.logToDisk(method, path, reqDump, nil, 0)
 			return nil, FromError(err)
 		}
+		respDump, _ := httputil.DumpResponse(resp, true)
+
+		c.logToDisk(method, path, reqDump, respDump, resp.StatusCode)
 		defer resp.Body.Close()
 
 		switch resp.StatusCode {
 		case 429, 500, 502, 503, 504:
-			c.logErrorToDiag(ctx, resp, method, path, requestBody)
+			c.logErrorToDiag(ctx, reqDump, respDump)
 			continue
 
 		case 200, 201:
@@ -232,7 +267,7 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 
 			var jsonApiError ErrorList
 
-			c.logErrorToDiag(ctx, resp, method, path, requestBody)
+			c.logErrorToDiag(ctx, reqDump, respDump)
 
 			if err := json.Unmarshal(buffer.Bytes(), &jsonApiError); err != nil {
 				return nil, FromError(err)
