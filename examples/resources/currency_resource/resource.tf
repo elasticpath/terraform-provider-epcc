@@ -11,7 +11,7 @@ provider "epcc" {
   beta_features = "account-management"
 }
 
-resource "epcc_currency" "british_pound_currency" {
+resource "epcc_currency" "chf" {
   code               = "CHF"
   exchange_rate      = 2
   format             = "£{price}"
