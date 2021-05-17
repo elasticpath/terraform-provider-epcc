@@ -90,4 +90,6 @@ jobs:
         # SOME_VAR: ${{ secrets.SOME_VAR }}
 
       run: |
+        sudo apt install jq
+        bash ./nuke_store.sh
         go test -v -cover ./internal/provider/
