@@ -15,14 +15,12 @@ func TestAccResourceRealm(t *testing.T) {
 			{
 				Config: testAccResourceRealm,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "code", regexp.MustCompile("CHF")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "exchange_rate", regexp.MustCompile("1")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "format", regexp.MustCompile("£{price}")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "decimal_point", regexp.MustCompile(".")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "thousand_separator", regexp.MustCompile(",")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "decimal_places", regexp.MustCompile("0")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "default", regexp.MustCompile("false")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "enabled", regexp.MustCompile("true")),
+					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "name", regexp.MustCompile("test_realm")),
+					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "redirect_uris.#", regexp.MustCompile("1")),
+					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "redirect_uris.0", regexp.MustCompile("https://google.com/")),
+					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "duplicate_email_policy", regexp.MustCompile("allowed")),
+					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "origin_id", regexp.MustCompile("hello-world")),
+					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm", "origin_type", regexp.MustCompile("customer-authentication-settings")),
 				),
 			},
 		},
@@ -31,7 +29,7 @@ func TestAccResourceRealm(t *testing.T) {
 
 // language=HCL
 const testAccResourceRealm = `
-resource "epcc_realm" "test_realm" {
+resource "epcc_realm" "acc_test_realm" {
   name = "test_realm"
   redirect_uris = [
     "https://google.com/"]
