@@ -16,7 +16,7 @@ resource "epcc_realm" "test_realm" {
   redirect_uris = [
     "https://google.com/"
   ]
-  duplicate_email_policy = "ALLOWED"
+  duplicate_email_policy = "allowed"
   origin_id              = "hello-world"
   origin_type            = "customer-authentication-settings"
 }
