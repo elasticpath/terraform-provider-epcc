@@ -31,7 +31,7 @@ type ProductPriceAttributes struct {
 func (productPrices) Get(ctx *context.Context, client *Client, productPricebookId string, productPriceId string) (*ProductPriceData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/pricebooks/%s/prices/%s", productPricebookId, productPriceId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -48,7 +48,7 @@ func (productPrices) Get(ctx *context.Context, client *Client, productPricebookI
 func (productPrices) GetAll(ctx *context.Context, client *Client, productPricebookId string) (*ProductPriceList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/pricebooks/%s/prices", productPricebookId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -75,7 +75,7 @@ func (productPrices) Create(ctx *context.Context, client *Client, productPricebo
 
 	path := fmt.Sprintf("/pcm/pricebooks/%s/prices", productPricebookId)
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -92,7 +92,7 @@ func (productPrices) Create(ctx *context.Context, client *Client, productPricebo
 func (productPrices) Delete(ctx *context.Context, client *Client, productPricebookId string, productPriceId string) ApiErrors {
 	path := fmt.Sprintf("/pcm/pricebooks/%s/prices/%s", productPricebookId, productPriceId)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -113,7 +113,7 @@ func (productPrices) Update(ctx *context.Context, client *Client, productPricebo
 
 	path := fmt.Sprintf("/pcm/pricebooks/%s/prices/%s", productPricebookId, productPriceId)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

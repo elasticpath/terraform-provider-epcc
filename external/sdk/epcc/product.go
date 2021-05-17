@@ -41,7 +41,7 @@ type ProductRelationshipsChild struct {
 func (products) Get(ctx *context.Context, client *Client, productId string) (*ProductData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/products/%s", productId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -58,7 +58,7 @@ func (products) Get(ctx *context.Context, client *Client, productId string) (*Pr
 func (products) GetAll(ctx *context.Context, client *Client) (*ProductList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/products")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -85,7 +85,7 @@ func (products) Create(ctx *context.Context, client *Client, product *Product) (
 
 	path := fmt.Sprintf("/pcm/products")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -102,7 +102,7 @@ func (products) Create(ctx *context.Context, client *Client, product *Product) (
 func (products) Delete(ctx *context.Context, client *Client, productID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/products/%s", productID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -123,7 +123,7 @@ func (products) Update(ctx *context.Context, client *Client, productID string, p
 
 	path := fmt.Sprintf("/pcm/products/%s", productID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -147,7 +147,7 @@ func (products) CreateProductFile(ctx *context.Context, client *Client, productI
 
 	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
 
-	_, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
@@ -163,7 +163,7 @@ func (products) UpdateProductFile(ctx *context.Context, client *Client, productI
 
 	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
 
-	_, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
@@ -171,7 +171,7 @@ func (products) UpdateProductFile(ctx *context.Context, client *Client, productI
 func (products) GetProductFiles(ctx *context.Context, client *Client, productId string) (*DataForTypeIdRelationshipList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/products/%s/relationships/files", productId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}

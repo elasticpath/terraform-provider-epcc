@@ -66,7 +66,7 @@ var productTestSteps = [...]string{
 	// language=HCL
 	fmt.Sprintf(`
 resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
-	sku            = "%d"
+	sku            = "%d-pr"
 	name           = "TestAccResourceProduct1"
 	commodity_type = "physical"
 	description    = "Draft description"
@@ -77,7 +77,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	// language=HCL
 	fmt.Sprintf(`
  resource "epcc_product" "acc_test_epcc_product_1_physical_live" {
-	sku            = "%d"
+	sku            = "%d-pr"
 	name           = "Test Acc Resource Product1 Updated"
 	commodity_type = "physical"
 	description    = "Live description"
@@ -93,7 +93,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d"
+		sku = "%d-pr"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -109,7 +109,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d"
+		sku = "%d-pr"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -131,7 +131,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d"
+		sku = "%d-pr"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -153,7 +153,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d"
+		sku = "%d-pr"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -175,7 +175,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d"
+		sku = "%d-pr"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"

@@ -31,7 +31,7 @@ type FileLink struct {
 func (files) Get(ctx *context.Context, client *Client, fileId string) (*FileData, ApiErrors) {
 	path := fmt.Sprintf("/v2/files/%s", fileId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -48,7 +48,7 @@ func (files) Get(ctx *context.Context, client *Client, fileId string) (*FileData
 func (files) GetAll(ctx *context.Context, client *Client) (*FileList, ApiErrors) {
 	path := fmt.Sprintf("/v2/files")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -127,7 +127,7 @@ func (files) CreateFromFileLocation(ctx *context.Context, client *Client, fileLo
 func (files) Delete(ctx *context.Context, client *Client, fileID string) ApiErrors {
 	path := fmt.Sprintf("/v2/files/%s", fileID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -148,7 +148,7 @@ func (files) Update(ctx *context.Context, client *Client, fileID string, file *F
 
 	path := fmt.Sprintf("/v2/files/%s", fileID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 
 	if apiError != nil {
 		return nil, apiError

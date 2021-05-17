@@ -23,7 +23,7 @@ type Flow struct {
 func (flows) Get(ctx *context.Context, client *Client, flowId string) (*FlowData, ApiErrors) {
 	path := fmt.Sprintf("/v2/flows/%s", flowId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -41,7 +41,7 @@ func (flows) Get(ctx *context.Context, client *Client, flowId string) (*FlowData
 func (flows) GetAll(ctx *context.Context, client *Client) (*FlowList, ApiErrors) {
 	path := fmt.Sprintf("/v2/flows")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -67,7 +67,7 @@ func (flows) Create(ctx *context.Context, client *Client, flow *Flow) (*FlowData
 
 	path := fmt.Sprintf("/v2/flows")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -84,7 +84,7 @@ func (flows) Create(ctx *context.Context, client *Client, flow *Flow) (*FlowData
 func (flows) Delete(ctx *context.Context, client *Client, flowID string) ApiErrors {
 	path := fmt.Sprintf("/v2/flows/%s", flowID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -105,7 +105,7 @@ func (flows) Update(ctx *context.Context, client *Client, flowID string, flow *F
 
 	path := fmt.Sprintf("/v2/flows/%s", flowID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

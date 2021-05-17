@@ -45,7 +45,7 @@ type TypeIdRelationship struct {
 func (nodes) Get(ctx *context.Context, client *Client, hierarchyId string, nodeId string) (*NodeData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s", hierarchyId, nodeId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -72,7 +72,7 @@ func (nodes) Create(ctx *context.Context, client *Client, hierarchyId string, no
 	log.Printf("[ERROR] %s\n", jsonPayload)
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes", hierarchyId)
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -89,7 +89,7 @@ func (nodes) Create(ctx *context.Context, client *Client, hierarchyId string, no
 func (nodes) Delete(ctx *context.Context, client *Client, hierarchyId string, nodeID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s", hierarchyId, nodeID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -106,7 +106,7 @@ func (nodes) Update(ctx *context.Context, client *Client, hierarchyId string, no
 	// Update the Parent
 	if nodeData.Data.Relationships != nil {
 		if len(nodeData.Data.Relationships.Parent.Data.Id) == 0 {
-			if _, err := client.DoRequest(ctx, "DELETE", fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/parent", hierarchyId, nodeID), nil); err != nil {
+			if _, err := client.DoRequest(ctx, "DELETE", fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/parent", hierarchyId, nodeID), "", nil); err != nil {
 				return nil, FromError(err)
 			}
 		} else {
@@ -116,7 +116,7 @@ func (nodes) Update(ctx *context.Context, client *Client, hierarchyId string, no
 				return nil, FromError(err)
 			}
 
-			if _, err := client.DoRequest(ctx, "PUT", fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/parent", hierarchyId, nodeID), bytes.NewBuffer(jsonPayload)); err != nil {
+			if _, err := client.DoRequest(ctx, "PUT", fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/parent", hierarchyId, nodeID), "", bytes.NewBuffer(jsonPayload)); err != nil {
 				return nil, FromError(err)
 			}
 		}
@@ -133,7 +133,7 @@ func (nodes) Update(ctx *context.Context, client *Client, hierarchyId string, no
 
 	log.Printf("[ERROR] %s\n", jsonPayload)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -156,7 +156,7 @@ func (nodes) CreateNodeProducts(ctx *context.Context, client *Client, hierarchyI
 
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID)
 
-	_, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
@@ -171,7 +171,7 @@ func (nodes) UpdateNodeProducts(ctx *context.Context, client *Client, hierarchyI
 
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID)
 
-	_, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
@@ -185,7 +185,7 @@ func (nodes) DeleteNodeProduct(ctx *context.Context, client *Client, hierarchyId
 
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/relationships/products", hierarchyId, nodeID)
 
-	_, apiError := client.DoRequest(ctx, "DELETE", path, bytes.NewBuffer(jsonPayload))
+	_, apiError := client.DoRequest(ctx, "DELETE", path, "", bytes.NewBuffer(jsonPayload))
 
 	return apiError
 }
@@ -193,17 +193,36 @@ func (nodes) DeleteNodeProduct(ctx *context.Context, client *Client, hierarchyId
 func (nodes) GetNodeProducts(ctx *context.Context, client *Client, hierarchyId string, nodeID string) (*DataForTypeIdRelationshipList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/hierarchies/%s/nodes/%s/products", hierarchyId, nodeID)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
-	if apiError != nil {
-		return nil, apiError
+	var offset = 0
+	list := make([]TypeIdRelationship, 0)
+	for {
+		body, apiError := client.DoRequest(ctx, "GET", path, fmt.Sprintf("page%%5Boffset%%5D=%d", offset), nil)
+		if apiError != nil {
+			return nil, apiError
+		}
+
+		var fileRelationships DataForTypeIdRelationshipList
+		if err := json.Unmarshal(body, &fileRelationships); err != nil {
+			return nil, FromError(err)
+		}
+
+		list = append(list, *fileRelationships.Data...)
+
+		count := len(*fileRelationships.Data)
+		if count <= 0 {
+			break
+		}
+
+		if offset > 6000 {
+			break
+		}
+		offset += count
 	}
 
-	var fileRelationships DataForTypeIdRelationshipList
-	if err := json.Unmarshal(body, &fileRelationships); err != nil {
-		return nil, FromError(err)
-	}
+	return &DataForTypeIdRelationshipList{
+		Data: &list,
+	}, nil
 
-	return &fileRelationships, nil
 }
 
 type NodeData struct {

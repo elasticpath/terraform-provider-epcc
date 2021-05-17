@@ -53,7 +53,7 @@ type IntegrationList struct {
 func (integrations) Get(ctx *context.Context, client *Client, id string) (*IntegrationData, ApiErrors) {
 	path := fmt.Sprintf("/v2/integrations/%s", id)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -70,7 +70,7 @@ func (integrations) Get(ctx *context.Context, client *Client, id string) (*Integ
 func (integrations) GetAll(ctx *context.Context, client *Client) (*IntegrationList, ApiErrors) {
 	path := fmt.Sprintf("/v2/integrations")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -96,7 +96,7 @@ func (integrations) Create(ctx *context.Context, client *Client, integration *In
 
 	path := fmt.Sprintf("/v2/integrations")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -113,7 +113,7 @@ func (integrations) Create(ctx *context.Context, client *Client, integration *In
 func (integrations) Delete(ctx *context.Context, client *Client, id string) ApiErrors {
 	path := fmt.Sprintf("/v2/integrations/%s", id)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -134,7 +134,7 @@ func (integrations) Update(ctx *context.Context, client *Client, id string, inte
 
 	path := fmt.Sprintf("/v2/integrations/%s", id)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

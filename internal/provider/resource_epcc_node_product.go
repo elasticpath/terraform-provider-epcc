@@ -82,7 +82,10 @@ func resourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m 
 	}
 
 	var foundMatch = false
+
+	var allIds = []string{}
 	if nodeProduct.Data != nil {
+		allIds = convertJsonTypesToIds(nodeProduct.Data)
 
 		for _, relationship := range *nodeProduct.Data {
 
@@ -96,7 +99,8 @@ func resourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m 
 	}
 
 	if !foundMatch {
-		return diag.FromErr(fmt.Errorf("Could not find node product relationship for hierarchy %s node %s product %s", hierarchyId, nodeId, productId))
+
+		return diag.FromErr(fmt.Errorf("Could not find node product relationship for hierarchy %s node %s product %s\nAll ids: %s", hierarchyId, nodeId, productId, allIds))
 	} else {
 		if err := d.Set("hierarchy_id", hierarchyId); err != nil {
 			return diag.FromErr(err)

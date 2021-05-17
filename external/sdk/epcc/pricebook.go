@@ -25,7 +25,7 @@ type PricebookAttributes struct {
 func (pricebooks) Get(ctx *context.Context, client *Client, pricebookId string) (*PricebookData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/pricebooks/%s", pricebookId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -42,7 +42,7 @@ func (pricebooks) Get(ctx *context.Context, client *Client, pricebookId string) 
 func (pricebooks) GetAll(ctx *context.Context, client *Client) (*PricebookList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/pricebooks")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -68,7 +68,7 @@ func (pricebooks) Create(ctx *context.Context, client *Client, pricebook *Priceb
 
 	path := fmt.Sprintf("/pcm/pricebooks")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -85,7 +85,7 @@ func (pricebooks) Create(ctx *context.Context, client *Client, pricebook *Priceb
 func (pricebooks) Delete(ctx *context.Context, client *Client, pricebookID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/pricebooks/%s", pricebookID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -106,7 +106,7 @@ func (pricebooks) Update(ctx *context.Context, client *Client, pricebookID strin
 
 	path := fmt.Sprintf("/pcm/pricebooks/%s", pricebookID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

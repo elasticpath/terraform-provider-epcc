@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 
@@ -59,6 +60,18 @@ func New(version string) func() *schema.Provider {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_BETA_API_FEATURES", ""),
+				},
+				"enable_authentication": &schema.Schema{
+					Type:     schema.TypeBool,
+					Optional: true,
+					Default:  true,
+				},
+				"additional_headers": &schema.Schema{
+					Type:     schema.TypeMap,
+					Optional: true,
+					Elem: &schema.Schema{
+						Type: schema.TypeString,
+					},
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
@@ -127,6 +140,16 @@ func configure(version string, p *schema.Provider) func(ctx context.Context, d *
 		epccApiBaseUrl := d.Get("api_base_url").(string)
 		epccBetaFeatures := d.Get("beta_features").(string)
 
+		additionalHeaders := d.Get("additional_headers").(map[string]interface{})
+
+		stringAdditionalHeaders := make(map[string]string)
+
+		if additionalHeaders != nil {
+			for key, val := range additionalHeaders {
+				(stringAdditionalHeaders)[key] = fmt.Sprintf("%s", val)
+			}
+		}
+
 		client := epcc.NewClient(epcc.ClientOptions{
 			BaseURL:      epccApiBaseUrl,
 			BetaFeatures: epccBetaFeatures,
@@ -134,19 +157,24 @@ func configure(version string, p *schema.Provider) func(ctx context.Context, d *
 				ClientId:     epccClientId,
 				ClientSecret: epccClientSecret,
 			},
-			UserAgent: "terraform-provider-epcc / " + version,
+			UserAgent:         "terraform-provider-epcc / " + version,
+			AdditionalHeaders: &stringAdditionalHeaders,
+			RetryLimitTimeout: 120 * time.Second,
 		})
 
-		err := client.Authenticate()
-		if err != nil {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Unable to create EPCC Client",
-				Detail:   "Unable to authenticate against the EPCC API: " + err.Error(),
-			})
-			return nil, diags
-		}
+		enableAuthentication := d.Get("enable_authentication").(bool)
 
+		if enableAuthentication {
+			err := client.Authenticate()
+			if err != nil {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Unable to create EPCC Client",
+					Detail:   "Unable to authenticate against the EPCC API: " + err.Error(),
+				})
+				return nil, diags
+			}
+		}
 		return client, diags
 	}
 }
