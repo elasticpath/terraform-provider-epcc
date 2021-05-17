@@ -53,9 +53,14 @@ resource "epcc_node" "my_first_node" {
   description  = "Node"
   slug         = "node-3%[1]d"
   hierarchy_id = epcc_hierarchy.my_first_hierarchy.id
-  products = [ epcc_product.my_first_terraform_physical_product.id ]
+  
 }
 
+resource "epcc_node_product" "node_product" { 
+	hierarchy_id = epcc_hierarchy.my_first_hierarchy.id
+	node_id = epcc_node.my_first_node.id
+	product_id = epcc_product.my_first_terraform_physical_product.id
+}
 resource "epcc_pricebook" "my_first_terraform_pricebook" {
   name        = "TFPricebook1%[1]d"
   description = "Terraform 1"
@@ -90,7 +95,6 @@ resource "epcc_node" "my_first_node" {
   description  = "Node"
   slug         = "node-3%[1]d"
   hierarchy_id = epcc_hierarchy.my_first_hierarchy.id
-  products = [ epcc_product.my_first_terraform_physical_product.id ]
 }
 
 resource "epcc_pricebook" "my_first_terraform_pricebook" {

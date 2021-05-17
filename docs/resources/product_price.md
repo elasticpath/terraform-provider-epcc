@@ -15,7 +15,7 @@ Represents the EPCC API [Price Object](https://documentation.elasticpath.com/com
 
 ### Required
 
-- **currency** (Block List, Min: 1) (see [below for nested schema](#nestedblock--currency))
+- **currency** (Block Set, Min: 1) (see [below for nested schema](#nestedblock--currency))
 - **pricebook_id** (String)
 - **sku** (String)
 
