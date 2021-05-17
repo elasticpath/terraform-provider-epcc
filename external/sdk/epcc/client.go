@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"time"
 
 	"gopkg.in/retry.v1"
@@ -148,6 +149,20 @@ func (c *Client) DoFileRequest(ctx *context.Context, path string, payload io.Rea
 func (c *Client) logToDisk(method string, path string, requestBytes []byte, responseBytes []byte) {
 
 }
+func (c *Client) logErrorToDiag(ctx *context.Context, resp *http.Response, method string, path string, requestBody string) {
+
+	var buffer bytes.Buffer
+	_, _ = buffer.ReadFrom(resp.Body)
+	diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
+	diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
+		Severity: diag.Error,
+		Summary:  "HTTP Request Failure",
+		Detail: fmt.Sprintf("Request Method:%s\nRequest Path:%s\nRequest Body:%s\nResponse Status:%s\nResponse Body:%s",
+			method, path, requestBody, strconv.Itoa(resp.StatusCode), buffer.String())})
+
+	*diagnostics = diagnosticsAppended
+
+}
 
 // DoRequest makes a html request to the EPCC API and handles the response.
 func (c *Client) doRequestInternal(ctx *context.Context, method string, contentType string, path string, query string, payload io.Reader, requestBody string) (body []byte, error ApiErrors) {
@@ -159,14 +174,6 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 	reqURL.Path = path
 	reqURL.RawQuery = query
 
-	//diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
-	//
-	//diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
-	//	Severity: diag.Warning,
-	//	Summary:  "HTTP Request Details",
-	//	Detail:   fmt.Sprintf("Method: %s, Path:%s, Body: %s", method, path, requestBody)})
-	//
-	//*diagnostics = diagnosticsAppended
 	req, err := http.NewRequest(method, reqURL.String(), payload)
 	if err != nil {
 		return nil, FromError(err)
@@ -203,7 +210,7 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 
 		switch resp.StatusCode {
 		case 429, 500, 502, 503, 504:
-			log.Printf("Response Status %d Retrying request", resp.StatusCode)
+			c.logErrorToDiag(ctx, resp, method, path, requestBody)
 			continue
 
 		case 200, 201:
@@ -211,11 +218,7 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 			if _, err := buffer.ReadFrom(resp.Body); err != nil {
 				return nil, FromError(err)
 			}
-			//diagnosticsAppended = append(diagnosticsAppended, diag.Diagnostic{
-			//	Severity: diag.Warning,
-			//	Summary:  "HTTP Response Details",
-			//	Detail:   fmt.Sprintf("Status Code: %s, Body:%s", strconv.Itoa(resp.StatusCode), buffer.String())})
-			//*diagnostics = diagnosticsAppended
+
 			return buffer.Bytes(), nil
 
 		case 204:
@@ -229,13 +232,12 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 
 			var jsonApiError ErrorList
 
-			bytes := buffer.Bytes()
+			c.logErrorToDiag(ctx, resp, method, path, requestBody)
 
-			if err := json.Unmarshal(bytes, &jsonApiError); err != nil {
+			if err := json.Unmarshal(buffer.Bytes(), &jsonApiError); err != nil {
 				return nil, FromError(err)
 			}
 
-			log.Printf("response: %s", buffer.String())
 			err := fmt.Errorf("status code %d is not ok", resp.StatusCode)
 
 			return nil, &ApiErrorResult{

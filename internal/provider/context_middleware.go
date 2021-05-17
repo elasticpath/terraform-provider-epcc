@@ -8,8 +8,8 @@ import (
 
 func addDiagToContext(a func(context.Context, *schema.ResourceData, interface{}) diag.Diagnostics) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-		var newDiags = new(diag.Diagnostics)
-		return a(context.WithValue(ctx, "diags", newDiags), d, m)
+		var contextDiags = new(diag.Diagnostics)
+		returnedDiag := a(context.WithValue(ctx, "diags", contextDiags), d, m)
+		return append(returnedDiag, *contextDiags...)
 	}
-
 }
