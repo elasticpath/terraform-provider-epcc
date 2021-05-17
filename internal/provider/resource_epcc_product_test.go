@@ -19,23 +19,23 @@ func TestAccResourceProduct(t *testing.T) {
 			{
 				Config: productTestSteps[0],
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_draft", "sku", regexp.MustCompile(strconv.FormatInt(timestamp, 10))),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_draft", "name", regexp.MustCompile("TestAccResourceProduct1")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_draft", "commodity_type", regexp.MustCompile("physical")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_draft", "description", regexp.MustCompile("Draft description")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_draft", "mpn", regexp.MustCompile("mfg-acc_test_epcc_product_1")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_draft", "status", regexp.MustCompile("draft")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "sku", regexp.MustCompile(strconv.FormatInt(timestamp, 10))),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "name", regexp.MustCompile("TestAccResourceProduct1")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "commodity_type", regexp.MustCompile("physical")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "description", regexp.MustCompile("Draft description")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "mpn", regexp.MustCompile("mfg-acc_test_epcc_product_1")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "status", regexp.MustCompile("draft")),
 				),
 			},
 			{
 				Config: productTestSteps[1],
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_live", "sku", regexp.MustCompile(strconv.FormatInt(timestamp, 10))),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_live", "name", regexp.MustCompile("Test Acc Resource Product1 Updated")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_live", "commodity_type", regexp.MustCompile("physical")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_live", "description", regexp.MustCompile("Live description")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_live", "mpn", regexp.MustCompile("mfg-acc_test_epcc_product_1")),
-					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1_physical_live", "status", regexp.MustCompile("live")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "sku", regexp.MustCompile(strconv.FormatInt(timestamp, 10))),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "name", regexp.MustCompile("Test Acc Resource Product1 Updated")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "commodity_type", regexp.MustCompile("physical")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "description", regexp.MustCompile("Live description")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "mpn", regexp.MustCompile("mfg-acc_test_epcc_product_1")),
+					resource.TestMatchResourceAttr("epcc_product.acc_test_epcc_product_1", "status", regexp.MustCompile("live")),
 				),
 			},
 			{
@@ -65,7 +65,7 @@ func TestAccResourceProduct(t *testing.T) {
 var productTestSteps = [...]string{
 	// language=HCL
 	fmt.Sprintf(`
-resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
+resource "epcc_product" "acc_test_epcc_product_1" {
 	sku            = "%d-pr"
 	name           = "TestAccResourceProduct1"
 	commodity_type = "physical"
@@ -76,7 +76,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 
 	// language=HCL
 	fmt.Sprintf(`
- resource "epcc_product" "acc_test_epcc_product_1_physical_live" {
+ resource "epcc_product" "acc_test_epcc_product_1" {
 	sku            = "%d-pr"
 	name           = "Test Acc Resource Product1 Updated"
 	commodity_type = "physical"
@@ -93,7 +93,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d-pr"
+		sku = "%d-pr-2"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -109,7 +109,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d-pr"
+		sku = "%d-pr-2"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -131,7 +131,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d-pr"
+		sku = "%d-pr-2"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -153,7 +153,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d-pr"
+		sku = "%d-pr-2"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
@@ -175,7 +175,7 @@ resource "epcc_product" "acc_test_epcc_product_1_physical_draft" {
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d-pr"
+		sku = "%d-pr-2"
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
