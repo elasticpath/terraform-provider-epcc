@@ -27,7 +27,7 @@ type CatalogAttributes struct {
 func (catalogs) Get(ctx *context.Context, client *Client, catalogId string) (*CatalogData, ApiErrors) {
 	path := fmt.Sprintf("/pcm/catalogs/%s", catalogId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -44,7 +44,7 @@ func (catalogs) Get(ctx *context.Context, client *Client, catalogId string) (*Ca
 func (catalogs) GetAll(ctx *context.Context, client *Client) (*CatalogList, ApiErrors) {
 	path := fmt.Sprintf("/pcm/catalogs")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -70,7 +70,7 @@ func (catalogs) Create(ctx *context.Context, client *Client, catalog *Catalog) (
 
 	path := fmt.Sprintf("/pcm/catalogs")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -87,7 +87,7 @@ func (catalogs) Create(ctx *context.Context, client *Client, catalog *Catalog) (
 func (catalogs) Delete(ctx *context.Context, client *Client, catalogID string) ApiErrors {
 	path := fmt.Sprintf("/pcm/catalogs/%s", catalogID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -108,7 +108,7 @@ func (catalogs) Update(ctx *context.Context, client *Client, catalogID string, c
 
 	path := fmt.Sprintf("/pcm/catalogs/%s", catalogID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

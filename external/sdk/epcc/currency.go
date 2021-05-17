@@ -27,7 +27,7 @@ type Currency struct {
 func (currencies) Get(ctx *context.Context, client *Client, currencyId string) (*CurrencyData, ApiErrors) {
 	path := fmt.Sprintf("/v2/currencies/%s", currencyId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -44,7 +44,7 @@ func (currencies) Get(ctx *context.Context, client *Client, currencyId string) (
 func (currencies) GetAll(ctx *context.Context, client *Client) (*CurrencyList, ApiErrors) {
 	path := fmt.Sprintf("/v2/currencies")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -70,7 +70,7 @@ func (currencies) Create(ctx *context.Context, client *Client, currency *Currenc
 
 	path := fmt.Sprintf("/v2/currencies")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -86,7 +86,7 @@ func (currencies) Create(ctx *context.Context, client *Client, currency *Currenc
 func (currencies) Delete(ctx *context.Context, client *Client, currencyID string) ApiErrors {
 	path := fmt.Sprintf("/v2/currencies/%s", currencyID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -107,7 +107,7 @@ func (currencies) Update(ctx *context.Context, client *Client, currencyID string
 
 	path := fmt.Sprintf("/v2/currencies/%s", currencyID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 
 	if apiError != nil {
 		return nil, apiError

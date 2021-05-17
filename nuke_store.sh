@@ -14,6 +14,9 @@ RESOURCES=(
 
 
 
+
+find -iname "terraform.tfstate*" -delete
+
 token=$(curl -X POST $EPCC_API_BASE_URL/oauth/access_token -d "client_id=$EPCC_CLIENT_ID" -d "client_secret=$EPCC_CLIENT_SECRET"     -d 'grant_type=client_credentials'  -s  2>/dev/null | jq -r .access_token);
 
 for RESOURCE in ${RESOURCES[@]};
@@ -31,7 +34,7 @@ do
       fi
 
 
-      curl -H "Authorization: Bearer $token" -H "EP-Beta-Features: $EPCC_BETA_API_FEATURES"  "$EPCC_API_BASE_URL/$RESOURCE" -s | jq -r .data[].id | awk '{ system("sleep 0.1"); print $1 }' | xargs -d "\n"  -I '{}' curl -X DELETE -H "Authorization: Bearer $token" -H "EP-Beta-Features: $EPCC_BETA_API_FEATURES"  "$EPCC_API_BASE_URL/$RESOURCE/{}"
+      curl -H "Authorization: Bearer $token" -H "EP-Beta-Features: $EPCC_BETA_API_FEATURES"  "$EPCC_API_BASE_URL/$RESOURCE" -s | jq -r .data[].id | awk '{ system("sleep 0.05"); print $1 }' | xargs -d "\n"  -I '{}' curl -X DELETE -H "Authorization: Bearer $token" -H "EP-Beta-Features: $EPCC_BETA_API_FEATURES"  "$EPCC_API_BASE_URL/$RESOURCE/{}"
     else
       break
     fi
@@ -39,4 +42,3 @@ do
 done
 
 
-find -iname "terraform.tfstate*" -delete

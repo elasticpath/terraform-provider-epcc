@@ -29,7 +29,7 @@ type Promotion struct {
 func (promotions) Get(ctx *context.Context, client *Client, promotionId string) (*PromotionData, ApiErrors) {
 	path := fmt.Sprintf("/v2/promotions/%s", promotionId)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -46,7 +46,7 @@ func (promotions) Get(ctx *context.Context, client *Client, promotionId string) 
 func (promotions) GetAll(ctx *context.Context, client *Client) (*PromotionList, ApiErrors) {
 	path := fmt.Sprintf("/v2/promotions")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -72,7 +72,7 @@ func (promotions) Create(ctx *context.Context, client *Client, promotion *Promot
 
 	path := fmt.Sprintf("/v2/promotions")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -88,7 +88,7 @@ func (promotions) Create(ctx *context.Context, client *Client, promotion *Promot
 func (promotions) Delete(ctx *context.Context, client *Client, promotionID string) ApiErrors {
 	path := fmt.Sprintf("/v2/promotions/%s", promotionID)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -109,7 +109,7 @@ func (promotions) Update(ctx *context.Context, client *Client, promotionID strin
 
 	path := fmt.Sprintf("/v2/promotions/%s", promotionID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 
 	if apiError != nil {
 		return nil, apiError

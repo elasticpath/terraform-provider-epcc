@@ -11,6 +11,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"time"
 
@@ -19,13 +20,14 @@ import (
 
 // Client is the type used to interface with EPCC API.
 type Client struct {
-	BaseURL       string
-	BetaFeatures  string
-	HTTPClient    *http.Client
-	RetryStrategy retry.Strategy
-	accessToken   string
-	Credentials   *Credentials
-	UserAgent     string
+	BaseURL           string
+	BetaFeatures      string
+	HTTPClient        *http.Client
+	RetryStrategy     retry.Strategy
+	accessToken       string
+	Credentials       *Credentials
+	UserAgent         string
+	AdditionalHeaders *map[string]string
 }
 
 // ClientOptions can be used to configure a new client.
@@ -36,6 +38,7 @@ type ClientOptions struct {
 	RetryLimitTimeout time.Duration // RetryLimitTimeout is how long requests will be retried for status codes 429, 500, 503 & 504
 	Credentials       *Credentials
 	UserAgent         string
+	AdditionalHeaders *map[string]string
 }
 
 type Credentials struct {
@@ -64,7 +67,8 @@ func NewClient(options ...ClientOptions) *Client {
 			ClientId:     cfg.Credentials.ClientID,
 			ClientSecret: cfg.Credentials.ClientSecret,
 		},
-		UserAgent: "go-epcc-client",
+		UserAgent:         "go-epcc-client",
+		AdditionalHeaders: &map[string]string{},
 	}
 
 	// If no configuration options are provided, return the default client.
@@ -87,7 +91,8 @@ func NewClient(options ...ClientOptions) *Client {
 					ClientId:     options[i].Credentials.ClientId,
 					ClientSecret: options[i].Credentials.ClientSecret,
 				},
-				UserAgent: options[i].UserAgent,
+				UserAgent:         options[i].UserAgent,
+				AdditionalHeaders: options[i].AdditionalHeaders,
 			}
 
 			if len(customClient.BaseURL) == 0 {
@@ -125,7 +130,7 @@ func (c *Client) Authenticate() error {
 }
 
 // DoRequest makes a html request to the EPCC API and handles the response.
-func (c *Client) DoRequest(ctx *context.Context, method string, path string, payload io.Reader) (body []byte, error ApiErrors) {
+func (c *Client) DoRequest(ctx *context.Context, method string, path string, query string, payload io.Reader) (body []byte, error ApiErrors) {
 	var teeBuf bytes.Buffer
 	tee := io.TeeReader(payload, &teeBuf)
 	var requestBody = "(n/a)"
@@ -133,21 +138,27 @@ func (c *Client) DoRequest(ctx *context.Context, method string, path string, pay
 		requestBodyBytes, _ := ioutil.ReadAll(tee)
 		requestBody = string(requestBodyBytes)
 	}
-	return c.doRequestInternal(ctx, method, "application/json", path, bytes.NewReader(teeBuf.Bytes()), requestBody)
+	return c.doRequestInternal(ctx, method, "application/json", path, query, bytes.NewReader(teeBuf.Bytes()), requestBody)
 }
 
 func (c *Client) DoFileRequest(ctx *context.Context, path string, payload io.Reader, contentType string) (body []byte, error ApiErrors) {
-	return c.doRequestInternal(ctx, "POST", contentType, path, payload, "(multipart data)")
+	return c.doRequestInternal(ctx, "POST", contentType, path, "", payload, "(multipart data)")
+}
+
+func (c *Client) logToDisk(method string, path string, requestBytes []byte, responseBytes []byte) {
+
 }
 
 // DoRequest makes a html request to the EPCC API and handles the response.
-func (c *Client) doRequestInternal(ctx *context.Context, method string, contentType string, path string, payload io.Reader, requestBody string) (body []byte, error ApiErrors) {
+func (c *Client) doRequestInternal(ctx *context.Context, method string, contentType string, path string, query string, payload io.Reader, requestBody string) (body []byte, error ApiErrors) {
 	reqURL, err := url.Parse(c.BaseURL)
 	if err != nil {
 		return nil, FromError(err)
 	}
 
 	reqURL.Path = path
+	reqURL.RawQuery = query
+
 	//diagnostics := (*ctx).Value("diags").(*diag.Diagnostics)
 	//
 	//diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
@@ -161,24 +172,37 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 		return nil, FromError(err)
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
+	if len(c.accessToken) > 0 {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
+	}
+
 	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("User-Agent", c.UserAgent)
+
+	for header, value := range *c.AdditionalHeaders {
+		req.Header.Add(header, value)
+	}
 
 	if len(c.BetaFeatures) > 0 {
 		req.Header.Add("EP-Beta-Features", c.BetaFeatures)
 	}
 
 	for r := retry.Start(c.RetryStrategy, nil); r.Next(); {
+
+		reqDump, _ := httputil.DumpRequestOut(req, true)
+
 		resp, err := c.HTTPClient.Do(req)
 
+		respDump, _ := httputil.DumpResponse(resp, true)
+
+		c.logToDisk(method, path, reqDump, respDump)
 		if err != nil {
 			return nil, FromError(err)
 		}
 		defer resp.Body.Close()
 
 		switch resp.StatusCode {
-		case 429, 500, 503, 504:
+		case 429, 500, 502, 503, 504:
 			log.Printf("Response Status %d Retrying request", resp.StatusCode)
 			continue
 

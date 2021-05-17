@@ -104,7 +104,7 @@ type FlowRelationship struct {
 func (fields) Get(ctx *context.Context, client *Client, id string) (*FieldData, ApiErrors) {
 	path := fmt.Sprintf("/v2/fields/%s", id)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -120,7 +120,7 @@ func (fields) Get(ctx *context.Context, client *Client, id string) (*FieldData, 
 func (fields) GetAll(ctx *context.Context, client *Client) (*FieldList, ApiErrors) {
 	path := fmt.Sprintf("/v2/fields")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -137,7 +137,7 @@ func (fields) GetAll(ctx *context.Context, client *Client) (*FieldList, ApiError
 func (fields) GetFieldsForFlow(ctx *context.Context, client *Client, flowSlug string) (*FieldList, ApiErrors) {
 	path := fmt.Sprintf("/v2/flows/%s/fields", flowSlug)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -162,7 +162,7 @@ func (fields) Create(ctx *context.Context, client *Client, data *Field) (*FieldD
 
 	path := fmt.Sprintf("/v2/fields")
 
-	body, apiError := client.DoRequest(ctx, "POST", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "POST", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -178,7 +178,7 @@ func (fields) Create(ctx *context.Context, client *Client, data *Field) (*FieldD
 func (fields) Delete(ctx *context.Context, client *Client, id string) ApiErrors {
 	path := fmt.Sprintf("/v2/fields/%s", id)
 
-	if _, err := client.DoRequest(ctx, "DELETE", path, nil); err != nil {
+	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
 		return err
 	}
 
@@ -197,7 +197,7 @@ func (fields) Update(ctx *context.Context, client *Client, fieldID string, data 
 
 	path := fmt.Sprintf("/v2/fields/%s", fieldID)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}

@@ -101,7 +101,7 @@ type PaymentGatewayList struct {
 func (paymentGateways) Get(ctx *context.Context, client *Client, slug payment_gateway.Slug) (*PaymentGatewayData, ApiErrors) {
 	path := fmt.Sprintf("/v2/gateways/%s", slug)
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -118,7 +118,7 @@ func (paymentGateways) Get(ctx *context.Context, client *Client, slug payment_ga
 func (paymentGateways) GetAll(ctx *context.Context, client *Client) (*PaymentGatewayList, ApiErrors) {
 	path := fmt.Sprintf("/v2/gateways")
 
-	body, apiError := client.DoRequest(ctx, "GET", path, nil)
+	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {
 		return nil, apiError
 	}
@@ -144,7 +144,7 @@ func (paymentGateways) Update(ctx *context.Context, client *Client, slug payment
 
 	path := fmt.Sprintf("/v2/gateways/%s", slug)
 
-	body, apiError := client.DoRequest(ctx, "PUT", path, bytes.NewBuffer(jsonPayload))
+	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
 	if apiError != nil {
 		return nil, apiError
 	}
