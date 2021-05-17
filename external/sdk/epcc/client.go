@@ -150,6 +150,9 @@ func getLogDirectory() *url.URL {
 	}
 
 	logDirUrl.Path = path.Join(logDirUrl.Path, baseUrl.Host)
+	if err := os.MkdirAll(logDirUrl.Path, 0755); err != nil {
+		log.Fatal(err)
+	}
 	return logDirUrl
 }
 
@@ -178,12 +181,10 @@ func (c *Client) logToDisk(requestMethod string, requestPath string, requestByte
 	logDirectory, _ := url.Parse(c.LogDirectory.Path)
 	logDirectory.Path = path.Join(logDirectory.Path, requestPath, requestMethod, strconv.Itoa(responseCode))
 	filename := time.Now().UnixNano()
-	if err := os.MkdirAll(logDirectory.Path, 0755); err != nil {
-		return
-	}
 	if f, err2 := os.Create(fmt.Sprintf("%s/%d", logDirectory.Path, filename)); err2 == nil {
 		defer f.Close()
 		f.Write(requestBytes)
+		f.Write([]byte("\n"))
 		f.Write(responseBytes)
 	}
 }
