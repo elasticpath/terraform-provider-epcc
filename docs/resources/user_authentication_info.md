@@ -1,5 +1,5 @@
 ---
-page_title: "epcc_userAuthenticationInfo Resource - terraform-provider-epcc"
+page_title: "epcc_user_authentication_info Resource - terraform-provider-epcc"
 subcategory: ""
 description: |- Represents the EPCC
 API User Authentication Info
