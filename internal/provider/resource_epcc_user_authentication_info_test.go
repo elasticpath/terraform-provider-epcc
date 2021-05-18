@@ -15,7 +15,7 @@ func TestAccResourceUserAuthenticationInfo(t *testing.T) {
 			{
 				Config: testAccResourceUserAuthenticationInfo,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "name", regexp.MustCompile("test_realm")),
+					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "name", regexp.MustCompile("John Doe")),
 					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "email", regexp.MustCompile("john.doe@banks.com")),
 					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm_for_user_authentication_info", "name", regexp.MustCompile("test_realm")),
 				),
