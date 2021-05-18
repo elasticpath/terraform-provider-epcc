@@ -93,6 +93,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_product_price":   dataSourceEpccProductPrice(),
 				"epcc_promotion":       dataSourceEpccPromotion(),
 				"epcc_realm":           dataSourceEpccRealm(),
+				"epcc_profile":         dataSourceEpccProfile(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
@@ -114,6 +115,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_product_price":   resourceEpccProductPrice(),
 				"epcc_promotion":       resourceEpccPromotion(),
 				"epcc_realm":           resourceEpccRealm(),
+				"epcc_profile":         resourceEpccProfile(),
 			},
 		}
 
