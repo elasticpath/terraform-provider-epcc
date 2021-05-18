@@ -1,14 +1,12 @@
 ---
 page_title: "epcc_user_authentication_info Data Source - terraform-provider-epcc"
 subcategory: ""
-description: |- Represents the EPCC
-API OpenID Connect User Authentication Info
+description: |- Represents the EPCC API User Authentication Info
 ---
 
 # Data Source `epcc_user_authentication_info`
 
-Represents the EPCC
-API OpenID Connect User Authentication Info
+Represents the EPCC API User Authentication Info
 
 ## Schema
 
