@@ -9,7 +9,7 @@ import (
 
 func dataSourceEpccMerchantRealmMapping() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccMerchantRealmMappingRead,
+		ReadContext: addDiagToContext(dataSourceEpccMerchantRealmMappingRead),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -35,7 +35,7 @@ func dataSourceEpccMerchantRealmMapping() *schema.Resource {
 	}
 }
 
-func dataSourceEpccMerchantRealmMappingRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccMerchantRealmMappingRead(ctx context.Context, d *schema.ResourceData, m interface{}){
 
 	client := m.(*epcc.Client)
 	var diags diag.Diagnostics
@@ -45,7 +45,8 @@ func dataSourceEpccMerchantRealmMappingRead(ctx context.Context, d *schema.Resou
 	merchantRealmMapping, err := epcc.MerchantRealmMappings.Get(&ctx, client, merchantRealmMappingId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("prefix", merchantRealmMapping.Data.Prefix)
@@ -55,5 +56,4 @@ func dataSourceEpccMerchantRealmMappingRead(ctx context.Context, d *schema.Resou
 
 	d.SetId(merchantRealmMapping.Data.Id)
 
-	return diags
 }

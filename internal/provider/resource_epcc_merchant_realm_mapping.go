@@ -43,22 +43,22 @@ func resourceEpccMerchantRealmMapping() *schema.Resource {
 
 }
 
-func resourceEpccMerchantRealmMappingDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccMerchantRealmMappingDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	merchantRealmMappingID := d.Id()
 
 	err := epcc.MerchantRealmMappings.Delete(&ctx, client, merchantRealmMappingID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.SetId("")
 
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccMerchantRealmMappingUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccMerchantRealmMappingUpdate(ctx context.Context, d *schema.ResourceData, m interface{}){
 	client := m.(*epcc.Client)
 
 	merchantRealmMappingId := d.Id()
@@ -73,44 +73,46 @@ func resourceEpccMerchantRealmMappingUpdate(ctx context.Context, d *schema.Resou
 	createdMerchantRealmMappingData, apiError := epcc.MerchantRealmMappings.Update(&ctx, client, merchantRealmMappingId, merchantRealmMapping)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdMerchantRealmMappingData.Data.Id)
 
-	return resourceEpccMerchantRealmMappingRead(ctx, d, m)
 }
 
-func resourceEpccMerchantRealmMappingRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccMerchantRealmMappingRead(ctx context.Context, d *schema.ResourceData, m interface{})  {
 	client := m.(*epcc.Client)
 	merchantRealmMappingID := d.Id()
 
 	merchantRealmMapping, err := epcc.MerchantRealmMappings.Get(&ctx, client, merchantRealmMappingID)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("prefix", merchantRealmMapping.Data.Prefix); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("realm_id", merchantRealmMapping.Data.RealmId); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("store_id", merchantRealmMapping.Data.StoreId); err != nil {
-		return diag.FromErr(err)
-	}
+		addToDiag(ctx, diag.FromErr(err))
+		return	}
 
 	if err := d.Set("type", merchantRealmMapping.Data.Type); err != nil {
-		return diag.FromErr(err)
-	}
+		addToDiag(ctx, diag.FromErr(err))
+		return	}
 
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccMerchantRealmMappingCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccMerchantRealmMappingCreate(ctx context.Context, d *schema.ResourceData, m interface{}){
 	client := m.(*epcc.Client)
 	merchantRealmMapping := &epcc.MerchantRealmMapping{
 		Prefix:  d.Get("prefix").(string),
@@ -122,12 +124,12 @@ func resourceEpccMerchantRealmMappingCreate(ctx context.Context, d *schema.Resou
 	createdMerchantRealmMappingData, apiError := epcc.MerchantRealmMappings.Create(&ctx, client, merchantRealmMapping)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdMerchantRealmMappingData.Data.Id)
 
 	resourceEpccMerchantRealmMappingRead(ctx, d, m)
 
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
