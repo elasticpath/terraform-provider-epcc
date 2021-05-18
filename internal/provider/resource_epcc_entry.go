@@ -9,6 +9,7 @@ import (
 
 func resourceEpccEntry() *schema.Resource {
 	return &schema.Resource{
+		Description:   "Represents the EPCC API [Entry Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/custom-data/entries/index.html).",
 		CreateContext: addDiagToContext(resourceEpccEntryCreate),
 		ReadContext:   addDiagToContext(resourceEpccEntryRead),
 		UpdateContext: addDiagToContext(resourceEpccEntryUpdate),
