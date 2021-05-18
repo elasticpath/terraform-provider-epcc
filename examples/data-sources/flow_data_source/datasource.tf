@@ -12,6 +12,6 @@ data "epcc_flow" "example" {
 }
 
 output "flow_name" {
-  value = data.epcc_flow.example.name
+  value = data.epcc_flow.example
 }
 
