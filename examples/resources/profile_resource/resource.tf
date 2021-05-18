@@ -2,7 +2,7 @@ terraform {
   required_providers {
     epcc = {
       version = "0.0.1"
-      source = "elasticpath.com/elasticpath/epcc"
+      source  = "elasticpath.com/elasticpath/epcc"
     }
   }
 }
@@ -18,14 +18,14 @@ resource "epcc_realm" "test_realm_for_profile" {
     "https://google.com/"
   ]
   duplicate_email_policy = "allowed"
-  origin_id = "hello-world"
-  origin_type = "customer-authentication-settings"
+  origin_id              = "hello-world"
+  origin_type            = "customer-authentication-settings"
 }
 
 resource "epcc_profile" "test_profile" {
-  name = "test_profile"
+  name          = "test_profile"
   discovery_url = "https://shared-keycloak.env.am.pd.elasticpath.cloud/auth/realms/epcc-integrations-env/.well-known/openid-configuration"
-  client_id = "epcc-integrations"
+  client_id     = "epcc-integrations"
   client_secret = "86c8986d-e1b2-4ce4-a24c-8430ec1ab383"
-  realm_id = epcc_realm.test_realm_for_profile.id
+  realm_id      = epcc_realm.test_realm_for_profile.id
 }
