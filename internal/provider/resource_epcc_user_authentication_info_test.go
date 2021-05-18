@@ -15,10 +15,8 @@ func TestAccResourceUserAuthenticationInfo(t *testing.T) {
 			{
 				Config: testAccResourceUserAuthenticationInfo,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "name", regexp.MustCompile("test_user_authentication_info")),
-					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "discovery_url", regexp.MustCompile("https://shared-keycloak.env.am.pd.elasticpath.cloud/auth/realms/epcc-integrations-env/.well-known/openid-configuration")),
-					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "client_id", regexp.MustCompile("epcc-integrations")),
-					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "client_secret", regexp.MustCompile("")),
+					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "name", regexp.MustCompile("test_realm")),
+					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "email", regexp.MustCompile("john.doe@banks.com")),
 					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm_for_user_authentication_info", "name", regexp.MustCompile("test_realm")),
 				),
 			},
