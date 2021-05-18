@@ -95,7 +95,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_realm":                    dataSourceEpccRealm(),
 				"epcc_profile":                  dataSourceEpccProfile(),
 				"epcc_user_authentication_info": dataSourceEpccUserAuthenticationInfo(),
-				"epcc_merchant_realm_mapping": dataSourceEpccMerchantRealmMapping(),
+				"epcc_merchant_realm_mapping":   dataSourceEpccMerchantRealmMapping(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
@@ -119,6 +119,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_realm":                    resourceEpccRealm(),
 				"epcc_profile":                  resourceEpccProfile(),
 				"epcc_user_authentication_info": resourceEpccUserAuthenticationInfo(),
+				"epcc_merchant_realm_mapping":   resourceEpccMerchantRealmMapping(),
 			},
 		}
 
