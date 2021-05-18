@@ -48,20 +48,18 @@ func resourceEpccNode() *schema.Resource {
 
 }
 
-func resourceEpccNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	err := epcc.Nodes.Delete(&ctx, client, d.Get("hierarchy_id").(string), d.Id())
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	hierarchyId := d.Get("hierarchy_id").(string)
@@ -91,15 +89,16 @@ func resourceEpccNodeUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	updatedNodeData, apiError := epcc.Nodes.Update(&ctx, client, hierarchyId, d.Id(), node)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedNodeData.Data.Id)
 
-	return resourceEpccNodeRead(ctx, d, m)
+	resourceEpccNodeRead(ctx, d, m)
 }
 
-func resourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	hierarchyId := d.Get("hierarchy_id").(string)
@@ -108,31 +107,34 @@ func resourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interfa
 	node, err := epcc.Nodes.Get(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", node.Data.Attributes.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("slug", node.Data.Attributes.Slug); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("description", node.Data.Attributes.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if node.Data.Relationships != nil && node.Data.Relationships.Parent != nil && node.Data.Relationships.Parent.Data != nil {
 		if err := d.Set("parent_id", node.Data.Relationships.Parent.Data.Id); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	node := &epcc.Node{
 		Type: "node",
@@ -149,12 +151,11 @@ func resourceEpccNodeCreate(ctx context.Context, d *schema.ResourceData, m inter
 	createdNodeData, apiError := epcc.Nodes.Create(&ctx, client, hierarchyId, node)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdNodeData.Data.Id)
 
 	resourceEpccNodeRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

@@ -27,7 +27,7 @@ func resourceEpccUserAuthenticationInfo() *schema.Resource {
 
 }
 
-func resourceEpccUserAuthenticationInfoDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccUserAuthenticationInfoDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	userAuthenticationInfoID := d.Id()
 	realmID := d.Get("realm_id").(string)
@@ -35,15 +35,13 @@ func resourceEpccUserAuthenticationInfoDelete(ctx context.Context, d *schema.Res
 	err := epcc.UserAuthenticationInfos.Delete(&ctx, client, userAuthenticationInfoID, realmID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccUserAuthenticationInfoUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccUserAuthenticationInfoUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	userAuthenticationInfoId := d.Id()
@@ -59,15 +57,16 @@ func resourceEpccUserAuthenticationInfoUpdate(ctx context.Context, d *schema.Res
 	updatedUserAuthenticationInfoData, apiError := epcc.UserAuthenticationInfos.Update(&ctx, client, userAuthenticationInfo)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedUserAuthenticationInfoData.Data.Id)
 
-	return resourceEpccUserAuthenticationInfoRead(ctx, d, m)
+	resourceEpccUserAuthenticationInfoRead(ctx, d, m)
 }
 
-func resourceEpccUserAuthenticationInfoRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccUserAuthenticationInfoRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	userAuthenticationInfoId := d.Id()
 
@@ -76,23 +75,24 @@ func resourceEpccUserAuthenticationInfoRead(ctx context.Context, d *schema.Resou
 	userAuthenticationInfo, err := epcc.UserAuthenticationInfos.Get(&ctx, client, realmId, userAuthenticationInfoId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	//if err := d.Set("type", "user-authentication-info"); err != nil {
-	//	return diag.FromErr(err)
+	//	addToDiag(ctx, diag.FromErr(err)); return
 	//}
 	if err := d.Set("name", userAuthenticationInfo.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("email", userAuthenticationInfo.Data.Email); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccUserAuthenticationInfoCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccUserAuthenticationInfoCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	userAuthenticationInfo := &epcc.UserAuthenticationInfo{
 		Type:    "user-authentication-info",
@@ -103,12 +103,11 @@ func resourceEpccUserAuthenticationInfoCreate(ctx context.Context, d *schema.Res
 	}
 	createdUserAuthenticationInfoData, apiError := epcc.UserAuthenticationInfos.Create(&ctx, client, userAuthenticationInfo)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdUserAuthenticationInfoData.Data.Id)
 
 	resourceEpccUserAuthenticationInfoRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

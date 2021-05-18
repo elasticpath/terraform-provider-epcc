@@ -42,7 +42,7 @@ func resourceEpccNodeProduct() *schema.Resource {
 
 }
 
-func resourceEpccNodeProductDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeProductDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	hierarchyId := d.Get("hierarchy_id").(string)
@@ -60,15 +60,13 @@ func resourceEpccNodeProductDelete(ctx context.Context, d *schema.ResourceData, 
 	err := epcc.Nodes.DeleteNodeProduct(&ctx, client, hierarchyId, nodeId, wrappedList)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	hierarchyId := d.Get("hierarchy_id").(string)
@@ -78,7 +76,8 @@ func resourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m 
 	nodeProduct, err := epcc.Nodes.GetNodeProducts(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	var foundMatch = false
@@ -99,28 +98,29 @@ func resourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m 
 	}
 
 	if !foundMatch {
-
-		return diag.FromErr(fmt.Errorf("Could not find node product relationship for hierarchy %s node %s product %s\nAll ids: %s", hierarchyId, nodeId, productId, allIds))
+		addToDiag(ctx, diag.FromErr(fmt.Errorf("Could not find node product relationship for hierarchy %s node %s product %s\nAll ids: %s", hierarchyId, nodeId, productId, allIds)))
 	} else {
 		if err := d.Set("hierarchy_id", hierarchyId); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		if err := d.Set("node_id", nodeId); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		if err := d.Set("product_id", productId); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		d.SetId(productId)
 
-		return *ctx.Value("diags").(*diag.Diagnostics)
 	}
 }
 
-func resourceEpccNodeProductCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccNodeProductCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	hierarchyId := d.Get("hierarchy_id").(string)
@@ -134,12 +134,11 @@ func resourceEpccNodeProductCreate(ctx context.Context, d *schema.ResourceData, 
 	})
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(productId)
 
 	resourceEpccNodeProductRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

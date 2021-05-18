@@ -113,45 +113,56 @@ func dataSourceEpccField() *schema.Resource {
 	}
 }
 
-func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	id := d.Get("id").(string)
 	result, err := epcc.Fields.Get(&ctx, client, id)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("field_type", result.Data.FieldType); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("slug", result.Data.Slug); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("name", result.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("description", result.Data.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("required", result.Data.Required); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("default", result.Data.Default); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("enabled", result.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("order", result.Data.Order); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("omit_null", result.Data.OmitNull); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("flow_id", result.Data.Relationships.Flow.Data.Id); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	fieldType := field.Type(result.Data.FieldType)
@@ -167,7 +178,8 @@ func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m inte
 			fallthrough
 		case field.Uuid:
 			if err := d.Set("valid_string_format", validationRule.ValidationType().AsString()); err != nil {
-				return diag.FromErr(err)
+				addToDiag(ctx, diag.FromErr(err))
+				return
 			}
 		case field.Enum:
 			switch fieldType {
@@ -175,18 +187,22 @@ func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m inte
 				fallthrough
 			case field.String:
 				if err := d.Set("valid_string_enum", validationRule.(*epcc.ValidationRuleStringEnumAttribute).Options); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			case field.Integer:
 				if err := d.Set("valid_int_enum", validationRule.(*epcc.ValidationRuleIntegerEnumAttribute).Options); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			case field.Float:
 				if err := d.Set("valid_float_enum", validationRule.(*epcc.ValidationRuleFloatEnumAttribute).Options); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			default:
-				return diag.Errorf("unknown enum for field type %v", fieldType)
+				addToDiag(ctx, diag.Errorf("unknown enum for field type %v", fieldType))
+				return
 			}
 		case field.Between:
 			switch fieldType {
@@ -197,7 +213,8 @@ func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m inte
 					"to":   attribute.Options.To,
 				})
 				if err := d.Set("valid_int_range", validIntRanges); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			case field.Float:
 				attribute := validationRule.(*epcc.ValidationRuleBetweenFloatsAttribute)
@@ -206,23 +223,25 @@ func dataSourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m inte
 					"to":   attribute.Options.To,
 				})
 				if err := d.Set("valid_float_range", validFloatRanges); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			default:
-				return diag.Errorf("unknown range for field type %v", fieldType)
+				addToDiag(ctx, diag.Errorf("unknown range for field type %v", fieldType))
+				return
 			}
 		case field.OneToMany:
 			if err := d.Set("relationship_to_many", validationRule.(*epcc.ValidationRuleRelationshipAttribute).To); err != nil {
-				return diag.FromErr(err)
+				addToDiag(ctx, diag.FromErr(err))
+				return
 			}
 		case field.OneToOne:
 			if err := d.Set("relationship_to_one", validationRule.(*epcc.ValidationRuleRelationshipAttribute).To); err != nil {
-				return diag.FromErr(err)
+				addToDiag(ctx, diag.FromErr(err))
+				return
 			}
 		}
 	}
 
 	d.SetId(result.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

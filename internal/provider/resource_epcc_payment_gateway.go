@@ -53,52 +53,48 @@ func (r PaymentGatewayResourceProvider) Resource() *schema.Resource {
 	}
 }
 
-func (r PaymentGatewayResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
-	result, diagErr := r.updatePaymentGateway(ctx, client, data)
-	if diagErr != nil {
-		return diagErr
-	}
+	result := r.updatePaymentGateway(ctx, client, data)
 
-	diagErr = r.parseResourceData(ctx, result, data)
-	if diagErr != nil {
-		return diagErr
-	}
+	r.parseResourceData(ctx, result, data)
 
 	data.SetId(result.Data.Type().AsString())
-
-	return nil
 }
 
-func (r PaymentGatewayResourceProvider) parseResourceData(ctx context.Context, result *epcc.PaymentGatewayData, data *schema.ResourceData) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) parseResourceData(ctx context.Context, result *epcc.PaymentGatewayData, data *schema.ResourceData) {
 	base := result.Data.Base()
 	if err := data.Set("enabled", base.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := data.Set("test", base.Test); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	optionsBytes, jsonErr := json.Marshal(result.Data)
 	if jsonErr != nil {
-		return diag.FromErr(jsonErr)
+		addToDiag(ctx, diag.FromErr(jsonErr))
+		return
 	}
 	var options map[string]interface{}
 	jsonErr = json.Unmarshal(optionsBytes, &options)
 	if jsonErr != nil {
-		return diag.FromErr(jsonErr)
+		addToDiag(ctx, diag.FromErr(jsonErr))
+		return
 	}
 	delete(options, "slug")
 	delete(options, "enabled")
 	delete(options, "test")
 	if err := data.Set("options", &options); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-	return nil
 }
 
-func (r PaymentGatewayResourceProvider) updatePaymentGateway(ctx context.Context, client *epcc.Client, data *schema.ResourceData) (*epcc.PaymentGatewayData, diag.Diagnostics) {
+func (r PaymentGatewayResourceProvider) updatePaymentGateway(ctx context.Context, client *epcc.Client, data *schema.ResourceData) *epcc.PaymentGatewayData {
 
 	base := epcc.PaymentGatewayBase{
 		Slug:    data.Get("slug").(string),
@@ -149,7 +145,8 @@ func (r PaymentGatewayResourceProvider) updatePaymentGateway(ctx context.Context
 		}
 	case payment_gateway.Braintree:
 		if base.Test {
-			return nil, diag.FromErr(fmt.Errorf("test parameter is not supported by Braintree"))
+			diag.FromErr(fmt.Errorf("test parameter is not supported by Braintree"))
+			return nil
 		}
 		obj = &epcc.BraintreePaymentGateway{
 			PaymentGatewayBase: base,
@@ -175,10 +172,11 @@ func (r PaymentGatewayResourceProvider) updatePaymentGateway(ctx context.Context
 
 	result, apiError := epcc.PaymentGateways.Update(&ctx, client, obj.Type(), &obj)
 	if apiError != nil {
-		return nil, FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return nil
 	}
 
-	return result, nil
+	return result
 }
 
 func mapStringValue(m map[string]interface{}, key string) string {
@@ -189,47 +187,46 @@ func mapStringValue(m map[string]interface{}, key string) string {
 	return value.(string)
 }
 
-func (r PaymentGatewayResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	slug := payment_gateway.Slug(data.Get("slug").(string))
 	result, err := epcc.PaymentGateways.Get(&ctx, client, slug)
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	base := result.Data.Base()
 	if err := data.Set("enabled", base.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := data.Set("test", base.Test); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	data.SetId(result.Data.Type().AsString())
-
-	return nil
 }
 
-func (r PaymentGatewayResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	if err := data.Set("options", map[string]interface{}{}); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := data.Set("enabled", false); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := data.Set("test", false); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
-	_, diagErr := r.updatePaymentGateway(ctx, client, data)
-	if diagErr != nil {
-		return diagErr
-	}
+	_ = r.updatePaymentGateway(ctx, client, data)
 
 	data.SetId("")
-
-	return nil
 }

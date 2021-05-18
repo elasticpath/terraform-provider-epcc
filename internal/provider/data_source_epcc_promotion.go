@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -42,13 +41,14 @@ func dataSourceEpccPromotion() *schema.Resource {
 	}
 }
 
-func dataSourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	promotionId := d.Get("id").(string)
 	promotion, err := epcc.Promotions.Get(&ctx, client, promotionId)
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("type", promotion.Data.Type)
@@ -64,6 +64,4 @@ func dataSourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m 
 	d.Set("max_discount_value", promotion.Data.MaxDiscountValue)
 
 	d.SetId(promotion.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

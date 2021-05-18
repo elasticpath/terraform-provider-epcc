@@ -50,22 +50,20 @@ func resourceEpccPromotion() *schema.Resource {
 
 }
 
-func resourceEpccPromotionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPromotionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	promotionID := d.Id()
 
 	err := epcc.Promotions.Delete(&ctx, client, promotionID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccPromotionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPromotionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	promotionId := d.Id()
@@ -89,15 +87,16 @@ func resourceEpccPromotionUpdate(ctx context.Context, d *schema.ResourceData, m 
 	updatedPromotionData, apiError := epcc.Promotions.Update(&ctx, client, promotionId, promotion)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedPromotionData.Data.Id)
 
-	return resourceEpccPromotionRead(ctx, d, m)
+	resourceEpccPromotionRead(ctx, d, m)
 }
 
-func resourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	promotionId := d.Id()
@@ -105,47 +104,57 @@ func resourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m in
 	promotion, err := epcc.Promotions.Get(&ctx, client, promotionId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("type", promotion.Data.Type); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("name", promotion.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("description", promotion.Data.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("enabled", promotion.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("automatic", promotion.Data.Automatic); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("promotion_type", promotion.Data.PromotionType); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("start", promotion.Data.Start); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("end", promotion.Data.End); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("schema", [1]interface{}{promotion.Data.Schema}); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("min_cart_value", promotion.Data.MinCartValue); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("max_discount_value", promotion.Data.MaxDiscountValue); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccPromotionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPromotionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	schemas := d.Get("schema").([]interface{})
 	singleSchema := schemas[0]
@@ -164,12 +173,11 @@ func resourceEpccPromotionCreate(ctx context.Context, d *schema.ResourceData, m 
 	}
 	createdPromotionData, apiError := epcc.Promotions.Create(&ctx, client, promotion)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdPromotionData.Data.Id)
 
 	resourceEpccPromotionRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

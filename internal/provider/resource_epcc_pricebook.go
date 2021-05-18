@@ -33,22 +33,20 @@ func resourceEpccPricebook() *schema.Resource {
 
 }
 
-func resourceEpccPricebookDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPricebookDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	pricebookId := d.Id()
 
 	err := epcc.Pricebooks.Delete(&ctx, client, pricebookId)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccPricebookUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPricebookUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	pricebookId := d.Id()
@@ -65,36 +63,38 @@ func resourceEpccPricebookUpdate(ctx context.Context, d *schema.ResourceData, m 
 	updatedPricebookData, apiError := epcc.Pricebooks.Update(&ctx, client, pricebookId, pricebook)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedPricebookData.Data.Id)
 
-	return resourceEpccPricebookRead(ctx, d, m)
+	resourceEpccPricebookRead(ctx, d, m)
 }
 
-func resourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	pricebookId := d.Id()
 
 	pricebook, err := epcc.Pricebooks.Get(&ctx, client, pricebookId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", pricebook.Data.Attributes.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("description", pricebook.Data.Attributes.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccPricebookCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccPricebookCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	pricebook := &epcc.Pricebook{
 		Type: "pricebook",
@@ -107,12 +107,11 @@ func resourceEpccPricebookCreate(ctx context.Context, d *schema.ResourceData, m 
 	createdPricebookData, apiError := epcc.Pricebooks.Create(&ctx, client, pricebook)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdPricebookData.Data.Id)
 
 	resourceEpccPricebookRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

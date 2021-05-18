@@ -69,7 +69,7 @@ func dataSourceEpccProduct() *schema.Resource {
 	}
 }
 
-func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 
 	client := m.(*epcc.Client)
 	productId := d.Get("id").(string)
@@ -77,13 +77,15 @@ func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m in
 	product, err := epcc.Products.Get(&ctx, client, productId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	productFiles, err := epcc.Products.GetProductFiles(&ctx, client, productId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("name", product.Data.Attributes.Name)
@@ -101,13 +103,13 @@ func dataSourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m in
 		fileIds := convertJsonTypesToIds(productFiles.Data)
 
 		if err := d.Set("files", fileIds); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	} else {
 		if err := d.Set("files", [0]string{}); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

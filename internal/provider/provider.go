@@ -187,16 +187,22 @@ func configure(version string, p *schema.Provider) func(ctx context.Context, d *
 	}
 }
 
-func FromAPIError(err epcc.ApiErrors) diag.Diagnostics {
+func ReportAPIError(ctx context.Context, err epcc.ApiErrors) {
 	if err == nil {
-		return nil
+		return
 	}
+	diagnostics := ctx.Value("diags").(*diag.Diagnostics)
 
-	return diag.Diagnostics{
-		diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  err.Error(),
-			Detail:   fmt.Sprintf("API Error Response [%s %s => %d]\n%s", err.HttpMethod(), err.HttpPath(), err.HttpStatusCode(), strings.ReplaceAll("\n"+err.ListOfErrors().String(), "\n", "\n\t")),
-		},
-	}
+	diagnosticsAppended := append(*diagnostics, diag.Diagnostic{
+		Severity: diag.Error,
+		Summary:  err.Error(),
+		Detail:   fmt.Sprintf("API Error Response [%s %s => %d]\n%s", err.HttpMethod(), err.HttpPath(), err.HttpStatusCode(), strings.ReplaceAll("\n"+err.ListOfErrors().String(), "\n", "\n\t")),
+	})
+	*diagnostics = diagnosticsAppended
+}
+
+func addToDiag(ctx context.Context, diagnostics diag.Diagnostics) {
+	ctxDiags := ctx.Value("diags").(*diag.Diagnostics)
+	diagnosticsAppended := append(*ctxDiags, diagnostics...)
+	*ctxDiags = diagnosticsAppended
 }

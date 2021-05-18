@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -24,25 +23,22 @@ func dataSourceEpccCurrency() *schema.Resource {
 	}
 }
 
-func dataSourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	currencyId := d.Get("id").(string)
 	currency, err := epcc.Currencies.Get(&ctx, client, currencyId)
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+	} else {
+		d.Set("code", currency.Data.Code)
+		d.Set("exchange_rate", currency.Data.ExchangeRate)
+		d.Set("format", currency.Data.Format)
+		d.Set("decimal_point", currency.Data.DecimalPoint)
+		d.Set("thousand_separator", currency.Data.ThousandSeparator)
+		d.Set("decimal_places", currency.Data.DecimalPlaces)
+		d.Set("default", currency.Data.Default)
+		d.Set("enabled", currency.Data.Enabled)
+		d.SetId(currency.Data.Id)
 	}
-
-	d.Set("code", currency.Data.Code)
-	d.Set("exchange_rate", currency.Data.ExchangeRate)
-	d.Set("format", currency.Data.Format)
-	d.Set("decimal_point", currency.Data.DecimalPoint)
-	d.Set("thousand_separator", currency.Data.ThousandSeparator)
-	d.Set("decimal_places", currency.Data.DecimalPlaces)
-	d.Set("default", currency.Data.Default)
-	d.Set("enabled", currency.Data.Enabled)
-
-	d.SetId(currency.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

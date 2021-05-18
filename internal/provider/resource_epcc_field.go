@@ -228,74 +228,84 @@ func resourceEpccField() *schema.Resource {
 	}
 }
 
-func resourceEpccFieldDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFieldDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	err := epcc.Fields.Delete(&ctx, client, d.Id())
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccFieldUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFieldUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	f, diagErr := constructField(d)
 	if diagErr != nil {
-		return diagErr
+		addToDiag(ctx, diagErr)
 	}
 
 	updated, apiError := epcc.Fields.Update(&ctx, client, d.Id(), f)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updated.Data.Id)
 
-	return resourceEpccFieldRead(ctx, d, m)
+	resourceEpccFieldRead(ctx, d, m)
 }
 
-func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	result, err := epcc.Fields.Get(&ctx, client, d.Id())
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("field_type", result.Data.FieldType); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("slug", result.Data.Slug); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("name", result.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("description", result.Data.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("required", result.Data.Required); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("default", result.Data.Default); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("enabled", result.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("order", result.Data.Order); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("omit_null", result.Data.OmitNull); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("flow_id", result.Data.Relationships.Flow.Data.Id); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	fieldType := field.Type(result.Data.FieldType)
@@ -311,7 +321,8 @@ func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interf
 			fallthrough
 		case field.Uuid:
 			if err := d.Set("valid_string_format", validationRule.ValidationType().AsString()); err != nil {
-				return diag.FromErr(err)
+				addToDiag(ctx, diag.FromErr(err))
+				return
 			}
 		case field.Enum:
 			switch fieldType {
@@ -319,18 +330,22 @@ func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interf
 				fallthrough
 			case field.String:
 				if err := d.Set("valid_string_enum", validationRule.(*epcc.ValidationRuleStringEnumAttribute).Options); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			case field.Integer:
 				if err := d.Set("valid_int_enum", validationRule.(*epcc.ValidationRuleIntegerEnumAttribute).Options); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			case field.Float:
 				if err := d.Set("valid_float_enum", validationRule.(*epcc.ValidationRuleFloatEnumAttribute).Options); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			default:
-				return diag.Errorf("unknown enum for field type %v", fieldType)
+				addToDiag(ctx,diag.Errorf("unknown enum for field type %v", fieldType))
+				return
 			}
 		case field.Between:
 			switch fieldType {
@@ -341,7 +356,8 @@ func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interf
 					"to":   attribute.Options.To,
 				})
 				if err := d.Set("valid_int_range", validIntRanges); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			case field.Float:
 				attribute := validationRule.(*epcc.ValidationRuleBetweenFloatsAttribute)
@@ -350,41 +366,43 @@ func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interf
 					"to":   attribute.Options.To,
 				})
 				if err := d.Set("valid_float_range", validFloatRanges); err != nil {
-					return diag.FromErr(err)
+					addToDiag(ctx, diag.FromErr(err))
+					return
 				}
 			default:
-				return diag.Errorf("unknown range for field type %v", fieldType)
+				addToDiag(ctx, diag.Errorf("unknown range for field type %v", fieldType))
+				return
 			}
 		case field.OneToMany:
 			if err := d.Set("relationship_to_many", validationRule.(*epcc.ValidationRuleRelationshipAttribute).To); err != nil {
-				return diag.FromErr(err)
+				addToDiag(ctx, diag.FromErr(err))
+				return
 			}
 		case field.OneToOne:
 			if err := d.Set("relationship_to_one", validationRule.(*epcc.ValidationRuleRelationshipAttribute).To); err != nil {
-				return diag.FromErr(err)
+				addToDiag(ctx, diag.FromErr(err))
+				return
 			}
 		}
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccFieldCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFieldCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	f, diagErr := constructField(d)
 	if diagErr != nil {
-		return diagErr
+		addToDiag(ctx,  diagErr)
+		return
 	}
 
 	created, apiError := epcc.Fields.Create(&ctx, client, f)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(created.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func constructField(d *schema.ResourceData) (*epcc.Field, diag.Diagnostics) {

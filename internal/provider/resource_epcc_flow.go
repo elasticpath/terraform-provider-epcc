@@ -43,22 +43,20 @@ func resourceEpccFlow() *schema.Resource {
 
 }
 
-func resourceEpccFlowDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFlowDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	flowID := d.Id()
 
 	err := epcc.Flows.Delete(&ctx, client, flowID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccFlowUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFlowUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	flowId := d.Id()
@@ -74,44 +72,48 @@ func resourceEpccFlowUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	createdFlowData, apiError := epcc.Flows.Update(&ctx, client, flowId, flow)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdFlowData.Data.Id)
 
-	return resourceEpccFlowRead(ctx, d, m)
+	resourceEpccFlowRead(ctx, d, m)
 }
 
-func resourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	flowID := d.Id()
 
 	flow, err := epcc.Flows.Get(&ctx, client, flowID)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", flow.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("slug", flow.Data.Slug); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("description", flow.Data.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("enabled", flow.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccFlowCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFlowCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	flow := &epcc.Flow{
 		Type:        "flow",
@@ -124,12 +126,11 @@ func resourceEpccFlowCreate(ctx context.Context, d *schema.ResourceData, m inter
 	createdFlowData, apiError := epcc.Flows.Create(&ctx, client, flow)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdFlowData.Data.Id)
 
 	resourceEpccFlowRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

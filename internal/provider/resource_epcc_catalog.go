@@ -46,22 +46,20 @@ func resourceEpccCatalog() *schema.Resource {
 
 }
 
-func resourceEpccCatalogDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCatalogDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	catalogID := d.Id()
 
 	err := epcc.Catalogs.Delete(&ctx, client, catalogID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccCatalogUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCatalogUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	catalogId := d.Id()
@@ -80,44 +78,48 @@ func resourceEpccCatalogUpdate(ctx context.Context, d *schema.ResourceData, m in
 	updatedCatalogData, apiError := epcc.Catalogs.Update(&ctx, client, catalogId, catalog)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedCatalogData.Data.Id)
 
-	return resourceEpccCatalogRead(ctx, d, m)
+	resourceEpccCatalogRead(ctx, d, m)
 }
 
-func resourceEpccCatalogRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCatalogRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	catalogId := d.Id()
 
 	catalog, err := epcc.Catalogs.Get(&ctx, client, catalogId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", catalog.Data.Attributes.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("description", catalog.Data.Attributes.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("pricebook", catalog.Data.Attributes.PriceBook); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("hierarchies", catalog.Data.Attributes.Hierarchies); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccCatalogCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCatalogCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	catalog := &epcc.Catalog{
 		Type: "catalog",
@@ -132,12 +134,11 @@ func resourceEpccCatalogCreate(ctx context.Context, d *schema.ResourceData, m in
 	createdCatalogData, apiError := epcc.Catalogs.Create(&ctx, client, catalog)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdCatalogData.Data.Id)
 
 	resourceEpccCatalogRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

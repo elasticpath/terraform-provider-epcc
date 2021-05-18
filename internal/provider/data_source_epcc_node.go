@@ -39,7 +39,7 @@ func dataSourceEpccNode() *schema.Resource {
 	}
 }
 
-func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 
 	client := m.(*epcc.Client)
 	nodeId := d.Get("id").(string)
@@ -47,7 +47,8 @@ func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m inter
 	node, err := epcc.Nodes.Get(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("name", node.Data.Attributes.Name)
@@ -56,11 +57,10 @@ func dataSourceEpccNodeRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	if node.Data.Relationships != nil && node.Data.Relationships.Parent != nil && node.Data.Relationships.Parent.Data != nil {
 		if err := d.Set("parent_id", node.Data.Relationships.Parent.Data.Id); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	}
 
 	d.SetId(node.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

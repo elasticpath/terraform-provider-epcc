@@ -32,22 +32,20 @@ func resourceEpccCurrency() *schema.Resource {
 
 }
 
-func resourceEpccCurrencyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCurrencyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	currencyID := d.Id()
 
 	err := epcc.Currencies.Delete(&ctx, client, currencyID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	currencyId := d.Id()
@@ -68,53 +66,61 @@ func resourceEpccCurrencyUpdate(ctx context.Context, d *schema.ResourceData, m i
 	updatedCurrencyData, apiError := epcc.Currencies.Update(&ctx, client, currencyId, currency)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedCurrencyData.Data.Id)
 
-	return resourceEpccCurrencyRead(ctx, d, m)
+	resourceEpccCurrencyRead(ctx, d, m)
 }
 
-func resourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	currencyId := d.Id()
 
 	currency, err := epcc.Currencies.Get(&ctx, client, currencyId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("code", currency.Data.Code); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("exchange_rate", currency.Data.ExchangeRate); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("format", currency.Data.Format); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("decimal_point", currency.Data.DecimalPoint); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("thousand_separator", currency.Data.ThousandSeparator); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("decimal_places", currency.Data.DecimalPlaces); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("default", currency.Data.Default); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("enabled", currency.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccCurrencyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCurrencyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	currency := &epcc.Currency{
 		Type:              "currency",
@@ -129,12 +135,11 @@ func resourceEpccCurrencyCreate(ctx context.Context, d *schema.ResourceData, m i
 	}
 	createdCurrencyData, apiError := epcc.Currencies.Create(&ctx, client, currency)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdCurrencyData.Data.Id)
 
 	resourceEpccCurrencyRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

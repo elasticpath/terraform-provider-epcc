@@ -57,22 +57,20 @@ func resourceEpccProductPrice() *schema.Resource {
 
 }
 
-func resourceEpccProductPriceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductPriceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	priceID := d.Id()
 
 	err := epcc.ProductPrices.Delete(&ctx, client, d.Get("pricebook_id").(string), priceID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccProductPriceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductPriceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	priceId := d.Id()
@@ -89,7 +87,8 @@ func resourceEpccProductPriceUpdate(ctx context.Context, d *schema.ResourceData,
 	currencies, err := convertSchemaCurrencyToApi(d.Get("currency").(*schema.Set))
 
 	if err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	productPrice.Attributes.Currencies = currencies
@@ -97,26 +96,29 @@ func resourceEpccProductPriceUpdate(ctx context.Context, d *schema.ResourceData,
 	updatedPriceData, apiError := epcc.ProductPrices.Update(&ctx, client, d.Get("pricebook_id").(string), priceId, productPrice)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedPriceData.Data.Id)
 
-	return resourceEpccProductPriceRead(ctx, d, m)
+	resourceEpccProductPriceRead(ctx, d, m)
 }
 
-func resourceEpccProductPriceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductPriceRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	priceId := d.Id()
 
 	productPrice, err := epcc.ProductPrices.Get(&ctx, client, d.Get("pricebook_id").(string), priceId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("sku", productPrice.Data.Attributes.Sku); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	currencies := make([]map[string]interface{}, 0)
@@ -130,13 +132,12 @@ func resourceEpccProductPriceRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	if err := d.Set("currency", currencies); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccProductPriceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductPriceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	productPrice := &epcc.ProductPrice{
 		Type: "product-price",
@@ -149,21 +150,21 @@ func resourceEpccProductPriceCreate(ctx context.Context, d *schema.ResourceData,
 	currencies, err := convertSchemaCurrencyToApi(d.Get("currency").(*schema.Set))
 
 	if err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	productPrice.Attributes.Currencies = currencies
 
 	createdPriceData, apiError := epcc.ProductPrices.Create(&ctx, client, d.Get("pricebook_id").(string), productPrice)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdPriceData.Data.Id)
 
 	resourceEpccProductPriceRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
 func convertSchemaCurrencyToApi(currencies *schema.Set) (ref map[string]epcc.ProductPriceInCurrency, err error) {

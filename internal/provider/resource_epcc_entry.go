@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -37,7 +36,7 @@ func resourceEpccEntry() *schema.Resource {
 	}
 }
 
-func resourceEpccEntryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccEntryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	flowSlug := d.Get("slug").(string)
@@ -46,15 +45,13 @@ func resourceEpccEntryDelete(ctx context.Context, d *schema.ResourceData, m inte
 	err := epcc.Entries.Delete(&ctx, client, flowSlug, entryID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccEntryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccEntryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	flowSlug := d.Get("slug").(string)
@@ -63,15 +60,16 @@ func resourceEpccEntryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	createdEntryData, apiError := epcc.Entries.Update(&ctx, client, flowSlug, entryID, d.Get("payload").(map[string]interface{}))
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdEntryData.Data.Id)
 
-	return resourceEpccEntryRead(ctx, d, m)
+	resourceEpccEntryRead(ctx, d, m)
 }
 
-func resourceEpccEntryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccEntryRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	entryID := d.Id()
 
@@ -79,13 +77,12 @@ func resourceEpccEntryRead(ctx context.Context, d *schema.ResourceData, m interf
 	_, err := epcc.Entries.Get(&ctx, client, flowSlug, entryID)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccEntryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccEntryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	entry := &epcc.Entry{
@@ -97,12 +94,11 @@ func resourceEpccEntryCreate(ctx context.Context, d *schema.ResourceData, m inte
 	createdEntryData, apiError := epcc.Entries.Create(&ctx, client, flowSlug, entry, d.Get("payload").(map[string]interface{}))
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdEntryData.Data.Id)
 
 	resourceEpccEntryRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

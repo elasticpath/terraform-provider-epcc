@@ -44,22 +44,20 @@ func resourceEpccHierarchy() *schema.Resource {
 
 }
 
-func resourceEpccHierarchyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccHierarchyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	hierarchyID := d.Id()
 
 	err := epcc.Hierarchies.Delete(&ctx, client, hierarchyID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccHierarchyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccHierarchyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	hierarchyId := d.Id()
@@ -77,40 +75,43 @@ func resourceEpccHierarchyUpdate(ctx context.Context, d *schema.ResourceData, m 
 	updatedHierarchyData, apiError := epcc.Hierarchies.Update(&ctx, client, hierarchyId, hierarchy)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedHierarchyData.Data.Id)
 
-	return resourceEpccHierarchyRead(ctx, d, m)
+	resourceEpccHierarchyRead(ctx, d, m)
 }
 
-func resourceEpccHierarchyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccHierarchyRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	hierarchyId := d.Id()
 
 	hierarchy, err := epcc.Hierarchies.Get(&ctx, client, hierarchyId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", hierarchy.Data.Attributes.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("slug", hierarchy.Data.Attributes.Slug); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("description", hierarchy.Data.Attributes.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccHierarchyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccHierarchyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	hierarchy := &epcc.Hierarchy{
 		Type: "hierarchy",
@@ -124,12 +125,11 @@ func resourceEpccHierarchyCreate(ctx context.Context, d *schema.ResourceData, m 
 	createdHierarchyData, apiError := epcc.Hierarchies.Create(&ctx, client, hierarchy)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdHierarchyData.Data.Id)
 
 	resourceEpccHierarchyRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
