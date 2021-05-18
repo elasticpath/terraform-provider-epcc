@@ -21,6 +21,3 @@ API [OpenID Connect Profiles](https://documentation.elasticpath.com/commerce-clo
 
 - **discovery_url** (String)
 - **client_id** (String)
-- **client_secret** (String)
-
-
