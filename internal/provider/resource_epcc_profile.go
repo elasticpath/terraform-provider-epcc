@@ -95,9 +95,6 @@ func resourceEpccProfileRead(ctx context.Context, d *schema.ResourceData, m inte
 	if err := d.Set("client_id", profile.Data.ClientID); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("client_secret", profile.Data.ClientSecret); err != nil {
-		return diag.FromErr(err)
-	}
 
 	return *ctx.Value("diags").(*diag.Diagnostics)
 }
