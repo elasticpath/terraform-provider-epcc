@@ -40,24 +40,25 @@ func (r PaymentGatewayDataSourceProvider) DataSource() *schema.Resource {
 	}
 }
 
-func (r PaymentGatewayDataSourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r PaymentGatewayDataSourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	slug := payment_gateway.Slug(data.Get("slug").(string))
 	result, err := epcc.PaymentGateways.Get(&ctx, client, slug)
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	base := result.Data.Base()
 	if err := data.Set("enabled", base.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := data.Set("test", base.Test); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	data.SetId(result.Data.Type().AsString())
-
-	return nil
 }

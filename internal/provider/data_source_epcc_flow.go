@@ -3,13 +3,12 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceEpccFlow() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceEpccFlowRead,
+		ReadContext: addDiagToContext(dataSourceEpccFlowRead),
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -35,7 +34,7 @@ func dataSourceEpccFlow() *schema.Resource {
 	}
 }
 
-func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 
 	client := m.(*epcc.Client)
 	flowId := d.Get("id").(string)
@@ -43,7 +42,8 @@ func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m inter
 	flow, err := epcc.Flows.Get(&ctx, client, flowId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("type", flow.Data.Type)
@@ -53,6 +53,4 @@ func dataSourceEpccFlowRead(ctx context.Context, d *schema.ResourceData, m inter
 	d.Set("enabled", flow.Data.Enabled)
 
 	d.SetId(flow.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

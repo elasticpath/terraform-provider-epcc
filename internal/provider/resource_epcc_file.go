@@ -62,7 +62,7 @@ func resourceEpccFile() *schema.Resource {
 
 }
 
-func resourceEpccFileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	fileID := d.Id()
@@ -70,15 +70,13 @@ func resourceEpccFileDelete(ctx context.Context, d *schema.ResourceData, m inter
 	err := epcc.Files.Delete(&ctx, client, fileID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	fileId := d.Id()
@@ -86,37 +84,41 @@ func resourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m interfa
 	file, err := epcc.Files.Get(&ctx, client, fileId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("file_name", file.Data.FileName); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("mime_type", file.Data.MimeType); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("file_size", file.Data.FileSize); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if file.Data.Link != nil {
 		if err := d.Set("file_link", file.Data.Link.Href); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	}
 
 	if _, fileLocationSet := d.GetOk("file_location"); !fileLocationSet {
 		if err := d.Set("public", file.Data.Public); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	_, fileSet := d.GetOk("file")
 	_, fileLocationSet := d.GetOk("file_location")
@@ -126,39 +128,41 @@ func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m inter
 	public := d.Get("public").(bool)
 
 	if fileSet && fileLocationSet {
-		return diag.FromErr(errors.New("Cannot specify file if file_location is specified"))
+		addToDiag(ctx, diag.FromErr(errors.New("Cannot specify file if file_location is specified")))
+		return
 	}
 
 	if fileSet {
 		b, err := base64.StdEncoding.DecodeString(fileContentsBase64)
 		if err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		createdFileData, apiError := epcc.Files.CreateFromFile(&ctx, client, d.Get("file_name").(string), public, bytes.NewBuffer(b))
 
 		if apiError != nil {
-			return FromAPIError(apiError)
+			ReportAPIError(ctx, apiError)
+			return
 		}
 
 		d.SetId(createdFileData.Data.Id)
 
 		resourceEpccFileRead(ctx, d, m)
 
-		return *ctx.Value("diags").(*diag.Diagnostics)
 	} else if fileLocationSet {
 		createdFileData, apiError := epcc.Files.CreateFromFileLocation(&ctx, client, fileLocation)
 
 		if apiError != nil {
-			return FromAPIError(apiError)
+			ReportAPIError(ctx, apiError)
+			return
 		}
 
 		d.SetId(createdFileData.Data.Id)
 
 		resourceEpccFileRead(ctx, d, m)
 
-		return *ctx.Value("diags").(*diag.Diagnostics)
 	} else {
-		return diag.FromErr(errors.New("You must specify a file location or a file"))
+		addToDiag(ctx, diag.FromErr(errors.New("You must specify a file location or a file")))
 	}
 }

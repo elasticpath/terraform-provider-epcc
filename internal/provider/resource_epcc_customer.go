@@ -35,22 +35,20 @@ func resourceEpccCustomer() *schema.Resource {
 
 }
 
-func resourceEpccCustomerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCustomerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	customerID := d.Id()
 
 	err := epcc.Customers.Delete(&ctx, client, customerID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	customerId := d.Id()
@@ -64,36 +62,38 @@ func resourceEpccCustomerUpdate(ctx context.Context, d *schema.ResourceData, m i
 	updatedCustomerData, apiError := epcc.Customers.Update(&ctx, client, customerId, customer)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedCustomerData.Data.Id)
 
-	return resourceEpccCustomerRead(ctx, d, m)
+	resourceEpccCustomerRead(ctx, d, m)
 }
 
-func resourceEpccCustomerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCustomerRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	customerId := d.Id()
 
 	customer, err := epcc.Customers.Get(&ctx, client, customerId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", customer.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("email", customer.Data.Email); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccCustomerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccCustomerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	customer := &epcc.Customer{
 		Type:  "customer",
@@ -104,12 +104,11 @@ func resourceEpccCustomerCreate(ctx context.Context, d *schema.ResourceData, m i
 	createdCustomerData, apiError := epcc.Customers.Create(&ctx, client, customer)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdCustomerData.Data.Id)
 
 	resourceEpccCustomerRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

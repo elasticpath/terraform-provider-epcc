@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -21,14 +20,15 @@ func dataSourceEpccProfile() *schema.Resource {
 	}
 }
 
-func dataSourceEpccProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	profileId := d.Get("id").(string)
 	realmId := d.Get("realm_id").(string)
 	profile, err := epcc.Profiles.Get(&ctx, client, realmId, profileId)
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("id", profile.Data.Id)
@@ -38,6 +38,4 @@ func dataSourceEpccProfileRead(ctx context.Context, d *schema.ResourceData, m in
 	d.Set("client_id", profile.Data.ClientID)
 	d.Set("client_secret", profile.Data.ClientSecret)
 	d.SetId(profile.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

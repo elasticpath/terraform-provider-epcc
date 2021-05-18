@@ -60,7 +60,7 @@ func (r IntegrationResourceProvider) Resource() *schema.Resource {
 	}
 }
 
-func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	observes := data.Get("observes").([]interface{})
@@ -79,28 +79,26 @@ func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.Re
 
 	result, err := epcc.Integrations.Create(&ctx, client, integrationObject)
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	data.SetId(result.Data.Id)
-
-	return nil
 }
 
-func (r IntegrationResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	err := epcc.Integrations.Delete(&ctx, client, data.Id())
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	data.SetId("")
-
-	return nil
 }
 
-func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	integrationObject := &epcc.Integration{
 		Type:        epcc.IntegrationType,
@@ -117,45 +115,49 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 	result, apiError := epcc.Integrations.Update(&ctx, client, data.Id(), integrationObject)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	data.SetId(result.Data.Id)
-
-	return nil
 }
 
-func (r IntegrationResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (r IntegrationResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	result, err := epcc.Integrations.Get(&ctx, client, data.Id())
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := data.Set("name", result.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("description", result.Data.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("enabled", result.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("url", result.Data.Configuration.Url); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("secret_key", result.Data.Configuration.SecretKey); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("observes", result.Data.Observes); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return nil
 }

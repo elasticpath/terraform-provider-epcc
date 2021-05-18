@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -28,7 +27,7 @@ func dataSourceEpccPricebook() *schema.Resource {
 	}
 }
 
-func dataSourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 
 	client := m.(*epcc.Client)
 	pricebookId := d.Get("id").(string)
@@ -36,13 +35,12 @@ func dataSourceEpccPricebookRead(ctx context.Context, d *schema.ResourceData, m 
 	pricebook, err := epcc.Pricebooks.Get(&ctx, client, pricebookId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	d.Set("name", pricebook.Data.Attributes.Name)
 	d.Set("description", pricebook.Data.Attributes.Description)
 
 	d.SetId(pricebook.Data.Id)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

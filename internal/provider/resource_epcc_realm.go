@@ -29,22 +29,20 @@ func resourceEpccRealm() *schema.Resource {
 
 }
 
-func resourceEpccRealmDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccRealmDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	realmID := d.Id()
 
 	err := epcc.Realms.Delete(&ctx, client, realmID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccRealmUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccRealmUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	realmId := d.Id()
@@ -53,7 +51,7 @@ func resourceEpccRealmUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		Id:                   realmId,
 		Type:                 "authentication-realm",
 		Name:                 d.Get("name").(string),
-		RedirectUris:         d.Get("redirect_uris").([]interface {}),
+		RedirectUris:         d.Get("redirect_uris").([]interface{}),
 		DuplicateEmailPolicy: d.Get("duplicate_email_policy").(string),
 		Relationships: &epcc.RealmRelationships{
 			Origin: &epcc.RealmRelationshipsOrigin{
@@ -68,53 +66,58 @@ func resourceEpccRealmUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	updatedRealmData, apiError := epcc.Realms.Update(&ctx, client, realmId, realm)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedRealmData.Data.Id)
 
-	return resourceEpccRealmRead(ctx, d, m)
+	resourceEpccRealmRead(ctx, d, m)
 }
 
-func resourceEpccRealmRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccRealmRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	realmId := d.Id()
 
 	realm, err := epcc.Realms.Get(&ctx, client, realmId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	//if err := d.Set("type", "authentication-realm"); err != nil {
-	//	return diag.FromErr(err)
+	//	addToDiag(ctx, diag.FromErr(err)); return
 	//}
 	if err := d.Set("name", realm.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("redirect_uris", realm.Data.RedirectUris); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("duplicate_email_policy", realm.Data.DuplicateEmailPolicy); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("origin_id", realm.Data.Relationships.Origin.Data.Id); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 	if err := d.Set("origin_type", realm.Data.Relationships.Origin.Data.Type); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccRealmCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccRealmCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	realm := &epcc.Realm{
 		Type:                 "authentication-realm",
 		Id:                   d.Get("id").(string),
 		Name:                 d.Get("name").(string),
-		RedirectUris:         d.Get("redirect_uris").([]interface {}),
+		RedirectUris:         d.Get("redirect_uris").([]interface{}),
 		DuplicateEmailPolicy: d.Get("duplicate_email_policy").(string),
 		Relationships: &epcc.RealmRelationships{
 			Origin: &epcc.RealmRelationshipsOrigin{
@@ -127,12 +130,11 @@ func resourceEpccRealmCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	createdRealmData, apiError := epcc.Realms.Create(&ctx, client, realm)
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdRealmData.Data.Id)
 
 	resourceEpccRealmRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

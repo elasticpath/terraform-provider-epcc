@@ -87,22 +87,20 @@ func resourceEpccProduct() *schema.Resource {
 
 }
 
-func resourceEpccProductDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	productId := d.Id()
 
 	err := epcc.Products.Delete(&ctx, client, productId)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	productId := d.Id()
@@ -125,7 +123,8 @@ func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m in
 	updatedProductData, apiError := epcc.Products.Update(&ctx, client, productId, product)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	newFiles := convertIdsToTypeIdRelationship("file", convertSetToStringSlice(d.Get("files").(*schema.Set)))
@@ -134,54 +133,59 @@ func resourceEpccProductUpdate(ctx context.Context, d *schema.ResourceData, m in
 	apiError = epcc.Products.UpdateProductFile(&ctx, client, productId, epcc.DataForTypeIdRelationshipList{Data: &newFiles})
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(updatedProductData.Data.Id)
 
-	return resourceEpccProductRead(ctx, d, m)
+	resourceEpccProductRead(ctx, d, m)
 }
 
-func resourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	productId := d.Id()
 
 	product, err := epcc.Products.Get(&ctx, client, productId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	productFiles, err := epcc.Products.GetProductFiles(&ctx, client, productId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", product.Data.Attributes.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("description", product.Data.Attributes.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if productFiles != nil && productFiles.Data != nil {
 		fileIds := convertJsonTypesToIds(productFiles.Data)
 
 		if err := d.Set("files", fileIds); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	} else {
 		if err := d.Set("files", [0]string{}); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	product := &epcc.Product{
 		Type: "product",
@@ -200,7 +204,8 @@ func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m in
 	createdProductData, apiError := epcc.Products.Create(&ctx, client, product)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdProductData.Data.Id)
@@ -214,10 +219,9 @@ func resourceEpccProductCreate(ctx context.Context, d *schema.ResourceData, m in
 	})
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	resourceEpccProductRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

@@ -46,22 +46,20 @@ func resourceEpccAccount() *schema.Resource {
 
 }
 
-func resourceEpccAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	accountID := d.Id()
 
 	err := epcc.Accounts.Delete(&ctx, client, accountID)
 
 	if err != nil {
-		FromAPIError(err)
+		ReportAPIError(ctx, err)
 	}
 
 	d.SetId("")
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	accountId := d.Id()
@@ -77,15 +75,16 @@ func resourceEpccAccountUpdate(ctx context.Context, d *schema.ResourceData, m in
 	createdAccountData, apiError := epcc.Accounts.Update(&ctx, client, accountId, account)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdAccountData.Data.Id)
 
-	return resourceEpccAccountRead(ctx, d, m)
+	resourceEpccAccountRead(ctx, d, m)
 }
 
-func resourceEpccAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	accountID := d.Id()
@@ -93,29 +92,32 @@ func resourceEpccAccountRead(ctx context.Context, d *schema.ResourceData, m inte
 	account, err := epcc.Accounts.Get(&ctx, client, accountID)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := d.Set("name", account.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("legal_name", account.Data.LegalName); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("registration_id", account.Data.RegistrationId); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := d.Set("parent_id", account.Data.ParentId); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }
 
-func resourceEpccAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceEpccAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	account := &epcc.Account{
 		Type:           "account",
@@ -128,12 +130,11 @@ func resourceEpccAccountCreate(ctx context.Context, d *schema.ResourceData, m in
 	createdAccountData, apiError := epcc.Accounts.Create(&ctx, client, account)
 
 	if apiError != nil {
-		return FromAPIError(apiError)
+		ReportAPIError(ctx, apiError)
+		return
 	}
 
 	d.SetId(createdAccountData.Data.Id)
 
 	resourceEpccAccountRead(ctx, d, m)
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

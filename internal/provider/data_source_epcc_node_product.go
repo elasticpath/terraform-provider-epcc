@@ -35,7 +35,7 @@ func dataSourceEpccNodeProduct() *schema.Resource {
 	}
 }
 
-func dataSourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 
 	client := m.(*epcc.Client)
 
@@ -46,7 +46,8 @@ func dataSourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, 
 	nodeProduct, err := epcc.Nodes.GetNodeProducts(&ctx, client, hierarchyId, nodeId)
 
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	var foundMatch = false
@@ -62,24 +63,25 @@ func dataSourceEpccNodeProductRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if !foundMatch {
-		return diag.FromErr(fmt.Errorf("Could not find node product relationship for hierarchy %s node %s product %s", hierarchyId, nodeId, productId))
+		addToDiag(ctx, diag.FromErr(fmt.Errorf("Could not find node product relationship for hierarchy %s node %s product %s", hierarchyId, nodeId, productId)))
+		return
 	} else {
 		if err := d.Set("hierarchy_id", hierarchyId); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		if err := d.Set("node_id", nodeId); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		if err := d.Set("product_id", productId); err != nil {
-			return diag.FromErr(err)
+			addToDiag(ctx, diag.FromErr(err))
+			return
 		}
 
 		d.SetId(productId)
 
-		return *ctx.Value("diags").(*diag.Diagnostics)
 	}
-
-	return *ctx.Value("diags").(*diag.Diagnostics)
 }

@@ -57,39 +57,44 @@ func (ds IntegrationDataSourceProvider) DataSource() *schema.Resource {
 	}
 }
 
-func (ds IntegrationDataSourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) diag.Diagnostics {
+func (ds IntegrationDataSourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
 	result, err := epcc.Integrations.Get(&ctx, client, data.Get("id").(string))
 	if err != nil {
-		return FromAPIError(err)
+		ReportAPIError(ctx, err)
+		return
 	}
 
 	if err := data.Set("name", result.Data.Name); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("description", result.Data.Description); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("enabled", result.Data.Enabled); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("url", result.Data.Configuration.Url); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("secret_key", result.Data.Configuration.SecretKey); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	if err := data.Set("observes", result.Data.Observes); err != nil {
-		return diag.FromErr(err)
+		addToDiag(ctx, diag.FromErr(err))
+		return
 	}
 
 	data.SetId(result.Data.Id)
-
-	return nil
 }
