@@ -6,7 +6,7 @@ description: |- Represents the EPCC API Account Authentication Settings
 
 # Data Source `epcc_account_authentication_settings`
 
-Represents the EPCC API Account Authentication Settings
+Represents the EPCC API [Account Authentication Settings] (https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/settings/account-authentication-settings/index.html)
 
 ## Schema
 
