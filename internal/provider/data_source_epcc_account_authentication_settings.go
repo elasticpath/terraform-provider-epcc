@@ -8,7 +8,7 @@ import (
 
 func dataSourceAccountAuthenticationSettings() *schema.Resource {
 	return &schema.Resource{
-		Description: "Represents the EPCC API Account Authentication Settings",
+		Description: "Represents the EPCC API [Account Authentication Settings] (https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/settings/account-authentication-settings/index.html)",
 		ReadContext: addDiagToContext(dataSourceEpccAccountAuthenticationSettingsRead),
 		Schema: map[string]*schema.Schema{
 			"realm_id":  {Type: schema.TypeString, Computed: true},

@@ -96,6 +96,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_profile":                         dataSourceEpccProfile(),
 				"epcc_user_authentication_info":        dataSourceEpccUserAuthenticationInfo(),
 				"epcc_account_authentication_settings": dataSourceAccountAuthenticationSettings(),
+				"epcc_customer_authentication_settings":       dataSourceCustomerAuthenticationSettings(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
