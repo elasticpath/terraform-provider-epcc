@@ -32,12 +32,6 @@ func init() {
 		log.Fatal(err.Error())
 	}
 
-	if cfg.Credentials.ClientID == "" {
-		log.Fatal("Required environment variable EPCC_CLIENT_ID not found")
-	}
-	if cfg.Credentials.ClientSecret == "" {
-		log.Fatal("Required environment variable EPCC_CLIENT_SECRET not found")
-	}
 }
 
 // Config is used to keep track of configuration in one place.
