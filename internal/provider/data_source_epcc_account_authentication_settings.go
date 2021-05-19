@@ -8,6 +8,7 @@ import (
 
 func dataSourceAccountAuthenticationSettings() *schema.Resource {
 	return &schema.Resource{
+		Description: "Represents the EPCC API Account Authentication Settings",
 		ReadContext: addDiagToContext(dataSourceEpccAccountAuthenticationSettingsRead),
 		Schema: map[string]*schema.Schema{
 			"realm_id":  {Type: schema.TypeString, Computed: true},
