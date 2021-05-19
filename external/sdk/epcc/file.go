@@ -1,11 +1,9 @@
 package epcc
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"strconv"
 )
@@ -44,25 +42,8 @@ func (files) Get(ctx *context.Context, client *Client, fileId string) (*FileData
 	return &files, nil
 }
 
-// GetAll fetches all files
-func (files) GetAll(ctx *context.Context, client *Client) (*FileList, ApiErrors) {
-	path := fmt.Sprintf("/v2/files")
-
-	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
-	if apiError != nil {
-		return nil, apiError
-	}
-
-	var files FileList
-	if err := json.Unmarshal(body, &files); err != nil {
-		return nil, FromError(err)
-	}
-
-	return &files, nil
-}
-
-// Create creates a file
-func (files) CreateFromFile(ctx *context.Context, client *Client, filename string, public bool, reader io.Reader) (*FileData, ApiErrors) {
+// CreateFromFile creates a file
+func (files) CreateFromFile(ctx *context.Context, client *Client, filename string, public bool) (*FileData, ApiErrors) {
 
 	path := fmt.Sprintf("/v2/files")
 
@@ -71,41 +52,13 @@ func (files) CreateFromFile(ctx *context.Context, client *Client, filename strin
 		"public": strconv.FormatBool(public),
 	}
 
-	fileContents, err := ioutil.ReadAll(reader)
+	fileContents, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		return nil, FromError(err)
 	}
 
 	byteBuf, contentType, err := EncodeForm(values, filename, "file", fileContents)
-
-	if err != nil {
-		return nil, FromError(err)
-	}
-
-	body, apiError := client.DoFileRequest(ctx, path, byteBuf, contentType)
-	if apiError != nil {
-		return nil, apiError
-	}
-	var newFile FileData
-	if err := json.Unmarshal(body, &newFile); err != nil {
-		return nil, FromError(err)
-	}
-
-	return &newFile, nil
-}
-
-// Create creates a file
-func (files) CreateFromFileLocation(ctx *context.Context, client *Client, fileLocation string) (*FileData, ApiErrors) {
-
-	path := fmt.Sprintf("/v2/files")
-
-	//prepare the reader instances to encode
-	values := map[string]string{
-		"file_location": fileLocation,
-	}
-
-	byteBuf, contentType, err := EncodeForm(values, "", "", []byte{})
 
 	if err != nil {
 		return nil, FromError(err)
@@ -132,33 +85,6 @@ func (files) Delete(ctx *context.Context, client *Client, fileID string) ApiErro
 	}
 
 	return nil
-}
-
-// Update updates a file.
-func (files) Update(ctx *context.Context, client *Client, fileID string, file *File) (*FileData, ApiErrors) {
-
-	fileData := FileData{
-		Data: *file,
-	}
-
-	jsonPayload, err := json.Marshal(fileData)
-	if err != nil {
-		return nil, FromError(err)
-	}
-
-	path := fmt.Sprintf("/v2/files/%s", fileID)
-
-	body, apiError := client.DoRequest(ctx, "PUT", path, "", bytes.NewBuffer(jsonPayload))
-
-	if apiError != nil {
-		return nil, apiError
-	}
-	var updatedFile FileData
-	if err := json.Unmarshal(body, &updatedFile); err != nil {
-		return nil, FromError(err)
-	}
-
-	return &updatedFile, nil
 }
 
 type FileData struct {
