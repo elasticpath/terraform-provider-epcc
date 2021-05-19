@@ -1,7 +1,6 @@
-package test
+package provider
 
 import (
-	"github.com/elasticpath/terraform-provider-epcc/internal/provider"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"os"
 	"testing"
@@ -12,13 +11,13 @@ import (
 // to create a provider server to which the CLI can reattach.
 var providerFactories = map[string]func() (*schema.Provider, error){
 	"epcc": func() (*schema.Provider, error) {
-		return provider.New("dev")(), nil
+		return New("dev")(), nil
 	},
 }
 
 func TestProvider(t *testing.T) {
 
-	provider := provider.New("dev")()
+	provider := New("dev")()
 
 	if err := provider.InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
