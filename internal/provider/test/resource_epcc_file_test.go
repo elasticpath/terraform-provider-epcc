@@ -1,54 +1,38 @@
 package test
 
 import (
+	"io/ioutil"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestAccResourceFile(t *testing.T) {
+	tempDir := t.TempDir()
+
 	resource.UnitTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+
+		PreCheck: func() {
+			testAccPreCheck(t)
+			err := ioutil.WriteFile(tempDir+"/hello_world.txt", []byte("hello world"), 0644)
+			if err != nil {
+				t.Fatal(err)
+			}
+		},
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: fileTestSteps[0],
+				PreventDiskCleanup: true,
+				Config:
+				`resource "epcc_file" "my_text_file"{
+					file_name = "` + tempDir + `/hello_world.txt"
+					file_hash = filemd5("` + tempDir + `/hello_world.txt")
+					public = true
+				}`,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_file.my_image_file", "file_name", "ep.png"),
-				),
-			},
-			{
-				Config: fileTestSteps[1],
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_file.my_text_file", "file_name", "hello_world.txt"),
-				),
-			},
-			{
-				Config: fileTestSteps[1],
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_file.my_binary_file", "file_name", "binary_data.bin"),
+					resource.TestCheckResourceAttr("epcc_file.my_text_file", "file_name", tempDir+"/hello_world.txt"),
 				),
 			},
 		},
 	})
-}
-
-var fileTestSteps = [...]string{
-	// language=HCL
-	`resource "epcc_file" "my_image_file" {
-		file_name = "ep.png"
-		file_hash = filemd5("ep.png")
-		public = true
-		}`, // language=HCL
-	`resource "epcc_file" "my_text_file" {
-		file_name = "hello_world.txt"
-		file_hash = filemd5("hello_world.txt")
-		public = false
-		}`,
-	// language=HCL
-	`resource "epcc_file" "my_binary_file" {
-		file_name = "binary_data.bin"
-		file_hash = filemd5("binary_data.bin")
-		public = true
-		}`,
 }
