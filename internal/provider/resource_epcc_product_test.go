@@ -97,7 +97,7 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		fmt.Sprintf(
 			// language=HCL
 			`
-	resource "epcc_file" "product_logo"{
+	resource "epcc_file" "hello_world"{
 		file_name = "%s/hello_world.txt"
 		file_hash = filemd5("%s/hello_world.txt")
 		public = true
@@ -108,12 +108,12 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
-		files = [ epcc_file.product_logo.id ]
+		files = [ epcc_file.hello_world.id ]
 	}
 	`, tempDir, tempDir, timestamp),
 		fmt.Sprintf(
 			// language=HCL
-			`resource "epcc_file" "product_logo_1"{
+			`resource "epcc_file" "hello_world_1"{
 		file_name = "%s/hello_world.txt"
 		file_hash = filemd5("%s/hello_world.txt")
 		public = true
@@ -124,40 +124,18 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
-		files = [ epcc_file.product_logo_1.id ]
+		files = [ epcc_file.hello_world_1.id ]
 	}
 	`, tempDir, tempDir, timestamp),
 		fmt.Sprintf(
 			// language=HCL
-			`resource "epcc_file" "product_logo_1"{
+			`resource "epcc_file" "hello_world_1"{
 		file_name = "%s/hello_world.txt"
 		file_hash = filemd5("%s/hello_world.txt")
 		public = true
 	}
 
-	resource "epcc_file" "product_logo_2"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
-		public = true
-	}
-
-	resource "epcc_product" "acc_test_product_with_file" { 
-		sku = "%d-pr-2"
-		name = "Test Product"
-		commodity_type = "physical"
-		status = "live"
-		files = [ epcc_file.product_logo_2.id ]
-	}
-	`, tempDir, tempDir, tempDir, tempDir, timestamp),
-		fmt.Sprintf(
-			// language=HCL
-			`resource "epcc_file" "product_logo_1"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
-		public = true
-	}
-
-	resource "epcc_file" "product_logo_2"{
+	resource "epcc_file" "hello_world_2"{
 		file_name = "%s/hello_world.txt"
 		file_hash = filemd5("%s/hello_world.txt")
 		public = true
@@ -168,18 +146,40 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		name = "Test Product"
 		commodity_type = "physical"
 		status = "live"
-		files = [ epcc_file.product_logo_2.id, epcc_file.product_logo_1.id]
+		files = [ epcc_file.hello_world_2.id ]
 	}
 	`, tempDir, tempDir, tempDir, tempDir, timestamp),
 		fmt.Sprintf(
 			// language=HCL
-			`resource "epcc_file" "product_logo_1"{
+			`resource "epcc_file" "hello_world_1"{
 		file_name = "%s/hello_world.txt"
 		file_hash = filemd5("%s/hello_world.txt")
 		public = true
 	}
 
-	resource "epcc_file" "product_logo_2"{
+	resource "epcc_file" "hello_world_2"{
+		file_name = "%s/hello_world.txt"
+		file_hash = filemd5("%s/hello_world.txt")
+		public = true
+	}
+
+	resource "epcc_product" "acc_test_product_with_file" { 
+		sku = "%d-pr-2"
+		name = "Test Product"
+		commodity_type = "physical"
+		status = "live"
+		files = [ epcc_file.hello_world_2.id, epcc_file.hello_world_1.id]
+	}
+	`, tempDir, tempDir, tempDir, tempDir, timestamp),
+		fmt.Sprintf(
+			// language=HCL
+			`resource "epcc_file" "hello_world_1"{
+		file_name = "%s/hello_world.txt"
+		file_hash = filemd5("%s/hello_world.txt")
+		public = true
+	}
+
+	resource "epcc_file" "hello_world_2"{
 		file_name = "%s/hello_world.txt"
 		file_hash = filemd5("%s/hello_world.txt")
 		public = true
