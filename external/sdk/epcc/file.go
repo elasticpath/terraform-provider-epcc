@@ -42,7 +42,7 @@ func (files) Get(ctx *context.Context, client *Client, fileId string) (*FileData
 	return &files, nil
 }
 
-// CreateFromFile creates a file
+// CreateFromFile creates from file
 func (files) CreateFromFile(ctx *context.Context, client *Client, filename string, public bool) (*FileData, ApiErrors) {
 
 	path := fmt.Sprintf("/v2/files")
@@ -59,6 +59,34 @@ func (files) CreateFromFile(ctx *context.Context, client *Client, filename strin
 	}
 
 	byteBuf, contentType, err := EncodeForm(values, filename, "file", fileContents)
+
+	if err != nil {
+		return nil, FromError(err)
+	}
+
+	body, apiError := client.DoFileRequest(ctx, path, byteBuf, contentType)
+	if apiError != nil {
+		return nil, apiError
+	}
+	var newFile FileData
+	if err := json.Unmarshal(body, &newFile); err != nil {
+		return nil, FromError(err)
+	}
+
+	return &newFile, nil
+}
+
+// CreateFromFileLocation creates from location
+func (files) CreateFromFileLocation(ctx *context.Context, client *Client, fileLocation string) (*FileData, ApiErrors) {
+
+	path := fmt.Sprintf("/v2/files")
+
+	//prepare the reader instances to encode
+	values := map[string]string{
+		"file_location": fileLocation,
+	}
+
+	byteBuf, contentType, err := EncodeForm(values, "", "", []byte{})
 
 	if err != nil {
 		return nil, FromError(err)

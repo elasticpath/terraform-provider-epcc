@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -102,21 +103,51 @@ func resourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m interfa
 		}
 	}
 
+	if _, fileLocationSet := d.GetOk("file_location"); !fileLocationSet {
+		if err := d.Set("public", file.Data.Public); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+	}
 }
 
 func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
+	_, fileSet := d.GetOk("file")
+	_, fileLocationSet := d.GetOk("file_location")
+
+	fileLocation := d.Get("file_location").(string)
 	public := d.Get("public").(bool)
 
-	createdFileData, apiError := epcc.Files.CreateFromFile(&ctx, client, d.Get("file_name").(string), public)
-
-	if apiError != nil {
-		ReportAPIError(ctx, apiError)
+	if fileSet && fileLocationSet {
+		addToDiag(ctx, diag.FromErr(errors.New("Cannot specify file if file_location is specified")))
 		return
 	}
+	if fileSet {
+		createdFileData, apiError := epcc.Files.CreateFromFile(&ctx, client, d.Get("file_name").(string), public)
 
-	d.SetId(createdFileData.Data.Id)
+		if apiError != nil {
+			ReportAPIError(ctx, apiError)
+			return
+		}
 
-	resourceEpccFileRead(ctx, d, m)
+		d.SetId(createdFileData.Data.Id)
 
+		resourceEpccFileRead(ctx, d, m)
+
+	} else if fileLocationSet {
+		createdFileData, apiError := epcc.Files.CreateFromFileLocation(&ctx, client, fileLocation)
+
+		if apiError != nil {
+			ReportAPIError(ctx, apiError)
+			return
+		}
+
+		d.SetId(createdFileData.Data.Id)
+
+		resourceEpccFileRead(ctx, d, m)
+
+	} else {
+		addToDiag(ctx, diag.FromErr(errors.New("you must specify a file location or a file")))
+	}
 }

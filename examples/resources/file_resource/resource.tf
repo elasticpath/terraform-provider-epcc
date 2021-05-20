@@ -25,6 +25,10 @@ resource "epcc_file" "my_binary_file" {
   public    = true
 }
 
+resource "epcc_file" "my_image_link" {
+  file_location = "https://my.example.com/images/abc.png"
+}
+
 output "my_image_file_link" {
   value = epcc_file.my_image_file.file_link
 }
@@ -33,4 +37,7 @@ output "my_text_file_link" {
 }
 output "my_binary_file_link" {
   value = epcc_file.my_binary_file.file_link
+}
+output "my_image_link_link" {
+  value = epcc_file.my_image_link.file_link
 }

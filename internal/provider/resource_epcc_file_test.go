@@ -28,9 +28,14 @@ func TestAccResourceFile(t *testing.T) {
 					file_name = "` + tempDir + `/hello_world.txt"
 					file_hash = filemd5("` + tempDir + `/hello_world.txt")
 					public = true
-				}`,
+				}
+				resource "epcc_file" "my_image_link" {
+					file_location = "https://my.example.com/images/abc.png"
+				}
+				`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("epcc_file.my_text_file", "file_name", tempDir+"/hello_world.txt"),
+					resource.TestCheckResourceAttr("epcc_file.my_image_link", "file_name", "abc.png"),
 				),
 			},
 		},
