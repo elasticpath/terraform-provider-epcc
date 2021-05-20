@@ -36,7 +36,12 @@ func resourceEpccFile() *schema.Resource {
 			},
 			"file_name": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				ForceNew: true,
+			},
+			"file_location": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 				ForceNew: true,
 			},
 			"public": &schema.Schema{
@@ -47,7 +52,7 @@ func resourceEpccFile() *schema.Resource {
 			},
 			"file_hash": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 		},
@@ -113,7 +118,7 @@ func resourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
-	_, fileSet := d.GetOk("file")
+	_, fileSet := d.GetOk("file_name")
 	_, fileLocationSet := d.GetOk("file_location")
 
 	fileLocation := d.Get("file_location").(string)
