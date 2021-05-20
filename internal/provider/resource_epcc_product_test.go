@@ -113,10 +113,10 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 	`, tempDir, tempDir, timestamp),
 		fmt.Sprintf(
 			// language=HCL
-			`resource "epcc_file" "product_logo_1" {
-	  file = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAfklEQVQImR3OsQkDMQwF0G9cpPQIGkVrpTDWdSlvpYMrUmaEOGQBQxoXwspPVDwQEvoC/qUbsYNEB9KPHAO4fEh5E7kT3TkwIU3Pjmr7QA2ZqEsd1Y1co6Elb7A8G/QxHBovh8Q5UeI2eLl0pCUHsY1tMCgWg8LJcxKuIfOdL8H1PrJhZV++AAAAAElFTkSuQmCC"
-	  file_name = "file.png"
-	  public = false
+			`resource "epcc_file" "product_logo_1"{
+		file_name = "%s/hello_world.txt"
+		file_hash = filemd5("%s/hello_world.txt")
+		public = true
 	}
 
 	resource "epcc_product" "acc_test_product_with_file" { 
@@ -126,7 +126,7 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		status = "live"
 		files = [ epcc_file.product_logo_1.id ]
 	}
-	`, timestamp),
+	`, tempDir, tempDir, timestamp),
 		fmt.Sprintf(
 			// language=HCL
 			`resource "epcc_file" "product_logo_1"{
