@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/url"
+	"path"
 	"strconv"
 )
 
@@ -43,7 +46,13 @@ func (files) Get(ctx *context.Context, client *Client, fileId string) (*FileData
 }
 
 // CreateFromFile creates a file
-func (files) CreateFromFile(ctx *context.Context, client *Client, filename string, public bool) (*FileData, ApiErrors) {
+func (files) CreateFromFile(ctx *context.Context, client *Client, filePath string, public bool) (*FileData, ApiErrors) {
+
+	myUrl, err := url.Parse(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileName := path.Base(myUrl.Path)
 
 	path := fmt.Sprintf("/v2/files")
 
@@ -52,13 +61,13 @@ func (files) CreateFromFile(ctx *context.Context, client *Client, filename strin
 		"public": strconv.FormatBool(public),
 	}
 
-	fileContents, err := ioutil.ReadFile(filename)
+	fileContents, err := ioutil.ReadFile(filePath)
 
 	if err != nil {
 		return nil, FromError(err)
 	}
 
-	byteBuf, contentType, err := EncodeForm(values, filename, "file", fileContents)
+	byteBuf, contentType, err := EncodeForm(values, fileName, "file", fileContents)
 
 	if err != nil {
 		return nil, FromError(err)

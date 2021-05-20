@@ -30,7 +30,7 @@ func TestAccResourceFile(t *testing.T) {
 					public = true
 				}`,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_file.my_text_file", "file_name", tempDir+"/hello_world.txt"),
+					resource.TestCheckResourceAttr("epcc_file.my_text_file", "file_name", "hello_world.txt"),
 				),
 			},
 		},
