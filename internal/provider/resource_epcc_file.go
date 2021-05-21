@@ -1,9 +1,7 @@
 package provider
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
 	"errors"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -24,11 +22,6 @@ func resourceEpccFile() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"file_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
 			"file_link": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -41,18 +34,23 @@ func resourceEpccFile() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			"file": &schema.Schema{
+			"file_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"file_location": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
 			"public": &schema.Schema{
 				Type:        schema.TypeBool,
-				Description: "TBD - But remember the behaviour of this differs from the API, in that terraform ignores this setting if you specify it for file_location.",
+				Description: "TBD.",
 				Optional:    true,
 				ForceNew:    true,
 			},
-			"file_location": &schema.Schema{
+			"file_hash": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
@@ -120,10 +118,9 @@ func resourceEpccFileRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
-	_, fileSet := d.GetOk("file")
+	_, fileSet := d.GetOk("file_name")
 	_, fileLocationSet := d.GetOk("file_location")
 
-	fileContentsBase64 := d.Get("file").(string)
 	fileLocation := d.Get("file_location").(string)
 	public := d.Get("public").(bool)
 
@@ -131,15 +128,8 @@ func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m inter
 		addToDiag(ctx, diag.FromErr(errors.New("Cannot specify file if file_location is specified")))
 		return
 	}
-
 	if fileSet {
-		b, err := base64.StdEncoding.DecodeString(fileContentsBase64)
-		if err != nil {
-			addToDiag(ctx, diag.FromErr(err))
-			return
-		}
-
-		createdFileData, apiError := epcc.Files.CreateFromFile(&ctx, client, d.Get("file_name").(string), public, bytes.NewBuffer(b))
+		createdFileData, apiError := epcc.Files.CreateFromFile(&ctx, client, d.Get("file_name").(string), public)
 
 		if apiError != nil {
 			ReportAPIError(ctx, apiError)
@@ -163,6 +153,6 @@ func resourceEpccFileCreate(ctx context.Context, d *schema.ResourceData, m inter
 		resourceEpccFileRead(ctx, d, m)
 
 	} else {
-		addToDiag(ctx, diag.FromErr(errors.New("You must specify a file location or a file")))
+		addToDiag(ctx, diag.FromErr(errors.New("you must specify a file location or a file")))
 	}
 }
