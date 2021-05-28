@@ -77,6 +77,7 @@ func New(version string) func() *schema.Provider {
 			DataSourcesMap: map[string]*schema.Resource{
 				"epcc_account":                          dataSourceEpccAccount(),
 				"epcc_catalog":                          dataSourceEpccCatalog(),
+				"epcc_catalog_rule":                     dataSourceEpccCatalogRule(),
 				"epcc_currency":                         dataSourceEpccCurrency(),
 				"epcc_customer":                         dataSourceEpccCustomer(),
 				"epcc_entry":                            dataSourceEpccEntry(),
@@ -102,6 +103,7 @@ func New(version string) func() *schema.Provider {
 			ResourcesMap: map[string]*schema.Resource{
 				"epcc_account":                  resourceEpccAccount(),
 				"epcc_catalog":                  resourceEpccCatalog(),
+				"epcc_catalog_rule":             resourceEpccCatalogRule(),
 				"epcc_currency":                 resourceEpccCurrency(),
 				"epcc_customer":                 resourceEpccCustomer(),
 				"epcc_entry":                    resourceEpccEntry(),
