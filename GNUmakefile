@@ -69,14 +69,14 @@ clean:
 .PHONY: testacc
 testacc:
 	(\
-		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
 		TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m \
 	)
 
 .PHONY: example
 example: install
 	(\
-		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
 		pushd $(EXAMPLE) && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
@@ -87,7 +87,7 @@ example: install
 .PHONY: example
 resource: install
 	(\
-		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
 		pushd examples/resources/$(TYPE)_resource && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
@@ -98,7 +98,7 @@ resource: install
 .PHONY: example
 data-source: install
 	(\
-		set -o allexport &&	[[ -f .env ]] && source ./.env && set +o allexport && \
+		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
 		pushd examples/data-sources/$(TYPE)_data_source && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
@@ -110,7 +110,7 @@ data-source: install
 .PHONY: docs
 docs: install
 	(\
-		set -o allexport &&	[[ -f .env ]] && source .env && set +o allexport && \
+		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
 		go generate \
