@@ -63,6 +63,22 @@ func convertArrayToFloatMaps(arr []interface{}) []map[string]float64 {
 	return result
 }
 
+func convertMapToStringMap(m map[string]interface{}) map[string]string {
+	result := make(map[string]string, len(m))
+	for k, v := range m {
+		result[k] = v.(string)
+	}
+	return result
+}
+
+func convertMapToBooleanMap(m map[string]interface{}) map[string]bool {
+	result := make(map[string]bool, len(m))
+	for k, v := range m {
+		result[k] = v.(bool)
+	}
+	return result
+}
+
 func convertSetToStringSlice(s *schema.Set) []string {
 	strings := make([]string, 0, s.Len())
 
