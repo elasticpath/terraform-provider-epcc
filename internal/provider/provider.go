@@ -75,34 +75,38 @@ func New(version string) func() *schema.Provider {
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"epcc_account":                  dataSourceEpccAccount(),
-				"epcc_catalog":                  dataSourceEpccCatalog(),
-				"epcc_currency":                 dataSourceEpccCurrency(),
-				"epcc_customer":                 dataSourceEpccCustomer(),
-				"epcc_entry":                    dataSourceEpccEntry(),
-				"epcc_field":                    dataSourceEpccField(),
-				"epcc_file":                     dataSourceEpccFile(),
-				"epcc_flow":                     dataSourceEpccFlow(),
-				"epcc_hierarchy":                dataSourceEpccHierarchy(),
-				"epcc_integration":              IntegrationDataSourceProvider{}.DataSource(),
-				"epcc_node":                     dataSourceEpccNode(),
-				"epcc_node_product":             dataSourceEpccNodeProduct(),
-				"epcc_payment_gateway":          PaymentGatewayDataSourceProvider{}.DataSource(),
-				"epcc_pricebook":                dataSourceEpccPricebook(),
-				"epcc_product":                  dataSourceEpccProduct(),
-				"epcc_product_price":            dataSourceEpccProductPrice(),
-				"epcc_promotion":                dataSourceEpccPromotion(),
-				"epcc_realm":                    dataSourceEpccRealm(),
-				"epcc_profile":                  dataSourceEpccProfile(),
-				"epcc_user_authentication_info": dataSourceEpccUserAuthenticationInfo(),
+				"epcc_account":                          dataSourceEpccAccount(),
+				"epcc_catalog":                          dataSourceEpccCatalog(),
+				"epcc_catalog_rule":                     dataSourceEpccCatalogRule(),
+				"epcc_currency":                         dataSourceEpccCurrency(),
+				"epcc_customer":                         dataSourceEpccCustomer(),
+				"epcc_entry":                            EntryDataSourceProvider{}.DataSource(),
+				"epcc_field":                            dataSourceEpccField(),
+				"epcc_file":                             dataSourceEpccFile(),
+				"epcc_flow":                             dataSourceEpccFlow(),
+				"epcc_hierarchy":                        dataSourceEpccHierarchy(),
+				"epcc_integration":                      IntegrationDataSourceProvider{}.DataSource(),
+				"epcc_node":                             dataSourceEpccNode(),
+				"epcc_node_product":                     dataSourceEpccNodeProduct(),
+				"epcc_payment_gateway":                  PaymentGatewayDataSourceProvider{}.DataSource(),
+				"epcc_pricebook":                        dataSourceEpccPricebook(),
+				"epcc_product":                          dataSourceEpccProduct(),
+				"epcc_product_price":                    dataSourceEpccProductPrice(),
+				"epcc_promotion":                        dataSourceEpccPromotion(),
+				"epcc_realm":                            dataSourceEpccRealm(),
+				"epcc_profile":                          dataSourceEpccProfile(),
+				"epcc_user_authentication_info":         dataSourceEpccUserAuthenticationInfo(),
+				"epcc_account_authentication_settings":  dataSourceAccountAuthenticationSettings(),
+				"epcc_customer_authentication_settings": dataSourceCustomerAuthenticationSettings(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
 				"epcc_account":                  resourceEpccAccount(),
 				"epcc_catalog":                  resourceEpccCatalog(),
+				"epcc_catalog_rule":             resourceEpccCatalogRule(),
 				"epcc_currency":                 resourceEpccCurrency(),
 				"epcc_customer":                 resourceEpccCustomer(),
-				"epcc_entry":                    resourceEpccEntry(),
+				"epcc_entry":                    EntryResourceProvider{}.Resource(),
 				"epcc_field":                    resourceEpccField(),
 				"epcc_file":                     resourceEpccFile(),
 				"epcc_flow":                     resourceEpccFlow(),
@@ -144,7 +148,27 @@ func configure(version string, p *schema.Provider) func(ctx context.Context, d *
 		var diags diag.Diagnostics
 
 		epccClientId := d.Get("client_id").(string)
+
+		if epccClientId == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to create EPCC Client",
+				Detail:   "To resolve this, ensure that you have properly set `client_id` in the provider configuration or the `EPCC_CLIENT_ID` environment variable.",
+			})
+			return nil, diags
+		}
+
 		epccClientSecret := d.Get("client_secret").(string)
+
+		if epccClientSecret == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to create EPCC Client",
+				Detail:   "To resolve this, ensure that you  have properly set `client_secret` in the provider configuration or set the `EPCC_CLIENT_SECRET` environment variable.",
+			})
+			return nil, diags
+		}
+
 		epccApiBaseUrl := d.Get("api_base_url").(string)
 		epccBetaFeatures := d.Get("beta_features").(string)
 

@@ -7,41 +7,24 @@ terraform {
   }
 }
 
-resource "epcc_flow" "tourism_flow" {
-  name        = "Flow for tourism"
-  slug        = "tourism"
-  description = "This is a Terraform test"
-  enabled     = true
+data "epcc_flow" "orders" {
+  id = "79b9cf49-dba6-4575-91ff-d793b01f126e"
 }
 
-resource "epcc_field" "tourism_season_field" {
-  name        = "tourism season"
-  slug        = "season"
+resource "epcc_field" "shipping" {
+  name        = "Shipping"
+  slug        = "shipping"
   field_type  = "string"
-  description = "Season for travelling"
+  description = "Shipping option"
   required    = false
-  default     = "summer"
-  omit_null   = false
   enabled     = true
-  flow_id     = epcc_flow.tourism_flow.id
+  flow_id     = data.epcc_flow.orders.id
 }
 
-resource "epcc_field" "tourism_place_field" {
-  name        = "tourism place"
-  slug        = "place"
-  field_type  = "string"
-  description = "place for travelling"
-  required    = false
-  default     = "vancouver"
-  omit_null   = false
-  enabled     = true
-  flow_id     = epcc_flow.tourism_flow.id
-}
-
-resource "epcc_entry" "tourism_netherlands" {
-  slug = epcc_flow.tourism_flow.slug
-  payload = {
-    (epcc_field.tourism_season_field.slug) = "spring",
-    (epcc_field.tourism_place_field.slug)  = "netherlands"
+resource "epcc_entry" "shipping_record" {
+  slug      = "orders"
+  target_id = "8cd0a8ef-a5c4-49bb-8012-186fad3f7917"
+  strings = {
+    (epcc_field.shipping.slug) = "shipping-id",
   }
 }

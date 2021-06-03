@@ -8,20 +8,20 @@ terraform {
 }
 
 resource "epcc_file" "my_image_file" {
-  file      = filebase64("ep.png")
   file_name = "ep.png"
+  file_hash = filemd5("ep.png")
   public    = true
 }
 
 resource "epcc_file" "my_text_file" {
-  file      = base64encode("Hello World!")
-  file_name = "hello-world.txt"
+  file_name = "hello_world.txt"
+  file_hash = filemd5("hello_world.txt")
   public    = false
 }
 
 resource "epcc_file" "my_binary_file" {
-  file      = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAfklEQVQImR3OsQkDMQwF0G9cpPQIGkVrpTDWdSlvpYMrUmaEOGQBQxoXwspPVDwQEvoC/qUbsYNEB9KPHAO4fEh5E7kT3TkwIU3Pjmr7QA2ZqEsd1Y1co6Elb7A8G/QxHBovh8Q5UeI2eLl0pCUHsY1tMCgWg8LJcxKuIfOdL8H1PrJhZV++AAAAAElFTkSuQmCC"
-  file_name = "file.bin"
+  file_name = "binary_data.bin"
+  file_hash = filemd5("binary_data.bin")
   public    = true
 }
 

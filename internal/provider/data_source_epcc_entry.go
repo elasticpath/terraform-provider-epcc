@@ -3,41 +3,74 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceEpccEntry() *schema.Resource {
+type EntryDataSourceProvider struct {
+}
+
+func (p EntryDataSourceProvider) DataSource() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: addDiagToContext(dataSourceEpccEntryRead),
+		ReadContext: addDiagToContext(p.read),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:     schema.TypeString,
-				Computed: true,
+				Required: true,
 			},
-			"payload": &schema.Schema{
+			"strings": {
 				Type:     schema.TypeMap,
-				Required: true,
+				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
+				},
+			},
+			"numbers": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeFloat,
+				},
+			},
+			"booleans": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeBool,
 				},
 			},
 		},
 	}
 }
 
-func dataSourceEpccEntryRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
-
+func (p EntryDataSourceProvider) read(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
-	entryId := d.Get("id").(string)
+
 	flowSlug := d.Get("slug").(string)
-	entry, err := epcc.Entries.Get(&ctx, client, flowSlug, entryId)
+	entryID := d.Get("id").(string)
+
+	entry, err := epcc.Entries.Get(&ctx, client, flowSlug, entryID)
 	if err != nil {
 		ReportAPIError(ctx, err)
-	} else {
-		d.SetId(entry.Data.Id)
+		return
 	}
+
+	if err := d.Set("strings", entry.Data.Strings); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+	if err := d.Set("numbers", entry.Data.Numbers); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+	if err := d.Set("booleans", entry.Data.Booleans); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	d.SetId(entryID)
 }

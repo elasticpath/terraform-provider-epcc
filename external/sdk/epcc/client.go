@@ -180,6 +180,11 @@ func (c *Client) logToDisk(requestMethod string, requestPath string, requestByte
 
 	logDirectory, _ := url.Parse(c.LogDirectory.Path)
 	logDirectory.Path = path.Join(logDirectory.Path, requestPath, requestMethod, strconv.Itoa(responseCode))
+
+	if err := os.MkdirAll(logDirectory.Path, 0755); err != nil {
+		return
+	}
+
 	filename := time.Now().UnixNano()
 	if f, err2 := os.Create(fmt.Sprintf("%s/%d", logDirectory.Path, filename)); err2 == nil {
 		defer f.Close()
