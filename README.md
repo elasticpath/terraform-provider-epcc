@@ -4,19 +4,6 @@ This repository contains a [Terraform](https://www.terraform.io) provider for th
 
 This project was based upon the [Terraform Provider Scaffolding Project](https://github.com/hashicorp/terraform-provider-scaffolding)
 
-This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
-
- - A resource, and a data source (`internal/provider/`),
- - Examples (`examples/`) and generated documentation (`docs/`),
- - Miscellaneous meta files.
- 
-These files contain boilerplate code that you will need to edit to create your own Terraform provider. A full guide to creating Terraform providers can be found at [Writing Custom Providers](https://www.terraform.io/docs/extend/writing-custom-providers.html).
-
-Please see the [GitHub template repository documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for how to create a new repository from this template on GitHub.
-
-Once you've written your provider, you'll want to [publish it on the Terraform Registry](https://www.terraform.io/docs/registry/providers/publishing.html) so that others can use it.
-
-
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.15.x
@@ -30,6 +17,18 @@ Once you've written your provider, you'll want to [publish it on the Terraform R
 ```sh
 $ go install
 ```
+
+## Environment Variables
+
+The following environment variables are [defined in Account Management](internal/config/env.go), and can be used to influence behaviour.
+
+| Name                      | Default          | Description                                                                                                                                        |
+| --------------------------| ---------------- | ------------ |
+| `EPCC_API_BASE_URL`       | -                | The Base URL of the EPCC API                                          |
+| `EPCC_BETA_API_FEATURES`  | -                | The value of the `EP-Beta-Features` header being sent to the EPCC API |
+| `EPCC_CLIENT_ID`          | -                | Client ID used for authenticating to the EPCC API                     |
+| `EPCC_CLIENT_SECRET`      | -                | Client Secret used for authenticating to the EPCC API                 |
+| `EPCC_LOG_DIR`            | (work directory) | The directory of the http log files                                   |
 
 ## Adding Dependencies
 
@@ -45,25 +44,32 @@ go mod tidy
 
 Then commit the changes to `go.mod` and `go.sum`.
 
+
+## Project Layout
+
+This project follows the terraform provider template: [GitHub template repository documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template)
+
+| Directory         | Description                                                                                    |
+|-------------------|------------------------------------------------------------------------------------------------|
+| `docs/`            | Folder that contains documentation                                                            |
+| `examples/`        | Directory for sample resources and data sources                                               |
+| `component-tests/` | Component tests for the service are located in here.                                          |
+| `external/`        | Any Go package that can be shared with other projects                                         |
+| `internal/`        | Application specific Go packages, e.g., they cannot be shared and are specific to this service|
+
 ## Using the provider
 
-Fill this in for each provider
+You would use the epcc-terraform-provider just as any other terraform provider. See the `./examples` directory for sample resources and data sources.
 
-## Developing the Provider
+See the [Core Terraform Workflow] (https://www.terraform.io/guides/core-workflow.html) page for more info on using Terraform.
 
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
+## Useful commands
 
-To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
-
-To generate or update documentation, run `go generate`.
-
-In order to run the full suite of Acceptance tests, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
-```sh
-$ make testacc
-```
+| Command         | Description                                                                                   |
+| ----------------| ----------------------------------------------------------------------------------------------|
+| go install      | Compile the provider. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.|
+| go generate     | Generate or update documentation                                                                       |
+| make testacc    | Runs the full suite of Acceptance tests                                             |
 
 ## Debugging the Provider
 
