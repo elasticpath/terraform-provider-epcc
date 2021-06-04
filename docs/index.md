@@ -5,8 +5,9 @@ description: |-
   
 ---
 
-# epcc-terraform-provider Provider
+# Elastic Path Commerce Cloud Provider
 
+The Elastic Path Commerce Cloud (EPCC) provider is used to interact with resources defined in the [Elastic Path Commerce Cloud API](https://documentation.elasticpath.com/commerce-cloud/docs/api/).
 
 
 ## Example Usage
@@ -25,6 +26,30 @@ provider "epcc" {
   // Can set via `EPCC_BETA_API_FEATURES` environment variable.
   beta_features = "account-management"
 }
+```
+
+
+## Authentication
+
+### Static Credentials
+
+!> **Warning:** Hard-coded credentials are not recommended in any Terraform
+configuration and risks secret leakage should this file ever be committed to a
+public version control system.
+
+Static credentials can be provided by using the `client_id` and `client_secret` parameters directly.
+
+### Environment Variables
+
+You can provide your credentials via the `EPCC_CLIENT_ID` and `EPCC_CLIENT_SECRET`, environment variables corresponding to the
+[`client_credentials` authentication mechanism](https://documentation.elasticpath.com/commerce-cloud/docs/api/basics/authentication/client-credential-token.html).
+
+
+Usage:
+```sh
+$export EPCC_CLIENT_ID="XXXX"
+$export EPCC_CLIENT_SECRET="YYYY"
+$terraform plan
 ```
 
 ## Schema
