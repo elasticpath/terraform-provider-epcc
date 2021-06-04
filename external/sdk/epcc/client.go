@@ -15,7 +15,6 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"path/filepath"
 	"strconv"
 	"time"
 
@@ -55,8 +54,6 @@ type Credentials struct {
 func NewClient(options ...ClientOptions) *Client {
 
 	logDirectory := getLogDirectory()
-
-	log.Printf("Log directory path: %s", logDirectory.Path)
 
 	exp := retry.Exponential{
 		Initial: 10 * time.Millisecond,
@@ -133,11 +130,7 @@ func NewClient(options ...ClientOptions) *Client {
 func getLogDirectory() *url.URL {
 	logRootDirectory := os.Getenv("EPCC_LOG_DIR")
 	if len(logRootDirectory) == 0 {
-		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			log.Fatal(err)
-		}
-		logRootDirectory = dir
+		return nil
 	}
 	logDirUrl, err := url.Parse(logRootDirectory)
 	if err != nil {
@@ -178,6 +171,9 @@ func (c *Client) DoFileRequest(ctx *context.Context, path string, payload io.Rea
 
 func (c *Client) logToDisk(requestMethod string, requestPath string, requestBytes []byte, responseBytes []byte, responseCode int) {
 
+	if(c.LogDirectory == nil) {
+		return
+	}
 	logDirectory, _ := url.Parse(c.LogDirectory.Path)
 	logDirectory.Path = path.Join(logDirectory.Path, requestPath, requestMethod, strconv.Itoa(responseCode))
 
