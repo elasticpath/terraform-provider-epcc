@@ -23,8 +23,7 @@ func TestAccResourceFile(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				PreventDiskCleanup: true,
-				Config:
-				`resource "epcc_file" "my_text_file"{
+				Config: `resource "epcc_file" "my_text_file"{
 					file_name = "` + tempDir + `/hello_world.txt"
 					file_hash = filemd5("` + tempDir + `/hello_world.txt")
 					public = true
