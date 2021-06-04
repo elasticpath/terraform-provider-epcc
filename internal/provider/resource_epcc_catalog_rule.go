@@ -71,8 +71,8 @@ func resourceEpccCatalogRuleUpdate(ctx context.Context, d *schema.ResourceData, 
 		Attributes: epcc.CatalogRulesAttributes{
 			Name:        d.Get("name").(string),
 			Description: d.Get("description").(string),
-			Catalog:   d.Get("catalog").(string),
-			Customers: convertSetToStringSlice(d.Get("customers").(*schema.Set)),
+			Catalog:     d.Get("catalog").(string),
+			Customers:   convertSetToStringSlice(d.Get("customers").(*schema.Set)),
 		},
 	}
 
@@ -127,8 +127,8 @@ func resourceEpccCatalogRuleCreate(ctx context.Context, d *schema.ResourceData, 
 		Attributes: epcc.CatalogRulesAttributes{
 			Name:        d.Get("name").(string),
 			Description: d.Get("description").(string),
-			Catalog:   d.Get("catalog").(string),
-			Customers: convertSetToStringSlice(d.Get("customers").(*schema.Set)),
+			Catalog:     d.Get("catalog").(string),
+			Customers:   convertSetToStringSlice(d.Get("customers").(*schema.Set)),
 		},
 	}
 

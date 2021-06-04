@@ -344,7 +344,7 @@ func resourceEpccFieldRead(ctx context.Context, d *schema.ResourceData, m interf
 					return
 				}
 			default:
-				addToDiag(ctx,diag.Errorf("unknown enum for field type %v", fieldType))
+				addToDiag(ctx, diag.Errorf("unknown enum for field type %v", fieldType))
 				return
 			}
 		case field.Between:
@@ -392,7 +392,7 @@ func resourceEpccFieldCreate(ctx context.Context, d *schema.ResourceData, m inte
 
 	f, diagErr := constructField(d)
 	if diagErr != nil {
-		addToDiag(ctx,  diagErr)
+		addToDiag(ctx, diagErr)
 		return
 	}
 

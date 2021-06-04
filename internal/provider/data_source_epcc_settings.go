@@ -10,8 +10,6 @@ func dataSourceEpccSettings() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccSettingsRead),
 		Schema: map[string]*schema.Schema{
-			"id":                   {Type: schema.TypeString, Required: true},
-			"type":                 {Type: schema.TypeString, Computed: true},
 			"page_length":          {Type: schema.TypeInt, Computed: true},
 			"list_child_products":  {Type: schema.TypeBool, Computed: true},
 			"additional_languages": {Type: schema.TypeList, Computed: true, Elem: &schema.Schema{Type: schema.TypeString}},
@@ -30,7 +28,6 @@ func dataSourceEpccSettingsRead(ctx context.Context, d *schema.ResourceData, m i
 	}
 
 	d.SetId("0")
-	d.Set("type", settings.Data.Type)
 	d.Set("page_length", settings.Data.PageLength)
 	d.Set("list_child_products", settings.Data.ListChildProducts)
 	d.Set("additional_languages", settings.Data.AdditionalLanguages)

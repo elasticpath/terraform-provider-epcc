@@ -76,7 +76,7 @@ testacc:
 .PHONY: example
 example: install
 	(\
-		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
+		set -o allexport && [[ -f .env ]] && source ./.env && set +o allexport || true ; \
 		pushd $(EXAMPLE) && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
@@ -87,7 +87,7 @@ example: install
 .PHONY: example
 resource: install
 	(\
-		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
+		set -o allexport && [[ -f .env ]] && source ./.env && set +o allexport || true ; \
 		pushd examples/resources/$(TYPE)_resource && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
@@ -98,7 +98,7 @@ resource: install
 .PHONY: example
 data-source: install
 	(\
-		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
+		set -o allexport && [[ -f .env ]] && source ./.env && set +o allexport || true ; \
 		pushd examples/data-sources/$(TYPE)_data_source && \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \

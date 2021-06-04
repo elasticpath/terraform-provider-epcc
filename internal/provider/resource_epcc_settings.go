@@ -9,7 +9,7 @@ import (
 
 func resourceEpccSettings() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Represents the EPCC API [OpenID Connect Settings](https://documentation.elasticpath.com/commerce-cloud/docs/api/single-sign-on/oidc-settings/index.html).",
+		Description:   "Represents the EPCC API [Settings](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/settings/index.html).\nNote: The `epcc_settings` resource behaves different from normal resources, in that Terraform does not *create* this reosurce, but instead \"adopts\" it into management.",
 		CreateContext: addDiagToContext(resourceEpccSettingsUpdate),
 		ReadContext:   addDiagToContext(resourceEpccSettingsRead),
 		UpdateContext: addDiagToContext(resourceEpccSettingsUpdate),
@@ -19,7 +19,6 @@ func resourceEpccSettings() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"id":                   {Type: schema.TypeString, Computed: true},
-			"type":                 {Type: schema.TypeString, Required: true},
 			"page_length":          {Type: schema.TypeInt, Optional: true},
 			"list_child_products":  {Type: schema.TypeBool, Optional: true},
 			"additional_languages": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
@@ -64,10 +63,7 @@ func resourceEpccSettingsRead(ctx context.Context, d *schema.ResourceData, m int
 	}
 
 	d.SetId("0")
-	if err := d.Set("type", settings.Data.Type); err != nil {
-		addToDiag(ctx, diag.FromErr(err))
-		return
-	}
+
 	if err := d.Set("id", settings.Data.Id); err != nil {
 		addToDiag(ctx, diag.FromErr(err))
 		return
