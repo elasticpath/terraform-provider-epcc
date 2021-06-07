@@ -17,7 +17,7 @@ func TestAccResourceMerchantRealmMappingPrefix(t *testing.T) {
 			{
 				Config: fmt.Sprintf(testAccResourceMerchantRealmMappingPrefix, myRandSeq),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_merchant-realm-mapping-prefix.test_merchant_realm_mapping_prefix", "prefix", myRandSeq),
+					resource.TestCheckResourceAttr("epcc_merchant_realm_mapping_prefix.test_merchant_realm_mapping_prefix", "prefix", myRandSeq),
 				),
 			},
 		},
