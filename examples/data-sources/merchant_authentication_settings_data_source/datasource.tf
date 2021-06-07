@@ -18,3 +18,7 @@ output "epcc_merchant_realm_mappings_id" {
 output "epcc_merchant_realm_mappings_store_id" {
   value = data.epcc_merchant_realm_mappings.example.store_id
 }
+
+output "epcc_merchant_realm_mappings_store_prefix" {
+  value = data.epcc_merchant_realm_mappings.example.prefix
+}
