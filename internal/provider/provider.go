@@ -98,6 +98,7 @@ func New(version string) func() *schema.Provider {
 				"epcc_user_authentication_info":         dataSourceEpccUserAuthenticationInfo(),
 				"epcc_account_authentication_settings":  dataSourceAccountAuthenticationSettings(),
 				"epcc_customer_authentication_settings": dataSourceCustomerAuthenticationSettings(),
+				"epcc_merchant_realm_mappings":          dataSourceMerchantRealmMappings(),
 				"epcc_settings":                         dataSourceEpccSettings(),
 			},
 
