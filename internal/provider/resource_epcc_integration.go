@@ -100,6 +100,8 @@ func (r IntegrationResourceProvider) delete(ctx context.Context, data *schema.Re
 
 func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
+
+	observes := data.Get("observes").([]interface{})
 	integrationObject := &epcc.Integration{
 		Type:        epcc.IntegrationType,
 		Name:        data.Get("name").(string),
@@ -109,7 +111,7 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 			Url:       data.Get("url").(string),
 			SecretKey: data.Get("secret_key").(string),
 		},
-		Observes: data.Get("observes").([]string),
+		Observes: convertArrayToStringSlice(observes),
 	}
 
 	result, apiError := epcc.Integrations.Update(&ctx, client, data.Id(), integrationObject)
