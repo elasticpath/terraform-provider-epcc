@@ -37,6 +37,33 @@ func TestAccResourceIntegration(t *testing.T) {
 					resource.TestCheckResourceAttr("epcc_integration.test", "observes.#", "2"),
 				),
 			},
+			{
+				// language=HCL
+				Config: `
+                   resource "epcc_integration" "test" {
+                     name = "Test Integration Updated"
+                     description = "Test Integration Description Updated"
+                     url = "https://webhook-updated"
+                     secret_key = "secret-updated"
+                     enabled = false
+                      observes = [
+                       "order.updated",
+                       "order.deleted",
+                     ]
+                   }
+                `,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("epcc_integration.test", "id"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "name", "Test Integration Updated"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "description", "Test Integration Description Updated"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "url", "https://webhook-updated"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "secret_key", "secret-updated"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "enabled", "false"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "observes.0", "order.updated"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "observes.1", "order.deleted"),
+					resource.TestCheckResourceAttr("epcc_integration.test", "observes.#", "2"),
+				),
+			},
 		},
 	})
 }
