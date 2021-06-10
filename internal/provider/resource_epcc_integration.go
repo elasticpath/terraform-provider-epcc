@@ -103,10 +103,11 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 
 	observes := data.Get("observes").([]interface{})
 	integrationObject := &epcc.Integration{
-		Type:        epcc.IntegrationType,
-		Name:        data.Get("name").(string),
-		Description: data.Get("description").(string),
-		Enabled:     data.Get("enabled").(bool),
+		Type:            epcc.IntegrationType,
+		IntegrationType: epcc.Webhook,
+		Name:            data.Get("name").(string),
+		Description:     data.Get("description").(string),
+		Enabled:         data.Get("enabled").(bool),
 		Configuration: epcc.IntegrationConfiguration{
 			Url:       data.Get("url").(string),
 			SecretKey: data.Get("secret_key").(string),

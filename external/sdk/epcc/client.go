@@ -171,7 +171,7 @@ func (c *Client) DoFileRequest(ctx *context.Context, path string, payload io.Rea
 
 func (c *Client) logToDisk(requestMethod string, requestPath string, requestBytes []byte, responseBytes []byte, responseCode int) {
 
-	if(c.LogDirectory == nil) {
+	if c.LogDirectory == nil {
 		return
 	}
 	logDirectory, _ := url.Parse(c.LogDirectory.Path)
