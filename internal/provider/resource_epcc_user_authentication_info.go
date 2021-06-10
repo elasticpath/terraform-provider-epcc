@@ -48,7 +48,7 @@ func resourceEpccUserAuthenticationInfoUpdate(ctx context.Context, d *schema.Res
 
 	userAuthenticationInfo := &epcc.UserAuthenticationInfo{
 		Id:      userAuthenticationInfoId,
-		Type:    "user-authentication-info",
+		Type:    "user_authentication_info",
 		Name:    d.Get("name").(string),
 		Email:   d.Get("email").(string),
 		RealmId: d.Get("realm_id").(string),
@@ -95,7 +95,7 @@ func resourceEpccUserAuthenticationInfoRead(ctx context.Context, d *schema.Resou
 func resourceEpccUserAuthenticationInfoCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 	userAuthenticationInfo := &epcc.UserAuthenticationInfo{
-		Type:    "user-authentication-info",
+		Type:    "user_authentication_info",
 		Id:      d.Get("id").(string),
 		Name:    d.Get("name").(string),
 		Email:   d.Get("email").(string),

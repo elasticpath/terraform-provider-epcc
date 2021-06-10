@@ -3,11 +3,13 @@ page_title: "epcc_promotion Resource - terraform-provider-epcc"
 subcategory: ""
 description: |-
   Represents the EPCC API Promotion Object https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object.
+  !> Warning: This resource only supports a single schema at this point
 ---
 
 # Resource `epcc_promotion`
 
 Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object).
+!> **Warning:** This resource only supports a single schema at this point
 
 
 

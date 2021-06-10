@@ -9,7 +9,10 @@ import (
 
 func resourceEpccPromotion() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object).",
+		Description: `Represents the EPCC API [Promotion Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/carts-and-checkout/promotions/index.html#the-promotion-object).
+!> **Warning:** This resource only supports a single schema at this point
+`,
+
 		CreateContext: addDiagToContext(resourceEpccPromotionCreate),
 		ReadContext:   addDiagToContext(resourceEpccPromotionRead),
 		UpdateContext: addDiagToContext(resourceEpccPromotionUpdate),
@@ -140,7 +143,13 @@ func resourceEpccPromotionRead(ctx context.Context, d *schema.ResourceData, m in
 		addToDiag(ctx, diag.FromErr(err))
 		return
 	}
-	if err := d.Set("schema", [1]interface{}{promotion.Data.Schema}); err != nil {
+
+	singleSchema := promotion.Data.Schema.(map[string]interface{})
+
+	currencySingleSchema := make(map[string]interface{})
+	currencySingleSchema["currencies"] = singleSchema["currencies"]
+
+	if err := d.Set("schema", [1]interface{}{currencySingleSchema}); err != nil {
 		addToDiag(ctx, diag.FromErr(err))
 		return
 	}
