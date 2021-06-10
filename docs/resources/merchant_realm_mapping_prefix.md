@@ -1,18 +1,25 @@
 ---
-page_title: "merchant_realm_mapping_prefix Resource - terraform-provider-epcc"
+page_title: "epcc_merchant_realm_mapping_prefix Resource - terraform-provider-epcc"
 subcategory: ""
-description: |- Represents the EPCC API Update merchant realm mapping prefix
-Update merchant realm mapping prefix https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/settings/merchant-authentication-settings/update-merchant-realm-mapping.html
+description: |-
+  Represents the EPCC API OpenID Connect MerchantRealmMappingPrefixes https://documentation.elasticpath.com/commerce-cloud/docs/api/single-sign-on/oidc-merchantRealmMappingPrefixes/index.html.
 ---
 
-# Resource `merchant-realm-mapping-prefix`
+# Resource `epcc_merchant_realm_mapping_prefix`
 
-Represents the EPCC
-API [Update merchant realm mapping prefix](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/settings/merchant-authentication-settings/update-merchant-realm-mapping.html).
+Represents the EPCC API [OpenID Connect MerchantRealmMappingPrefixes](https://documentation.elasticpath.com/commerce-cloud/docs/api/single-sign-on/oidc-merchantRealmMappingPrefixes/index.html).
+
+
 
 ## Schema
 
 ### Required
 
-- **merchant-realm-mapping-id** (String)
+- **merchant_realm_mapping_id** (String)
 - **prefix** (String)
+
+### Read-only
+
+- **id** (String) The ID of this resource.
+
+
