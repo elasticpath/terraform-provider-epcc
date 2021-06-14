@@ -35,6 +35,7 @@ func resourceEpccField() *schema.Resource {
 					return nil
 				},
 				Required: true,
+				ForceNew: true,
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -72,6 +73,7 @@ func resourceEpccField() *schema.Resource {
 			"flow_id": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"valid_string_format": {
 				Type: schema.TypeString,
