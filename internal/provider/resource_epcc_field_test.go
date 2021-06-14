@@ -7,6 +7,89 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func TestAccResourceField_Update(t *testing.T) {
+	resource.UnitTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: providerFactories,
+		Steps: []resource.TestStep{
+			{
+				// language=HCL
+				Config: `
+					resource "epcc_flow" "original_flow" {
+					  name        = "Original flow"
+					  slug        = "original_flow"
+					  description = "This is a Terraform test"
+					  enabled     = true
+					}
+					
+					resource "epcc_field" "flow_field" {
+					  name = "Original field"
+					  slug = "flow_field"
+					  field_type = "string"
+					  description = "Original field type - string"
+					  required = false
+					  enabled = true
+					  flow_id = epcc_flow.original_flow.id
+					}
+				`,
+			},
+			{
+				ResourceName: "epcc_field.flow_field",
+				ImportState:  true,
+			},
+			{
+				// language=HCL
+				Config: `
+					resource "epcc_flow" "original_flow" {
+					  name        = "Original flow"
+					  slug        = "original_flow"
+					  description = "This is a Terraform test"
+					  enabled     = true
+					}
+					
+					resource "epcc_field" "flow_field" {
+					  name = "Updated field"
+					  slug = "flow_field"
+					  field_type = "integer"
+					  description = "Changed type"
+					  required = false
+					  enabled = true
+					  flow_id = epcc_flow.original_flow.id
+					}
+				`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("epcc_field.flow_field", "field_type", "integer"),
+					resource.TestCheckResourceAttr("epcc_field.flow_field", "description", "Changed type"),
+				),
+			},
+			{
+				// language=HCL
+				Config: `
+					resource "epcc_flow" "another_flow" {
+					  name        = "Another Flow"
+					  slug        = "another_flow"
+					  description = "Another flow"
+					  enabled     = true
+					}
+
+					resource "epcc_field" "flow_field" {
+					  name = "Updated field"
+					  slug = "flow_field"
+					  field_type = "integer"
+					  description = "Changed flow"
+					  required = false
+					  enabled = true
+					  flow_id = epcc_flow.another_flow.id
+					}
+				`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("epcc_field.flow_field", "description", "Changed flow"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccResourceField_StringFormat(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
