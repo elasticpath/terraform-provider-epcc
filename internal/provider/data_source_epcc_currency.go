@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -10,8 +11,8 @@ func dataSourceEpccCurrency() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccCurrencyRead),
 		Schema: map[string]*schema.Schema{
-			"id":                 {Type: schema.TypeString, Required: true},
-			"code":               {Type: schema.TypeString, Computed: true},
+			"id":                 {Type: schema.TypeString, Computed: true},
+			"code":               {Type: schema.TypeString, Required: true},
 			"exchange_rate":      {Type: schema.TypeInt, Computed: true},
 			"format":             {Type: schema.TypeString, Computed: true},
 			"decimal_point":      {Type: schema.TypeString, Computed: true},
@@ -26,19 +27,52 @@ func dataSourceEpccCurrency() *schema.Resource {
 func dataSourceEpccCurrencyRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
-	currencyId := d.Get("id").(string)
-	currency, err := epcc.Currencies.Get(&ctx, client, currencyId)
+	currencyCode := d.Get("code").(string)
+	currencies, err := epcc.Currencies.GetAll(&ctx, client)
 	if err != nil {
 		ReportAPIError(ctx, err)
 	} else {
-		d.Set("code", currency.Data.Code)
-		d.Set("exchange_rate", currency.Data.ExchangeRate)
-		d.Set("format", currency.Data.Format)
-		d.Set("decimal_point", currency.Data.DecimalPoint)
-		d.Set("thousand_separator", currency.Data.ThousandSeparator)
-		d.Set("decimal_places", currency.Data.DecimalPlaces)
-		d.Set("default", currency.Data.Default)
-		d.Set("enabled", currency.Data.Enabled)
-		d.SetId(currency.Data.Id)
+		var currency *epcc.Currency
+		for i, next := range currencies.Data {
+			if next.Code == currencyCode {
+				currency = &currencies.Data[i]
+				break
+			}
+		}
+		if currency == nil {
+			addToDiag(ctx, diag.Errorf("currency with code %v not found", currencyCode))
+			return
+		}
+
+		if err := d.Set("exchange_rate", currency.ExchangeRate); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+		if err := d.Set("format", currency.Format); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+		if err := d.Set("decimal_point", currency.DecimalPoint); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+		if err := d.Set("thousand_separator", currency.ThousandSeparator); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+		if err := d.Set("decimal_places", currency.DecimalPlaces); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+		if err := d.Set("default", currency.Default); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+		if err := d.Set("enabled", currency.Enabled); err != nil {
+			addToDiag(ctx, diag.FromErr(err))
+			return
+		}
+
+		d.SetId(currency.Id)
 	}
 }
