@@ -6,14 +6,16 @@ terraform {
     }
   }
 }
+
 provider "epcc" {
   beta_features = "account-management"
 }
-data "epcc_currency" "example" {
-  id = "d8339926-3ee0-4d69-acd5-af107f7da42f"
+
+data "epcc_currency" "USD" {
+  code = "USD"
 }
 
-output "currency_code" {
-  value = data.epcc_currency.example.code
+output "usd_currency_id" {
+  value = data.epcc_currency.USD.id
 }
 

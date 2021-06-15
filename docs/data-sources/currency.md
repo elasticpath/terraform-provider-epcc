@@ -15,11 +15,11 @@ Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **code** (String) Currency 3-letter unique code
 
 ### Read-only
 
-- **code** (String)
+- **id** (String) The ID of this resource.
 - **decimal_places** (Number)
 - **decimal_point** (String)
 - **default** (Boolean)
