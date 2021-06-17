@@ -25,8 +25,13 @@ func resourceEpccCurrency() *schema.Resource {
 			"decimal_point":      {Type: schema.TypeString, Required: true},
 			"thousand_separator": {Type: schema.TypeString, Required: true},
 			"decimal_places":     {Type: schema.TypeInt, Required: true},
-			"default":            {Type: schema.TypeBool, Required: true},
-			"enabled":            {Type: schema.TypeBool, Required: true},
+			"default": {Type: schema.TypeBool, Required: true, ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+				if val.(bool) {
+					warns = append(warns, "If multiple currencies are defined, please ensure that the `default` tag is set to `true` on only one of them")
+				}
+				return
+			}},
+			"enabled": {Type: schema.TypeBool, Required: true},
 		},
 	}
 
