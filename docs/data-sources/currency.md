@@ -15,17 +15,17 @@ Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/
 
 ### Required
 
-- **code** (String) Currency 3-letter unique code
+- **code** (String)
 
 ### Read-only
 
-- **id** (String) The ID of this resource.
 - **decimal_places** (Number)
 - **decimal_point** (String)
 - **default** (Boolean)
 - **enabled** (Boolean)
 - **exchange_rate** (Number)
 - **format** (String)
+- **id** (String) The ID of this resource.
 - **thousand_separator** (String)
 
 
