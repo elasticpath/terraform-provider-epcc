@@ -11,15 +11,50 @@ func dataSourceEpccCurrency() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccCurrencyRead),
 		Schema: map[string]*schema.Schema{
-			"id":                 {Type: schema.TypeString, Computed: true},
-			"code":               {Type: schema.TypeString, Required: true},
-			"exchange_rate":      {Type: schema.TypeInt, Computed: true},
-			"format":             {Type: schema.TypeString, Computed: true},
-			"decimal_point":      {Type: schema.TypeString, Computed: true},
-			"thousand_separator": {Type: schema.TypeString, Computed: true},
-			"decimal_places":     {Type: schema.TypeInt, Computed: true},
-			"default":            {Type: schema.TypeBool, Computed: true},
-			"enabled":            {Type: schema.TypeBool, Computed: true},
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier for this currency.",
+			},
+			"code": {Type: schema.TypeString,
+				Required:    true,
+				Description: "The currency code.",
+			},
+			"exchange_rate": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "The exchange rate.",
+			},
+			"format": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "How to structure a currency; e.g., `${price}`.",
+			},
+			"decimal_point": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The decimal point character.",
+			},
+			"thousand_separator": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The thousand separator character.",
+			},
+			"decimal_places": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "The amount of decimal places the currency is formatted to.",
+			},
+			"default": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Whether this is the default currency in the store.",
+			},
+			"enabled": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Is this currency available for products? `true` or `false`",
+			},
 		},
 	}
 }

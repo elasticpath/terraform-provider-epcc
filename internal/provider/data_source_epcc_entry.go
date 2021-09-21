@@ -15,12 +15,14 @@ func (p EntryDataSourceProvider) DataSource() *schema.Resource {
 		ReadContext: addDiagToContext(p.read),
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier for this entry.",
 			},
 			"slug": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The slug for the Flow you are requesting an Entry for.",
 			},
 			"strings": {
 				Type:     schema.TypeMap,

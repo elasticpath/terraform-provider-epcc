@@ -10,17 +10,20 @@ func dataSourceEpccCustomer() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccCustomerRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier for this customer.",
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The `name` of the customer.",
 			},
-			"email": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"email": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The `email` of the customer.",
 			},
 		},
 	}

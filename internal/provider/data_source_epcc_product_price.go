@@ -28,15 +28,15 @@ func dataSourceEpccProductPrice() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"code": &schema.Schema{
+						"code": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"amount": &schema.Schema{
+						"amount": {
 							Type:     schema.TypeInt,
 							Computed: true,
 						},
-						"includes_tax": &schema.Schema{
+						"includes_tax": {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},

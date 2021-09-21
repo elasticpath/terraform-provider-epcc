@@ -10,23 +10,23 @@ func dataSourceEpccFlow() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccFlowRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"enabled": &schema.Schema{
+			"enabled": {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},

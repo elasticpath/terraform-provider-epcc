@@ -13,8 +13,9 @@ func dataSourceEpccField() *schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccFieldRead),
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: " The ID for the field you are requesting.",
 			},
 			"field_type": {
 				Type:     schema.TypeString,

@@ -11,27 +11,27 @@ func dataSourceEpccNode() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccNodeRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"hierarchy_id": &schema.Schema{
+			"hierarchy_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"parent_id": &schema.Schema{
+			"parent_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

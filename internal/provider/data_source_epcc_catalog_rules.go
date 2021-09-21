@@ -11,28 +11,32 @@ func dataSourceEpccCatalogRule() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccCatalogRuleRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the rule without spaces.",
 			},
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"description": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The purpose for this rule.",
 			},
-			"catalog": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"catalog": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier of the catalog for this rule. If you want to display a catalog that contains V2 Products, Brands, Categories, and Collections, specify `legacy`",
 			},
-			"customers": &schema.Schema{
+			"customers": {
 				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Description: "The list of customers who are eligible to see this catalog. If empty, the rule matches all customers.",
 			},
 		},
 	}

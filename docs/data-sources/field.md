@@ -15,7 +15,7 @@ Represents the EPCC API [Fields Object](https://documentation.elasticpath.com/co
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The ID for the field you are requesting.
 
 ### Read-only
 

@@ -11,28 +11,32 @@ func dataSourceEpccCatalog() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccCatalogRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the catalog.",
 			},
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"description": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: " A description of the catalog, such as the purpose for the catalog.",
 			},
-			"hierarchies": &schema.Schema{
+			"hierarchies": {
 				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Description: "The unique identifiers of the hierarchies to associate with this catalog.",
 			},
-			"pricebook": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"pricebook": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier of the price book to associate with this catalog.",
 			},
 		},
 	}

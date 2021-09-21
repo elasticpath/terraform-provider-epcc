@@ -15,13 +15,13 @@ Represents the EPCC API [Account resource](https://documentation.elasticpath.com
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier for an Account
 
 ### Read-only
 
-- **legal_name** (String)
-- **name** (String)
-- **parent_id** (String)
-- **registration_id** (String)
+- **legal_name** (String) The legal name of the account.
+- **name** (String) The name of the account.
+- **parent_id** (String) Specifies the ID of the parent account.
+- **registration_id** (String) The registration ID of the account.
 
 

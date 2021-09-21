@@ -15,17 +15,17 @@ Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/
 
 ### Required
 
-- **code** (String) Currency 3-letter unique code
+- **code** (String) The currency code.
 
 ### Read-only
 
-- **id** (String) The ID of this resource.
-- **decimal_places** (Number)
-- **decimal_point** (String)
-- **default** (Boolean)
-- **enabled** (Boolean)
-- **exchange_rate** (Number)
-- **format** (String)
-- **thousand_separator** (String)
+- **decimal_places** (Number) The amount of decimal places the currency is formatted to.
+- **decimal_point** (String) The decimal point character.
+- **default** (Boolean) Whether this is the default currency in the store.
+- **enabled** (Boolean) Is this currency available for products? `true` or `false`
+- **exchange_rate** (Number) The exchange rate.
+- **format** (String) How to structure a currency; e.g., `${price}`.
+- **id** (String) The unique identifier for this currency.
+- **thousand_separator** (String) The thousand separator character.
 
 
