@@ -16,7 +16,7 @@ func TestAccResourceProfile(t *testing.T) {
 				Config: testAccResourceProfile,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("epcc_profile.acc_test_profile", "name", regexp.MustCompile("test_profile")),
-					resource.TestMatchResourceAttr("epcc_profile.acc_test_profile", "discovery_url", regexp.MustCompile("https://shared-keycloak.env.am.pd.elasticpath.cloud/auth/realms/epcc-integrations-env/.well-known/openid-configuration")),
+					resource.TestMatchResourceAttr("epcc_profile.acc_test_profile", "discovery_url", regexp.MustCompile("https://elasticpath-customer.okta.com/.well-known/openid-configuration")),
 					resource.TestMatchResourceAttr("epcc_profile.acc_test_profile", "client_id", regexp.MustCompile("epcc-integrations")),
 					resource.TestMatchResourceAttr("epcc_profile.acc_test_profile", "client_secret", regexp.MustCompile("")),
 					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm_for_profile", "name", regexp.MustCompile("test_realm")),
@@ -40,7 +40,7 @@ resource "epcc_realm" "acc_test_realm_for_profile" {
 
 resource "epcc_profile" "acc_test_profile" {
   name = "test_profile"
-  discovery_url = "https://shared-keycloak.env.am.pd.elasticpath.cloud/auth/realms/epcc-integrations-env/.well-known/openid-configuration"
+  discovery_url = "https://elasticpath-customer.okta.com/.well-known/openid-configuration"
   client_id = "epcc-integrations"
   client_secret = "86c8986d-e1b2-4ce4-a24c-8430ec1ab383"
   realm_id = epcc_realm.acc_test_realm_for_profile.id
