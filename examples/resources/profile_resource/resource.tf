@@ -24,7 +24,7 @@ resource "epcc_realm" "test_realm_for_profile" {
 
 resource "epcc_profile" "test_profile" {
   name          = "test_profile"
-  discovery_url = "https://shared-keycloak.env.am.pd.elasticpath.cloud/auth/realms/epcc-integrations-env/.well-known/openid-configuration"
+  discovery_url = "https://elasticpath-customer.okta.com/.well-known/openid-configuration"
   client_id     = "epcc-integrations"
   client_secret = "86c8986d-e1b2-4ce4-a24c-8430ec1ab383"
   realm_id      = epcc_realm.test_realm_for_profile.id
