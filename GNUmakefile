@@ -110,7 +110,7 @@ data-source: install
 .PHONY: docs
 docs: install
 	(\
-		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
+		set -o allexport && [[ -f .env ]] && source ./.env && set +o allexport || true ; \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
 		go generate \
