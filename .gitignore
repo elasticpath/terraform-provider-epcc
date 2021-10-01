@@ -41,3 +41,6 @@ website/vendor
 .env
 
 cmd/
+
+
+/terraform-provider-epcc

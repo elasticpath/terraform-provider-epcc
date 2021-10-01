@@ -3,13 +3,22 @@ package provider
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func TestMain( m *testing.M) {
+	seed := time.Now().UnixNano()
+	rand.Seed(seed)
+	fmt.Printf("Seed is %d\n", seed)
+	os.Exit(m.Run())
+}
+
 func TestAccResourceMerchantRealmMappingPrefix(t *testing.T) {
-	myRandSeq := randSeq(10)
+	myRandSeq := randSeq(20)
 	resource.UnitTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: providerFactories,
