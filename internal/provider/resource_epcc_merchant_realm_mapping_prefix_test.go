@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestMain( m *testing.M) {
+func TestMain(m *testing.M) {
 	seed := time.Now().UnixNano()
 	rand.Seed(seed)
 	fmt.Printf("Seed is %d\n", seed)

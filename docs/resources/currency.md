@@ -9,6 +9,8 @@ description: |-
 
 Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/currencies/index.html#the-currency-object).
 
+!> **WARNING:** If multiple currencies are defined, please ensure that the `default` tag is set to `true` on only one of them
+
 ## Schema
 
 ### Required
@@ -25,6 +27,3 @@ Represents the EPCC API [Currency Object](https://documentation.elasticpath.com/
 ### Read-only
 
 - **id** (String) The ID of this resource.
-
-
-!> **WARNING:** If multiple currencies are defined, please ensure that the `default` tag is set to `true` on only one of them

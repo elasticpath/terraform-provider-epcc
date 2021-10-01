@@ -36,7 +36,7 @@ func TestProvider(t *testing.T) {
 		}
 
 		for attributeName, schema := range resource.Schema {
-			if(schema.Description == "") {
+			if schema.Description == "" {
 				resourceAttributesWithNoDescription = append(resourceAttributesWithNoDescription, fmt.Sprintf("Resource %s attribute %s", key, attributeName))
 			}
 		}
@@ -51,20 +51,17 @@ func TestProvider(t *testing.T) {
 		}
 
 		for attributeName, schema := range dataSource.Schema {
-			if(schema.Description == "") {
+			if schema.Description == "" {
 				dataSourceAttributesWithNoDescription = append(dataSourceAttributesWithNoDescription, fmt.Sprintf("Resource %s attribute %s", key, attributeName))
 			}
 		}
 	}
 
-
 	dataSourceAndResourcesMissingDescriptions := len(resourcesWithNoDescription) + len(dataSourcesWithNoDescription)
-
 
 	if dataSourceAndResourcesMissingDescriptions > 0 {
 		t.Fatalf("%d object's don't have descriptions:\n\tResources:%s\nData Sources:%s\n", dataSourceAndResourcesMissingDescriptions, resourcesWithNoDescription, dataSourcesWithNoDescription)
 	}
-
 
 	dataSourceAndResourceAttributesMissingDescription := len(resourceAttributesWithNoDescription) + len(dataSourceAttributesWithNoDescription)
 	currentDay := int(time.Now().Unix() / 86400)
@@ -73,7 +70,6 @@ func TestProvider(t *testing.T) {
 
 		t.Fatalf("%d object's don't have descriptions\n\tWe have a lot of technical debt so this tests permits a non zero value but over time decreases the number of descriptions needed by 1 per day, so just go and get below this number: %d\n\tResources:%s\nData Sources:%s\n", dataSourceAndResourceAttributesMissingDescription, currentTarget, resourceAttributesWithNoDescription, dataSourceAttributesWithNoDescription)
 	}
-
 
 }
 
