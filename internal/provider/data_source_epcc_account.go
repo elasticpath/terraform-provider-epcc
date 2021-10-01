@@ -10,25 +10,30 @@ func dataSourceEpccAccount() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccAccountRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier for an Account",
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the account.",
 			},
-			"legal_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"legal_name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The legal name of the account.",
 			},
-			"registration_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"registration_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The registration ID of the account.",
 			},
-			"parent_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"parent_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Specifies the ID of the parent account.",
 			},
 		},
 	}

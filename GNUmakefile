@@ -69,7 +69,7 @@ clean:
 .PHONY: testacc
 testacc:
 	(\
-		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
+		set -o allexport && [[ -f .env ]] && source ./.env && set +o allexport || true ; \
 		TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m \
 	)
 
@@ -110,7 +110,7 @@ data-source: install
 .PHONY: docs
 docs: install
 	(\
-		set -o allexport && [[ -f .env ]] && source .env && set +o allexport || true ; \
+		set -o allexport && [[ -f .env ]] && source ./.env && set +o allexport || true ; \
 		(rm .terraform.lock.hcl || true) && \
 		terraform init && \
 		go generate \

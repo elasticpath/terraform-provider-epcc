@@ -15,8 +15,8 @@ Represents the EPCC API [Entry Object](https://documentation.elasticpath.com/com
 
 ### Required
 
-- **id** (String) The ID of this resource.
-- **slug** (String)
+- **id** (String) The unique identifier for this entry.
+- **slug** (String) The slug for the Flow you are requesting an Entry for.
 
 ### Read-only
 

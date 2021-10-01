@@ -13,52 +13,52 @@ func dataSourceEpccProduct() *schema.Resource {
 		Description: "Allows the caller to look up details of an Elastic Path Commerce Cloud PCM [product](https://documentation.elasticpath.com/commerce-cloud/docs/concepts/products-pcm.html).",
 		ReadContext: addDiagToContext(dataSourceEpccProductRead),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:        schema.TypeString,
 				Description: "The unique identifier of the product.",
 				Required:    true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Description: "The product name to display to customers.",
 				Computed:    true,
 			},
-			"commodity_type": &schema.Schema{
+			"commodity_type": {
 				Type:        schema.TypeString,
 				Description: "The type of the product; either `physical` or `digital`.",
 				Computed:    true,
 			},
-			"sku": &schema.Schema{
+			"sku": {
 				Type:        schema.TypeString,
 				Description: "The unique _stock keeping unit_ of the product.",
 				Computed:    true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:        schema.TypeString,
 				Description: "The unique slug of the product.",
 				Computed:    true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:        schema.TypeString,
 				Description: "The product description to display to customers.",
 				Computed:    true,
 			},
-			"mpn": &schema.Schema{
+			"mpn": {
 				Type:        schema.TypeString,
 				Description: "The _manufacturer part number_ of the product.",
 				Computed:    true,
 			},
-			"status": &schema.Schema{
+			"status": {
 				Type:        schema.TypeString,
 				Description: "The status of the product; either `draft` or `live`. Default is `draft`.",
 				Computed:    true,
 			},
-			"upc_ean": &schema.Schema{
+			"upc_ean": {
 				Type:        schema.TypeString,
 				Description: "The _universal product code_ or _european article number_ of the product.",
 				Computed:    true,
 			},
-			"files": &schema.Schema{
+			"files": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{

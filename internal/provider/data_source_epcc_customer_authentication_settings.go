@@ -11,8 +11,16 @@ func dataSourceCustomerAuthenticationSettings() *schema.Resource {
 		Description: "Represents the EPCC API [Customer Authentication Settings] (https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/settings/customer-authentication-settings/index.html)",
 		ReadContext: addDiagToContext(dataSourceEpccCustomerAuthenticationSettingsRead),
 		Schema: map[string]*schema.Schema{
-			"realm_id":  {Type: schema.TypeString, Computed: true},
-			"client_id": {Type: schema.TypeString, Computed: true}},
+			"realm_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The authentication realm id used for authentication for this store.",
+			},
+			"client_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The client id to be used in Single Sign On authentication flows for customers.",
+			}},
 	}
 }
 

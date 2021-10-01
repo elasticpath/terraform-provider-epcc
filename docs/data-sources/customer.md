@@ -15,11 +15,11 @@ Represents the EPCC API [Customer Object](https://documentation.elasticpath.com/
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier for this customer.
 
 ### Read-only
 
-- **email** (String)
-- **name** (String)
+- **email** (String) The `email` of the customer.
+- **name** (String) The `name` of the customer.
 
 

@@ -19,7 +19,7 @@ Represents the EPCC API [Customer Authentication Settings] (https://documentatio
 
 ### Read-only
 
-- **client_id** (String)
-- **realm_id** (String)
+- **client_id** (String) The client id to be used in Single Sign On authentication flows for customers.
+- **realm_id** (String) The authentication realm id used for authentication for this store.
 
 
