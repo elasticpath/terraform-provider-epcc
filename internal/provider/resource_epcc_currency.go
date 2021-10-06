@@ -18,20 +18,57 @@ func resourceEpccCurrency() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id":                 {Type: schema.TypeString, Computed: true},
-			"code":               {Type: schema.TypeString, Required: true},
-			"exchange_rate":      {Type: schema.TypeInt, Required: true},
-			"format":             {Type: schema.TypeString, Required: true},
-			"decimal_point":      {Type: schema.TypeString, Required: true},
-			"thousand_separator": {Type: schema.TypeString, Required: true},
-			"decimal_places":     {Type: schema.TypeInt, Required: true},
-			"default": {Type: schema.TypeBool, Required: true, ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-				if val.(bool) {
-					warns = append(warns, "If multiple currencies are defined, please ensure that the `default` tag is set to `true` on only one of them")
-				}
-				return
-			}},
-			"enabled": {Type: schema.TypeBool, Required: true},
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier for this currency.",
+			},
+			"code": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The currency code.",
+			},
+			"exchange_rate": {
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The exchange rate.",
+			},
+			"format": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "How to structure a currency; e.g., `${price}`.",
+			},
+			"decimal_point": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The decimal point character.",
+			},
+			"thousand_separator": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The thousand separator character.",
+			},
+			"decimal_places": {
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The amount of decimal places the currency is formatted to.",
+			},
+			"default": {
+				Type:        schema.TypeBool,
+				Required:    true,
+				Description: "Whether this is the default currency in the store.",
+
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					if val.(bool) {
+						warns = append(warns, "If multiple currencies are defined, please ensure that the `default` tag is set to `true` on only one of them")
+					}
+					return
+				}},
+			"enabled": {
+				Type:        schema.TypeBool,
+				Required:    true,
+				Description: "Is this currency available for products? `true` or `false`",
+			},
 		},
 	}
 

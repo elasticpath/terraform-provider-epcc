@@ -17,6 +17,13 @@ var providerFactories = map[string]func() (*schema.Provider, error){
 	},
 }
 
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 func TestProvider(t *testing.T) {
 
 	provider := New("dev")()
@@ -65,9 +72,9 @@ func TestProvider(t *testing.T) {
 
 	dataSourceAndResourceAttributesMissingDescription := len(resourceAttributesWithNoDescription) + len(dataSourceAttributesWithNoDescription)
 	currentDay := int(time.Now().Unix() / 86400)
-	currentTarget := currentDay - 18680
-	if dataSourceAndResourceAttributesMissingDescription > currentTarget {
+	currentTarget := max(19110-currentDay, 0)
 
+	if dataSourceAndResourceAttributesMissingDescription > currentTarget {
 		t.Fatalf("%d object's don't have descriptions\n\tWe have a lot of technical debt so this tests permits a non zero value but over time decreases the number of descriptions needed by 1 per day, so just go and get below this number: %d\n\tResources:%s\nData Sources:%s\n", dataSourceAndResourceAttributesMissingDescription, currentTarget, resourceAttributesWithNoDescription, dataSourceAttributesWithNoDescription)
 	}
 

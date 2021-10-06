@@ -18,17 +18,20 @@ func resourceEpccCustomer() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier for this customer.",
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"name": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier for this customer.",
 			},
-			"email": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"email": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier for this customer.",
 			},
 		},
 	}
