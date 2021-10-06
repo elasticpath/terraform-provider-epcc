@@ -6,9 +6,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceEpccRealm() *schema.Resource {
+func dataSourceEpccAuthenticationRealm() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: addDiagToContext(dataSourceEpccRealmRead),
+		ReadContext: addDiagToContext(dataSourceEpccAuthenticationRealmRead),
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
@@ -42,27 +42,26 @@ func dataSourceEpccRealm() *schema.Resource {
 				Description: "The type of the origin entity.",
 			},
 		},
-		DeprecationMessage: "This resource is deprecated please use epcc_authentication_realm",
 	}
 }
 
-func dataSourceEpccRealmRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
+func dataSourceEpccAuthenticationRealmRead(ctx context.Context, d *schema.ResourceData, m interface{}) {
 	client := m.(*epcc.Client)
 
-	realmId := d.Get("id").(string)
-	realm, err := epcc.Realms.Get(&ctx, client, realmId)
+	authenticationRealmId := d.Get("id").(string)
+	authenticationRealm, err := epcc.Realms.Get(&ctx, client, authenticationRealmId)
 	if err != nil {
 		ReportAPIError(ctx, err)
 		return
 	}
 
-	d.Set("id", realm.Data.Id)
-	d.Set("type", realm.Data.Type)
-	d.Set("name", realm.Data.Name)
-	d.Set("redirect_uris", realm.Data.RedirectUris)
-	d.Set("duplicate_email_policy", realm.Data.DuplicateEmailPolicy)
-	d.Set("relationships", realm.Data.Relationships)
-	d.Set("origin_id", realm.Data.Relationships.Origin.Data.Id)
-	d.Set("origin_type", realm.Data.Relationships.Origin.Data.Type)
-	d.SetId(realm.Data.Id)
+	d.Set("id", authenticationRealm.Data.Id)
+	d.Set("type", authenticationRealm.Data.Type)
+	d.Set("name", authenticationRealm.Data.Name)
+	d.Set("redirect_uris", authenticationRealm.Data.RedirectUris)
+	d.Set("duplicate_email_policy", authenticationRealm.Data.DuplicateEmailPolicy)
+	d.Set("relationships", authenticationRealm.Data.Relationships)
+	d.Set("origin_id", authenticationRealm.Data.Relationships.Origin.Data.Id)
+	d.Set("origin_type", authenticationRealm.Data.Relationships.Origin.Data.Type)
+	d.SetId(authenticationRealm.Data.Id)
 }

@@ -5,7 +5,8 @@ description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
-# {{.Name}} ({{.Type}})
+# {{.Type}} `{{.Name}}`
+~> This resource is deprecated, and it is recommended you migrate to [authentication_realm](authentication_realms)
 
 {{ .Description | trimspace }}
 
@@ -14,8 +15,6 @@ description: |-
 
 {{ printf "{{tffile %q}}" .ExampleFile }}
 {{- end }}
-
-!> **WARNING:** If multiple currencies are defined, please ensure that the `default` tag is set to `true` on only one of them
 
 {{ .SchemaMarkdown | trimspace }}
 
@@ -26,4 +25,3 @@ Import is supported using the following syntax:
 
 {{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
 {{- end }}
-

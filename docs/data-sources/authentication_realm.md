@@ -1,12 +1,11 @@
 ---
-page_title: "Data Source epcc_realm - terraform-provider-epcc"
+page_title: "epcc_authentication_realm Data Source - terraform-provider-epcc"
 subcategory: ""
 description: |-
   Represents the EPCC API Authentication Realms https://documentation.elasticpath.com/commerce-cloud/docs/api/single-sign-on/authentication-realms/index.html.
 ---
 
-# epcc_realm `Data Source`
-~> This resource is deprecated, and it is recommended you migrate to [authentication_realm](authentication_realms)
+# Data Source `epcc_authentication_realm`
 
 Represents the EPCC API [Authentication Realms](https://documentation.elasticpath.com/commerce-cloud/docs/api/single-sign-on/authentication-realms/index.html).
 
