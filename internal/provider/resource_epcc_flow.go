@@ -18,25 +18,30 @@ func resourceEpccFlow() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier for this flow.",
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"slug": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The name of the flow.",
 			},
-			"description": &schema.Schema{
+			"slug": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "A unique slug identifier for the flow.",
 			},
-			"enabled": &schema.Schema{
+			"description": {
+				Type:     schema.TypeString,
+				Required: true,
+				Description: "Any description for this flow.",
+			},
+			"enabled": {
 				Type:     schema.TypeBool,
 				Required: true,
+				Description: "true if enabled, false if not.",
 			},
 		},
 	}

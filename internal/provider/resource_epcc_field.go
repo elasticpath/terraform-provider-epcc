@@ -23,6 +23,7 @@ func resourceEpccField() *schema.Resource {
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "The unique identifier for this field.",
 			},
 			"field_type": {
 				Type: schema.TypeString,
@@ -36,44 +37,54 @@ func resourceEpccField() *schema.Resource {
 				},
 				Required: true,
 				ForceNew: true,
+				Description: "Specifies the type of field, such as string, integer, boolean, float, date, relationship.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "A unique slug identifier for the field.",
 			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The name of the field.",
 			},
 			"description": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "Any description for this field.",
 			},
 			"required": {
 				Type:     schema.TypeBool,
 				Required: true,
+				Description: "true if required on input, false if not. Always false if the field_type is a relationship.",
 			},
 			"default": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Description: "A default value if none is supplied and field is not required.",
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
 				Required: true,
+				Description: "If this field is enabled on the flow this should be true, otherwise false.",
 			},
 			"order": {
 				Type:     schema.TypeInt,
 				Default:  1,
 				Optional: true,
+				Description: "Denotes the order in which this field is returned relative to the rest of the flow fields.",
 			},
 			"omit_null": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Description: "Hide this field from responses if the value is null.",
 			},
 			"flow_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				Description: "The id of the flow that this field applies to.",
 			},
 			"valid_string_format": {
 				Type: schema.TypeString,
@@ -94,6 +105,7 @@ func resourceEpccField() *schema.Resource {
 					"relationship_to_one",
 					"relationship_to_many",
 				},
+				Description: "Corresponds to the field validation rules for string, one of \"email\", \"slug\", or \"uuid\".",
 			},
 			"valid_string_enum": {
 				Type: schema.TypeList,
@@ -109,6 +121,7 @@ func resourceEpccField() *schema.Resource {
 					"relationship_to_one",
 					"relationship_to_many",
 				},
+				Description: "A predefined collection of strings that represent the allowed value for this string field.",
 			},
 			"valid_int_enum": {
 				Type: schema.TypeList,
@@ -124,6 +137,7 @@ func resourceEpccField() *schema.Resource {
 					"relationship_to_one",
 					"relationship_to_many",
 				},
+				Description: "A predefined collection of integer that represent the allowed value for this integer field.",
 			},
 			"valid_int_range": {
 				Type: schema.TypeList,
@@ -154,6 +168,7 @@ func resourceEpccField() *schema.Resource {
 					"relationship_to_one",
 					"relationship_to_many",
 				},
+				Description: "A list of integers specified with from= and to= that represent the range of this value",
 			},
 			"valid_float_enum": {
 				Type: schema.TypeList,
@@ -169,6 +184,7 @@ func resourceEpccField() *schema.Resource {
 					"relationship_to_one",
 					"relationship_to_many",
 				},
+				Description: "A predefined collection of floats that represent the allowed value for this float field.",
 			},
 			"valid_float_range": {
 				Type: schema.TypeList,

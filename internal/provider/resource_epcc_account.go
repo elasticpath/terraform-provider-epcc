@@ -21,18 +21,22 @@ func resourceEpccAccount() *schema.Resource {
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "The unique identifier for an Account",
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The name of the account.",
 			},
 			"legal_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The legal name of the account.",
 			},
 			"registration_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Description: "The registration ID of the account.",
 			},
 			"parent_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -40,6 +44,7 @@ func resourceEpccAccount() *schema.Resource {
 
 				// You can't change the parent id of an account, must be recreated.
 				ForceNew: true,
+				Description: "Specifies the ID of the parent account.",
 			},
 		},
 	}
