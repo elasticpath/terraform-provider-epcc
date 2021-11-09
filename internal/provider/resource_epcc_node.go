@@ -15,31 +15,31 @@ func resourceEpccNode() *schema.Resource {
 		UpdateContext: addDiagToContext(resourceEpccNodeUpdate),
 		DeleteContext: addDiagToContext(resourceEpccNodeDelete),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"hierarchy_id": &schema.Schema{
+			"hierarchy_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				Computed: false,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:     schema.TypeString,
 				Required: false,
 				Computed: false,
 				Optional: true,
 			},
-			"parent_id": &schema.Schema{
+			"parent_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

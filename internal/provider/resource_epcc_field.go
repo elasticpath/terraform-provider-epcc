@@ -21,8 +21,8 @@ func resourceEpccField() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
 				Description: "The unique identifier for this field.",
 			},
 			"field_type": {
@@ -35,55 +35,55 @@ func resourceEpccField() *schema.Resource {
 					}
 					return nil
 				},
-				Required: true,
-				ForceNew: true,
+				Required:    true,
+				ForceNew:    true,
 				Description: "Specifies the type of field, such as string, integer, boolean, float, date, relationship.",
 			},
 			"slug": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "A unique slug identifier for the field.",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "The name of the field.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "Any description for this field.",
 			},
 			"required": {
-				Type:     schema.TypeBool,
-				Required: true,
+				Type:        schema.TypeBool,
+				Required:    true,
 				Description: "true if required on input, false if not. Always false if the field_type is a relationship.",
 			},
 			"default": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
 				Description: "A default value if none is supplied and field is not required.",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Required: true,
+				Type:        schema.TypeBool,
+				Required:    true,
 				Description: "If this field is enabled on the flow this should be true, otherwise false.",
 			},
 			"order": {
-				Type:     schema.TypeInt,
-				Default:  1,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Default:     1,
+				Optional:    true,
 				Description: "Denotes the order in which this field is returned relative to the rest of the flow fields.",
 			},
 			"omit_null": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
 				Description: "Hide this field from responses if the value is null.",
 			},
 			"flow_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
 				Description: "The id of the flow that this field applies to.",
 			},
 			"valid_string_format": {

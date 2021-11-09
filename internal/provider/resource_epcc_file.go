@@ -18,39 +18,39 @@ func resourceEpccFile() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"file_link": &schema.Schema{
+			"file_link": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"mime_type": &schema.Schema{
+			"mime_type": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"file_size": &schema.Schema{
+			"file_size": {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			"file_name": &schema.Schema{
+			"file_name": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-			"file_location": &schema.Schema{
+			"file_location": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-			"public": &schema.Schema{
+			"public": {
 				Type:        schema.TypeBool,
 				Description: "TBD.",
 				Optional:    true,
 				ForceNew:    true,
 			},
-			"file_hash": &schema.Schema{
+			"file_hash": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,

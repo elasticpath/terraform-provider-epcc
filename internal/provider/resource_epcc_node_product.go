@@ -21,21 +21,21 @@ func resourceEpccNodeProduct() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"hierarchy_id": &schema.Schema{
+			"hierarchy_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"node_id": &schema.Schema{
+			"node_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"product_id": &schema.Schema{
+			"product_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,

@@ -37,15 +37,15 @@ func resourceEpccProductPrice() *schema.Resource {
 				Required: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"code": &schema.Schema{
+						"code": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-						"amount": &schema.Schema{
+						"amount": {
 							Type:     schema.TypeInt,
 							Required: true,
 						},
-						"includes_tax": &schema.Schema{
+						"includes_tax": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},

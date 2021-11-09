@@ -16,17 +16,17 @@ func resourceEpccProduct() *schema.Resource {
 		UpdateContext: addDiagToContext(resourceEpccProductUpdate),
 		DeleteContext: addDiagToContext(resourceEpccProductDelete),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:        schema.TypeString,
 				Description: "The unique identifier of the product.",
 				Computed:    true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Description: "The product name to display to customers.",
 				Required:    true,
 			},
-			"commodity_type": &schema.Schema{
+			"commodity_type": {
 				Type:        schema.TypeString,
 				Description: "Valid values: `physical` or `digital`.",
 				Required:    true,
@@ -38,27 +38,27 @@ func resourceEpccProduct() *schema.Resource {
 					return
 				},
 			},
-			"sku": &schema.Schema{
+			"sku": {
 				Type:        schema.TypeString,
 				Description: "The unique _stock keeping unit_ of the product.",
 				Required:    true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:        schema.TypeString,
 				Description: "The unique slug of the product.",
 				Optional:    true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:        schema.TypeString,
 				Description: "The product description to display to customers.",
 				Optional:    true,
 			},
-			"mpn": &schema.Schema{
+			"mpn": {
 				Type:        schema.TypeString,
 				Description: "The _manufacturer part number_ of the product.",
 				Optional:    true,
 			},
-			"status": &schema.Schema{
+			"status": {
 				Type:        schema.TypeString,
 				Description: "Valid values: `draft` or `live`. Default is `draft`.",
 				Optional:    true,
@@ -70,12 +70,12 @@ func resourceEpccProduct() *schema.Resource {
 					return
 				},
 			},
-			"upc_ean": &schema.Schema{
+			"upc_ean": {
 				Type:        schema.TypeString,
 				Description: "The _universal product code_ or _european article number_ of the product.",
 				Optional:    true,
 			},
-			"files": &schema.Schema{
+			"files": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{
