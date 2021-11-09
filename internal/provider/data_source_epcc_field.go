@@ -15,51 +15,62 @@ func dataSourceEpccField() *schema.Resource {
 			"id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: " The ID for the field you are requesting.",
+				Description: "The unique identifier for this field.",
 			},
 			"field_type": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "Specifies the type of field, such as string, integer, boolean, float, date, relationship.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "A unique slug identifier for the field.",
 			},
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "The name of the field.",
 			},
 			"description": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "Any description for this field.",
 			},
 			"required": {
 				Type:     schema.TypeBool,
 				Computed: true,
+				Description: "true if required on input, false if not. Always false if the field_type is a relationship.",
 			},
 			"default": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "A default value if none is supplied and field is not required.",
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
 				Computed: true,
+				Description: "If this field is enabled on the flow this should be true, otherwise false.",
 			},
 			"order": {
 				Type:     schema.TypeInt,
 				Computed: true,
+				Description: "Denotes the order in which this field is returned relative to the rest of the flow fields.",
 			},
 			"omit_null": {
 				Type:     schema.TypeBool,
 				Computed: true,
+				Description: "Hide this field from responses if the value is null.",
 			},
 			"flow_id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "The id of the flow that this field applies to.",
 			},
 			"valid_string_format": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "Corresponds to the field validation rules for string, one of \"email\", \"slug\", or \"uuid\".",
 			},
 			"valid_string_enum": {
 				Type: schema.TypeList,
@@ -67,6 +78,7 @@ func dataSourceEpccField() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				Computed: true,
+				Description: "A predefined collection of strings that represent the allowed value for this string field.",
 			},
 			"valid_int_enum": {
 				Type: schema.TypeList,
@@ -74,6 +86,7 @@ func dataSourceEpccField() *schema.Resource {
 					Type: schema.TypeInt,
 				},
 				Computed: true,
+				Description: "A predefined collection of integer that represent the allowed value for this integer field.",
 			},
 			"valid_int_range": {
 				Type: schema.TypeList,
@@ -84,6 +97,7 @@ func dataSourceEpccField() *schema.Resource {
 					},
 				},
 				Computed: true,
+				Description: "A list of integers specified with from= and to= that represent the range of this value",
 			},
 			"valid_float_enum": {
 				Type: schema.TypeList,
@@ -91,6 +105,7 @@ func dataSourceEpccField() *schema.Resource {
 					Type: schema.TypeFloat,
 				},
 				Computed: true,
+				Description: "A predefined collection of floats that represent the allowed value for this float field.",
 			},
 			"valid_float_range": {
 				Type: schema.TypeList,
