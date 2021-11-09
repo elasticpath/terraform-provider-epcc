@@ -18,23 +18,23 @@ func resourceEpccCatalogRule() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"catalog": &schema.Schema{
+			"catalog": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"customers": &schema.Schema{
+			"customers": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{

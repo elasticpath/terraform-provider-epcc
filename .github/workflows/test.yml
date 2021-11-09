@@ -33,11 +33,16 @@ jobs:
       run: |
         go mod download
 
-    - name: Check Terraform Style
+    - name: Check Terraform And Go Style
       run: |
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
         sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-        sudo apt install terraform
+        echo "If this command fails you should run go fmt \"./...\""
+        if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+            echo "Code style differences detected:"
+            gofmt -s -l .
+            exit 1
+        fi
         echo "If this fails you should run \"terraform fmt -recursive\""
         terraform fmt -recursive -check
 

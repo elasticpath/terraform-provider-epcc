@@ -16,15 +16,15 @@ func resourceEpccPricebook() *schema.Resource {
 		UpdateContext: addDiagToContext(resourceEpccPricebookUpdate),
 		DeleteContext: addDiagToContext(resourceEpccPricebookDelete),
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

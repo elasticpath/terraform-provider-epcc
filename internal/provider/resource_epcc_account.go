@@ -18,32 +18,32 @@ func resourceEpccAccount() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
 				Description: "The unique identifier for an Account",
 			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"name": {
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "The name of the account.",
 			},
-			"legal_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"legal_name": {
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "The legal name of the account.",
 			},
-			"registration_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"registration_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
 				Description: "The registration ID of the account.",
 			},
-			"parent_id": &schema.Schema{
+			"parent_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 
 				// You can't change the parent id of an account, must be recreated.
-				ForceNew: true,
+				ForceNew:    true,
 				Description: "Specifies the ID of the parent account.",
 			},
 		},

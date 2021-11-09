@@ -39,34 +39,34 @@ func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			Schema: map[string]*schema.Schema{
-				"client_id": &schema.Schema{
+				"client_id": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_CLIENT_ID", nil),
 				},
-				"client_secret": &schema.Schema{
+				"client_secret": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_CLIENT_SECRET", nil),
 				},
-				"api_base_url": &schema.Schema{
+				"api_base_url": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_API_BASE_URL", "https://api.moltin.com/"),
 				},
 				// TODO Change this to an array maybe that would be cleaner.
-				"beta_features": &schema.Schema{
+				"beta_features": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_BETA_API_FEATURES", ""),
 				},
-				"enable_authentication": &schema.Schema{
+				"enable_authentication": {
 					Type:     schema.TypeBool,
 					Optional: true,
 					Default:  true,
 				},
-				"additional_headers": &schema.Schema{
+				"additional_headers": {
 					Type:     schema.TypeMap,
 					Optional: true,
 					Elem: &schema.Schema{

@@ -90,6 +90,29 @@ dlv exec --headless ./bin/terraform-provider-my-provider -- --debug
 TF_REATTACH_PROVIDERS='...' terraform apply
 ```
 
+
+## Code Style
+
+Please run `gofmt` prior to committing, the following [pre-commit hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) (create and mark executable in `.git/hooks/pre-commit`) can do this automatically for you
+
+```bash
+#!/bin/bash
+
+echo "Running commit hook"
+
+echo "Fixing changed files"
+git diff --cached --name-only --diff-filter=ACM | grep -E "\.go$" | xargs -n 1 -d "\n" gofmt -s -w
+
+git diff --cached --name-only --diff-filter=ACM | grep -E "\.go$" | xargs git add 
+
+echo "Inspecting all other files"
+
+if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+  echo "Code style differences detected:"
+  gofmt -s -l .
+  exit 1
+fi
+```
 [Debugging Providers](https://www.terraform.io/docs/extend/debugging.html#starting-a-provider-in-debug-mode)
 ### Useful Links
 

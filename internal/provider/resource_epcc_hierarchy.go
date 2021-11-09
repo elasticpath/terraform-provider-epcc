@@ -18,22 +18,22 @@ func resourceEpccHierarchy() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				Computed: false,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Required: false,
 				Computed: false,
 				Optional: true,
 			},
-			"slug": &schema.Schema{
+			"slug": {
 				Type:     schema.TypeString,
 				Required: false,
 				Computed: false,
