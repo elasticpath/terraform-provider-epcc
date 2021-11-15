@@ -53,6 +53,27 @@ func (r IntegrationResourceProvider) Resource() *schema.Resource {
 				Description: "[observable event type](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/events/create-an-event.html)",
 				Optional:    true,
 			},
+			"integration_type": {
+				Type:        schema.TypeString,
+				Description: "Specifies how the event is delivered, either webhook or aws_sqs",
+				Required:    true,
+			},
+			"aws_access_key_id": {
+				Type:        schema.TypeString,
+				Description: "The required AWS access key ID. Note: The EPCC API only returns the 4 characters of this value",
+				Optional:    true,
+			},
+			"aws_secret_access_key": {
+				Type:        schema.TypeString,
+				Description: "The required AWS secret key ID. Note: The EPCC API only returns the 4 characters of this value",
+				Optional:    true,
+				Sensitive:   true,
+			},
+			"region": {
+				Type:        schema.TypeString,
+				Description: "The required AWS region.",
+				Optional:    true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -66,13 +87,16 @@ func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.Re
 	observes := data.Get("observes").([]interface{})
 	integrationObject := &epcc.Integration{
 		Type:            epcc.IntegrationType,
-		IntegrationType: epcc.Webhook,
+		IntegrationType: data.Get("integration_type").(string),
 		Name:            data.Get("name").(string),
 		Description:     data.Get("description").(string),
 		Enabled:         data.Get("enabled").(bool),
 		Configuration: epcc.IntegrationConfiguration{
-			Url:       data.Get("url").(string),
-			SecretKey: data.Get("secret_key").(string),
+			Url:                data.Get("url").(string),
+			SecretKey:          data.Get("secret_key").(string),
+			AwsAccessKeyId:     data.Get("aws_access_key_id").(string),
+			AwsSecretAccessKey: data.Get("aws_secret_access_key").(string),
+			Region:             data.Get("region").(string),
 		},
 		Observes: convertArrayToStringSlice(observes),
 	}
@@ -84,6 +108,19 @@ func (r IntegrationResourceProvider) create(ctx context.Context, data *schema.Re
 	}
 
 	data.SetId(result.Data.Id)
+
+	// EPCC API only returns the last 4 characters for these two keys, so we will store in state the correct value from the request
+	if err := data.Set("aws_access_key_id", integrationObject.Configuration.AwsAccessKeyId); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("aws_secret_access_key", integrationObject.Configuration.AwsSecretAccessKey); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	r.read(ctx, data, m)
 }
 
 func (r IntegrationResourceProvider) delete(ctx context.Context, data *schema.ResourceData, m interface{}) {
@@ -102,15 +139,19 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 	client := m.(*epcc.Client)
 
 	observes := data.Get("observes").([]interface{})
+
 	integrationObject := &epcc.Integration{
 		Type:            epcc.IntegrationType,
-		IntegrationType: epcc.Webhook,
+		IntegrationType: data.Get("integration_type").(string),
 		Name:            data.Get("name").(string),
 		Description:     data.Get("description").(string),
 		Enabled:         data.Get("enabled").(bool),
 		Configuration: epcc.IntegrationConfiguration{
-			Url:       data.Get("url").(string),
-			SecretKey: data.Get("secret_key").(string),
+			Url:                data.Get("url").(string),
+			SecretKey:          data.Get("secret_key").(string),
+			AwsAccessKeyId:     data.Get("aws_access_key_id").(string),
+			AwsSecretAccessKey: data.Get("aws_secret_access_key").(string),
+			Region:             data.Get("region").(string),
 		},
 		Observes: convertArrayToStringSlice(observes),
 	}
@@ -123,6 +164,19 @@ func (r IntegrationResourceProvider) update(ctx context.Context, data *schema.Re
 	}
 
 	data.SetId(result.Data.Id)
+
+	// EPCC API only returns the last 4 characters for these two keys, so we will store in state the correct value from the request
+	if err := data.Set("aws_access_key_id", integrationObject.Configuration.AwsAccessKeyId); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("aws_secret_access_key", integrationObject.Configuration.AwsSecretAccessKey); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	r.read(ctx, data, m)
 }
 
 func (r IntegrationResourceProvider) read(ctx context.Context, data *schema.ResourceData, m interface{}) {
@@ -163,4 +217,43 @@ func (r IntegrationResourceProvider) read(ctx context.Context, data *schema.Reso
 		addToDiag(ctx, diag.FromErr(err))
 		return
 	}
+
+	if err := data.Set("integration_type", result.Data.IntegrationType); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("region", result.Data.Configuration.Region); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	// Update the state to the API value only if the last 4 characters don't match.
+	if accessKeyIdFromState, ok := data.GetOk("aws_access_key_id"); ok {
+		if lastFourChars(accessKeyIdFromState.(string)) != lastFourChars(result.Data.Configuration.AwsAccessKeyId) {
+			if err := data.Set("aws_access_key_id", result.Data.Configuration.AwsAccessKeyId); err != nil {
+				addToDiag(ctx, diag.FromErr(err))
+				return
+			}
+		}
+	}
+
+	// Update the state to the API value only if the last 4 characters don't match.
+	if secretAccessKeyFromState, ok := data.GetOk("aws_secret_access_key"); ok {
+		if lastFourChars(secretAccessKeyFromState.(string)) != lastFourChars(result.Data.Configuration.AwsSecretAccessKey) {
+			if err := data.Set("aws_secret_access_key", result.Data.Configuration.AwsSecretAccessKey); err != nil {
+				addToDiag(ctx, diag.FromErr(err))
+				return
+			}
+		}
+	}
+}
+
+func lastFourChars(s string) string {
+	if len(s) > 4 {
+		// not UTF-8 safe, but who knows if AWS access keys will ever be UTF-8
+		return s[len(s)-4:]
+	}
+
+	return s
 }

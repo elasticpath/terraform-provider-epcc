@@ -20,10 +20,14 @@ Allows to configure webhooks
 
 ### Read-Only
 
+- **aws_access_key_id** (String) The required AWS access key ID. Note: The EPCC API only returns the 4 characters of this value
+- **aws_secret_access_key** (String, Sensitive) The required AWS secret key ID. Note: The EPCC API only returns the 4 characters of this value
 - **description** (String)
 - **enabled** (Boolean) Should the event trigger or not. Default: `false`
+- **integration_type** (String) Specifies how the event is delivered, either webhook or aws_sqs
 - **name** (String)
 - **observes** (List of String) [observable event type](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/events/create-an-event.html)
+- **region** (String) The required AWS region.
 - **secret_key** (String) Value that is passed to webhook as `X-Moltin-Secret-Key` header
 - **url** (String) Webhook endpoint
 

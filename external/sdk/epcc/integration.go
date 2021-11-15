@@ -16,22 +16,21 @@ type IntegrationData struct {
 }
 
 type IntegrationConfiguration struct {
-	Url       string `json:"url"`
-	SecretKey string `json:"secret_key,omitempty"`
+	Url                string `json:"url"`
+	SecretKey          string `json:"secret_key,omitempty"`
+	AwsAccessKeyId     string `json:"aws_access_key_id,omitempty"`
+	AwsSecretAccessKey string `json:"aws_secret_access_key,omitempty"`
+	Region             string `json:"region,omitempty"`
 }
 
-type integrationObjectType string
-type integrationType string
-
 const (
-	IntegrationType integrationObjectType = "integration"
-	Webhook         integrationType       = "webhook"
+	IntegrationType string = "integration"
 )
 
 type Integration struct {
 	Id              string                   `json:"id,omitempty"`
-	Type            integrationObjectType    `json:"type"`
-	IntegrationType integrationType          `json:"integration_type"`
+	Type            string                   `json:"type"`
+	IntegrationType string                   `json:"integration_type"`
 	Name            string                   `json:"name"`
 	Description     string                   `json:"description,omitempty"`
 	Enabled         bool                     `json:"enabled"`

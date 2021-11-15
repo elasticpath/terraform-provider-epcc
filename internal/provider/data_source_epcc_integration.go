@@ -50,6 +50,27 @@ func (ds IntegrationDataSourceProvider) DataSource() *schema.Resource {
 				Description: "[observable event type](https://documentation.elasticpath.com/commerce-cloud/docs/api/advanced/events/create-an-event.html)",
 				Computed:    true,
 			},
+			"integration_type": {
+				Type:        schema.TypeString,
+				Description: "Specifies how the event is delivered, either webhook or aws_sqs",
+				Computed:    true,
+			},
+			"aws_access_key_id": {
+				Type:        schema.TypeString,
+				Description: "The required AWS access key ID. Note: The EPCC API only returns the 4 characters of this value",
+				Computed:    true,
+			},
+			"aws_secret_access_key": {
+				Type:        schema.TypeString,
+				Description: "The required AWS secret key ID. Note: The EPCC API only returns the 4 characters of this value",
+				Computed:    true,
+				Sensitive:   true,
+			},
+			"region": {
+				Type:        schema.TypeString,
+				Description: "The required AWS region.",
+				Computed:    true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -92,6 +113,26 @@ func (ds IntegrationDataSourceProvider) read(ctx context.Context, data *schema.R
 	}
 
 	if err := data.Set("observes", result.Data.Observes); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("integration_type", result.Data.IntegrationType); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("aws_access_key_id", result.Data.Configuration.AwsAccessKeyId); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("aws_secret_access_key", result.Data.Configuration.AwsSecretAccessKey); err != nil {
+		addToDiag(ctx, diag.FromErr(err))
+		return
+	}
+
+	if err := data.Set("region", result.Data.Configuration.Region); err != nil {
 		addToDiag(ctx, diag.FromErr(err))
 		return
 	}
