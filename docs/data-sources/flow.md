@@ -16,12 +16,12 @@ Represents the EPCC API [Flow Object](https://documentation.elasticpath.com/comm
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier for this flow.
 
 ### Read-Only
 
-- **description** (String)
-- **enabled** (Boolean)
-- **name** (String)
-- **slug** (String)
+- **description** (String) Any description for this flow.
+- **enabled** (Boolean) true if enabled, false if not.
+- **name** (String) The name of the flow.
+- **slug** (String) A unique slug identifier for the flow.
 

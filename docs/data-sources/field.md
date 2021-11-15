@@ -16,26 +16,26 @@ Represents the EPCC API [Fields Object](https://documentation.elasticpath.com/co
 
 ### Required
 
-- **id** (String) The ID for the field you are requesting.
+- **id** (String) The unique identifier for this field.
 
 ### Read-Only
 
-- **default** (String)
-- **description** (String)
-- **enabled** (Boolean)
-- **field_type** (String)
-- **flow_id** (String)
-- **name** (String)
-- **omit_null** (Boolean)
-- **order** (Number)
+- **default** (String) A default value if none is supplied and field is not required.
+- **description** (String) Any description for this field.
+- **enabled** (Boolean) If this field is enabled on the flow this should be true, otherwise false.
+- **field_type** (String) Specifies the type of field, such as string, integer, boolean, float, date, relationship.
+- **flow_id** (String) The id of the flow that this field applies to.
+- **name** (String) The name of the field.
+- **omit_null** (Boolean) Hide this field from responses if the value is null.
+- **order** (Number) Denotes the order in which this field is returned relative to the rest of the flow fields.
 - **relationship_to_many** (String)
 - **relationship_to_one** (String)
-- **required** (Boolean)
-- **slug** (String)
-- **valid_float_enum** (List of Number)
+- **required** (Boolean) true if required on input, false if not. Always false if the field_type is a relationship.
+- **slug** (String) A unique slug identifier for the field.
+- **valid_float_enum** (List of Number) A predefined collection of floats that represent the allowed value for this float field.
 - **valid_float_range** (List of Map of Number)
-- **valid_int_enum** (List of Number)
-- **valid_int_range** (List of Map of Number)
-- **valid_string_enum** (List of String)
-- **valid_string_format** (String)
+- **valid_int_enum** (List of Number) A predefined collection of integer that represent the allowed value for this integer field.
+- **valid_int_range** (List of Map of Number) A list of integers specified with from= and to= that represent the range of this value
+- **valid_string_enum** (List of String) A predefined collection of strings that represent the allowed value for this string field.
+- **valid_string_format** (String) Corresponds to the field validation rules for string, one of "email", "slug", or "uuid".
 
