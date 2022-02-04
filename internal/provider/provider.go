@@ -3,10 +3,11 @@ package provider
 import (
 	"context"
 	"fmt"
+	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
+	"github.com/hashicorp/go-cty/cty"
+	"math"
 	"strings"
 	"time"
-
-	"github.com/elasticpath/terraform-provider-epcc/external/sdk/epcc"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -43,28 +44,33 @@ func New(version string) func() *schema.Provider {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_CLIENT_ID", nil),
+					Description: "The **Client ID** API key for the store, this value is available in Commerce Manager under \"Your API keys\"",
 				},
 				"client_secret": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_CLIENT_SECRET", nil),
+					Description: "The **Client Secret** API key for the store, this value is available in Commerce Manager under \"Your API keys\"",
 				},
 				"api_base_url": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_API_BASE_URL", "https://api.moltin.com/"),
+					Description: "The **API base URL** for the store, this value is available in Commerce Manager under \"Your API keys\"",
 				},
 				// TODO Change this to an array maybe that would be cleaner.
 				"beta_features": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("EPCC_BETA_API_FEATURES", ""),
+					Description: "The value to use for the `EP-Beta_Features` header value which controls access to [Beta APIs](https://documentation.elasticpath.com/commerce-cloud/docs/api/basics/api-contract.html#beta-apis)",
 				},
 				"enable_authentication": {
-					Type:     schema.TypeBool,
-					Optional: true,
-					Default:  true,
+					Type:        schema.TypeBool,
+					Optional:    true,
+					Default:     true,
+					Description: "Controls whether or not to authenticate before making a request. Disabling this may be appropriate if you are using additional_headers to supply an authentication token.",
 				},
 				"additional_headers": {
 					Type:     schema.TypeMap,
@@ -72,6 +78,23 @@ func New(version string) func() *schema.Provider {
 					Elem: &schema.Schema{
 						Type: schema.TypeString,
 					},
+					Description: "A set of additional HTTP Headers to send on all requests",
+				},
+				"rate_limit": {
+					Type:        schema.TypeInt,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("EPCC_RATE_LIMIT", 25),
+					ValidateDiagFunc: func(i interface{}, path cty.Path) diag.Diagnostics {
+						integer := i.(int)
+
+						if integer < 1 || integer > math.MaxUint16 {
+							return diag.FromErr(fmt.Errorf("rate_limit value `%d` is not in the range [%d, %d]", integer, 1, math.MaxUint16))
+						}
+
+						return nil
+
+					},
+					Description: "Controls the maximum number of requests this provider will make per second, which conforms to the [Rate Limits](https://documentation.elasticpath.com/commerce-cloud/docs/api/basics/rate-limits.html) of EPCC.",
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
@@ -195,9 +218,10 @@ func configure(version string, p *schema.Provider) func(ctx context.Context, d *
 				ClientId:     epccClientId,
 				ClientSecret: epccClientSecret,
 			},
-			UserAgent:         "terraform-provider-epcc / " + version,
-			AdditionalHeaders: &stringAdditionalHeaders,
-			RetryLimitTimeout: 120 * time.Second,
+			UserAgent:                  "terraform-provider-epcc / " + version,
+			AdditionalHeaders:          &stringAdditionalHeaders,
+			RetryLimitTimeout:          120 * time.Second,
+			RateLimitRequestsPerSecond: uint16(d.Get("rate_limit").(int)),
 		})
 
 		enableAuthentication := d.Get("enable_authentication").(bool)
