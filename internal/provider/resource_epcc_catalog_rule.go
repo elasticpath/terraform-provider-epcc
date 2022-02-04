@@ -19,20 +19,24 @@ func resourceEpccCatalogRule() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier of the catalog rule.",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the rule without spaces.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The purpose for this rule.",
 			},
 			"catalog": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier of the catalog for this rule. If you want to display a catalog that contains V2 Products, Brands, Categories, and Collections, specify `legacy`",
 			},
 			"customers": {
 				Type:     schema.TypeSet,
@@ -40,6 +44,7 @@ func resourceEpccCatalogRule() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Description: "The list of customers who are eligible to see this catalog. If empty, the rule matches all customers.",
 			},
 		},
 	}

@@ -12,8 +12,9 @@ func dataSourceEpccCatalog() *schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccCatalogRead),
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The id of the catalog.",
 			},
 			"name": {
 				Type:        schema.TypeString,

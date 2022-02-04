@@ -19,16 +19,19 @@ func resourceEpccCatalog() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The id of the catalog.",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the catalog.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: " A description of the catalog, such as the purpose for the catalog.",
 			},
 			"hierarchies": {
 				Type:     schema.TypeSet,
@@ -36,10 +39,12 @@ func resourceEpccCatalog() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Description: "The unique identifiers of the hierarchies to associate with this catalog.",
 			},
 			"pricebook": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The unique identifier of the price book to associate with this catalog.",
 			},
 		},
 	}

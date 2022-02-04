@@ -36,16 +36,24 @@ func TestProvider(t *testing.T) {
 
 	resourceAttributesWithNoDescription := make([]string, 0)
 
+	totalBadCount := 0
 	for key, resource := range provider.ResourcesMap {
 
 		if resource.Description == "" {
 			resourcesWithNoDescription = append(resourcesWithNoDescription, key)
 		}
 
-		for attributeName, schema := range resource.Schema {
+		count := 0
+		for _, schema := range resource.Schema {
+
 			if schema.Description == "" {
-				resourceAttributesWithNoDescription = append(resourceAttributesWithNoDescription, fmt.Sprintf("Resource %s attribute %s", key, attributeName))
+				count++
+				totalBadCount++
 			}
+		}
+
+		if count > 0 {
+			resourceAttributesWithNoDescription = append(resourceAttributesWithNoDescription, fmt.Sprintf("%s => %d", key, count))
 		}
 
 	}
@@ -57,10 +65,15 @@ func TestProvider(t *testing.T) {
 			dataSourcesWithNoDescription = append(dataSourcesWithNoDescription, key)
 		}
 
-		for attributeName, schema := range dataSource.Schema {
+		count := 0
+		for _, schema := range dataSource.Schema {
 			if schema.Description == "" {
-				dataSourceAttributesWithNoDescription = append(dataSourceAttributesWithNoDescription, fmt.Sprintf("Resource %s attribute %s", key, attributeName))
+				count++
+				totalBadCount++
 			}
+		}
+		if count > 0 {
+			dataSourceAttributesWithNoDescription = append(dataSourceAttributesWithNoDescription, fmt.Sprintf("%s => %d", key, count))
 		}
 	}
 
@@ -70,12 +83,11 @@ func TestProvider(t *testing.T) {
 		t.Fatalf("%d object's don't have descriptions:\n\tResources:%s\nData Sources:%s\n", dataSourceAndResourcesMissingDescriptions, resourcesWithNoDescription, dataSourcesWithNoDescription)
 	}
 
-	dataSourceAndResourceAttributesMissingDescription := len(resourceAttributesWithNoDescription) + len(dataSourceAttributesWithNoDescription)
 	currentDay := int(time.Now().Unix() / 86400)
 	currentTarget := max(19110-currentDay, 0)
 
-	if dataSourceAndResourceAttributesMissingDescription > currentTarget {
-		t.Fatalf("%d object's don't have descriptions\n\tWe have a lot of technical debt so this tests permits a non zero value but over time decreases the number of descriptions needed by 1 per day, so just go and get below this number: %d\n\tResources:%s\nData Sources:%s\n", dataSourceAndResourceAttributesMissingDescription, currentTarget, resourceAttributesWithNoDescription, dataSourceAttributesWithNoDescription)
+	if totalBadCount+10 > currentTarget {
+		t.Fatalf("%d object's don't have descriptions\n\tWe have a lot of technical debt so this tests permits a non zero value but over time decreases the number of descriptions needed by 1 per day, so just go and get below this number: %d\n\tResources:%s\nData Sources:%s\n", totalBadCount, currentTarget, resourceAttributesWithNoDescription, dataSourceAttributesWithNoDescription)
 	}
 
 }

@@ -12,8 +12,9 @@ func dataSourceEpccCatalogRule() *schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccCatalogRuleRead),
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier of the catalog rule.",
 			},
 			"name": {
 				Type:        schema.TypeString,
