@@ -14,7 +14,6 @@ func TestAccResourcePromotion(t *testing.T) {
 			{
 				Config: testAccResourcePromotion,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_promotion.acc_test_promotion", "type", "promotion"),
 					resource.TestCheckResourceAttr("epcc_promotion.acc_test_promotion", "name", "Promo #1"),
 					resource.TestCheckResourceAttr("epcc_promotion.acc_test_promotion", "description", "Initial Promotion"),
 					resource.TestCheckResourceAttr("epcc_promotion.acc_test_promotion", "enabled", "true"),
@@ -52,7 +51,6 @@ resource "epcc_currency" "chf" {
 }
 
 resource "epcc_promotion" "acc_test_promotion" {
-  type = "promotion"
   name = "Promo #1"
   description = "Initial Promotion"
   enabled = true

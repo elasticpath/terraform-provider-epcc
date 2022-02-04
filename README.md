@@ -1,39 +1,41 @@
 # Elastic Path Commerce Cloud Terraform Provider
 
-This repository contains a [Terraform](https://www.terraform.io) provider for the [Elastic Path Commerce Cloud API](https://documentation.elasticpath.com/commerce-cloud/docs/api/). 
+This repository contains a [Terraform](https://www.terraform.io) provider for the [Elastic Path Commerce Cloud API](https://documentation.elasticpath.com/commerce-cloud/docs/api/).
 
 This project was based upon the [Terraform Provider Scaffolding Project](https://github.com/hashicorp/terraform-provider-scaffolding)
 
 ## Requirements
 
--	[Terraform](https://www.terraform.io/downloads.html) >= 0.15.x
--	[Go](https://golang.org/doc/install) >= 1.15
+- [Terraform](https://www.terraform.io/downloads.html) >= 0.15.x
+- [Go](https://golang.org/doc/install) >= 1.15
 
 ## Building The Provider
 
 1. Clone the repository
 1. Enter the repository directory
-1. Build the provider using the Go `install` command: 
+1. Build the provider using the Go `install` command:
+
 ```sh
 $ go install
 ```
 
 ## Environment Variables
 
-The following environment variables are [defined in Account Management](internal/config/env.go), and can be used to influence behaviour.
+The following environment variables are defined in the EPCC Terraform Provider.
 
-| Name                      | Default          | Description                                                                                                                                        |
-| --------------------------| ---------------- | ------------ |
-| `EPCC_API_BASE_URL`       | -                | The Base URL of the EPCC API                                          |
-| `EPCC_BETA_API_FEATURES`  | -                | The value of the `EP-Beta-Features` header being sent to the EPCC API |
-| `EPCC_CLIENT_ID`          | -                | Client ID used for authenticating to the EPCC API                     |
-| `EPCC_CLIENT_SECRET`      | -                | Client Secret used for authenticating to the EPCC API                 |
-| `EPCC_LOG_DIR`            | (work directory) | The directory of the http log files                                   |
+| Name                     | Default          | Description                                                                                                                                        |
+|--------------------------|------------------| ------------ |
+| `EPCC_API_BASE_URL`      | -                | The Base URL of the EPCC API                                          |
+| `EPCC_BETA_API_FEATURES` | -                | The value of the `EP-Beta-Features` header being sent to the EPCC API |
+| `EPCC_CLIENT_ID`         | -                | Client ID used for authenticating to the EPCC API                     |
+| `EPCC_CLIENT_SECRET`     | -                | Client Secret used for authenticating to the EPCC API                 |
+| `EPCC_RATE_LIMIT`        | 25               | A limit on the number of requests that can be made per second to EPCC |
+| `EPCC_LOG_DIR`           | (work directory) | The directory of the http log files                                   |
 
 ## Adding Dependencies
 
-This provider uses [Go modules](https://github.com/golang/go/wiki/Modules).
-Please see the Go documentation for the most up to date information about using Go modules.
+This provider uses [Go modules](https://github.com/golang/go/wiki/Modules). Please see the Go documentation for the most up to date information about using Go
+modules.
 
 To add a new dependency `github.com/author/dependency` to your Terraform provider:
 
@@ -43,7 +45,6 @@ go mod tidy
 ```
 
 Then commit the changes to `go.mod` and `go.sum`.
-
 
 ## Project Layout
 
@@ -74,14 +75,15 @@ See the [Core Terraform Workflow] (https://www.terraform.io/guides/core-workflow
 ## Debugging the Provider
 
 1. Run `make build`
-   
+
 2. Run the following command (assuming you've installed delve)
+
 ```bash
-dlv exec --headless ./bin/terraform-provider-my-provider -- --debug
+dlv exec --accept-multiclient --continue --headless ./bin/terraform-provider-epcc --listen=:41837 -- -debug
 ```
 
 3. Connect with your Debugger
-   
+
 4. Find the line `TF_REATTACH_PROVIDERS` in the output
 
 5. When running terraform prefix the above to the command, for example:
@@ -90,10 +92,10 @@ dlv exec --headless ./bin/terraform-provider-my-provider -- --debug
 TF_REATTACH_PROVIDERS='...' terraform apply
 ```
 
-
 ## Code Style
 
-Please run `gofmt` prior to committing, the following [pre-commit hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) (create and mark executable in `.git/hooks/pre-commit`) can do this automatically for you
+Please run `gofmt` prior to committing, the following [pre-commit hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) (create and mark executable
+in `.git/hooks/pre-commit`) can do this automatically for you
 
 ```bash
 #!/bin/bash
@@ -113,7 +115,9 @@ if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
   exit 1
 fi
 ```
+
 [Debugging Providers](https://www.terraform.io/docs/extend/debugging.html#starting-a-provider-in-debug-mode)
+
 ### Useful Links
 
 1. [AWS SDK for Go](https://github.com/aws/aws-sdk-go-v2)

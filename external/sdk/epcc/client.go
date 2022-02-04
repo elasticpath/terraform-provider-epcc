@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/time/rate"
 	"io"
 	"log"
 	"mime/multipart"
@@ -32,17 +34,19 @@ type Client struct {
 	UserAgent         string
 	AdditionalHeaders *map[string]string
 	LogDirectory      *url.URL
+	Limiter           *rate.Limiter
 }
 
 // ClientOptions can be used to configure a new client.
 type ClientOptions struct {
-	BaseURL           string // BaseURL is the where requests will be made to.
-	BetaFeatures      string
-	ClientTimeout     time.Duration // ClientTimeout is how long the client waits for a response before timing out.
-	RetryLimitTimeout time.Duration // RetryLimitTimeout is how long requests will be retried for status codes 429, 500, 503 & 504
-	Credentials       *Credentials
-	UserAgent         string
-	AdditionalHeaders *map[string]string
+	BaseURL                    string // BaseURL is the where requests will be made to.
+	BetaFeatures               string
+	ClientTimeout              time.Duration // ClientTimeout is how long the client waits for a response before timing out.
+	RetryLimitTimeout          time.Duration // RetryLimitTimeout is how long requests will be retried for status codes 429, 500, 503 & 504
+	Credentials                *Credentials
+	UserAgent                  string
+	AdditionalHeaders          *map[string]string
+	RateLimitRequestsPerSecond uint16
 }
 
 type Credentials struct {
@@ -56,9 +60,10 @@ func NewClient(options ...ClientOptions) *Client {
 	logDirectory := getLogDirectory()
 
 	exp := retry.Exponential{
-		Initial: 10 * time.Millisecond,
-		Factor:  1.5,
-		Jitter:  true,
+		Initial:  10 * time.Millisecond,
+		Factor:   1.5,
+		Jitter:   true,
+		MaxDelay: 5 * time.Second,
 	}
 
 	strategy := retry.LimitTime(cfg.RetryLimitTimeout, exp)
@@ -77,6 +82,7 @@ func NewClient(options ...ClientOptions) *Client {
 		UserAgent:         "go-epcc-client",
 		AdditionalHeaders: &map[string]string{},
 		LogDirectory:      logDirectory,
+		Limiter:           rate.NewLimiter(rate.Limit(cfg.RateLimit), 1),
 	}
 
 	// If no configuration options are provided, return the default client.
@@ -102,6 +108,7 @@ func NewClient(options ...ClientOptions) *Client {
 				UserAgent:         options[i].UserAgent,
 				AdditionalHeaders: options[i].AdditionalHeaders,
 				LogDirectory:      logDirectory,
+				Limiter:           rate.NewLimiter(rate.Limit(options[i].RateLimitRequestsPerSecond), 1),
 			}
 
 			if len(customClient.BaseURL) == 0 {
@@ -118,6 +125,10 @@ func NewClient(options ...ClientOptions) *Client {
 
 			if len(customClient.Credentials.ClientSecret) == 0 {
 				customClient.Credentials.ClientSecret = defaultClient.Credentials.ClientSecret
+			}
+
+			if customClient.Limiter == nil {
+				customClient.Limiter = defaultClient.Limiter
 			}
 
 			return &customClient
@@ -230,7 +241,15 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 		req.Header.Add("EP-Beta-Features", c.BetaFeatures)
 	}
 
-	for r := retry.Start(c.RetryStrategy, nil); r.Next(); {
+	r := retry.Start(c.RetryStrategy, nil)
+	for r.Next() {
+
+		start := time.Now()
+		if err := c.Limiter.Wait(*ctx); err != nil {
+			tflog.Warn(*ctx, fmt.Sprintf("Rate Limiter returned error, aborting: %s", err))
+			break
+		}
+		elapsed := time.Since(start)
 
 		reqDump, _ := httputil.DumpRequestOut(req, true)
 
@@ -244,10 +263,11 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 
 		c.logToDisk(method, path, reqDump, respDump, resp.StatusCode)
 		defer resp.Body.Close()
-
+		tflog.Info(*ctx, fmt.Sprintf("Request completed %s => %s, received %d after %d tries, rate limiting made us wait %s", req.Method, req.RequestURI, resp.StatusCode, r.Count(), elapsed))
 		switch resp.StatusCode {
 		case 429, 500, 502, 503, 504:
-			c.logErrorToDiag(ctx, reqDump, respDump)
+			tflog.Warn(*ctx, fmt.Sprintf("Could not complete request %s => %s, received %d after %d tries", req.Method, req.RequestURI, resp.StatusCode, r.Count()))
+			//c.logErrorToDiag(ctx, reqDump, respDump)
 			continue
 
 		case 200, 201:
@@ -287,6 +307,7 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 		}
 	}
 
+	tflog.Error(*ctx, fmt.Sprintf("Could not complete request %s => %s, completely failed after %d tries", req.Method, req.RequestURI, r.Count()))
 	err = errors.New("retry timeout error")
 	return nil, FromError(err)
 }

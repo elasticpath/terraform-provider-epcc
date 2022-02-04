@@ -44,3 +44,7 @@ cmd/
 
 
 /terraform-provider-epcc
+
+*.tf
+
+logs/

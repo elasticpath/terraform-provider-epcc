@@ -17,7 +17,11 @@ func TestAccResourceProduct(t *testing.T) {
 	productTestSteps := productTestSteps(tempDir)
 	resource.UnitTest(t, resource.TestCase{
 		PreCheck: func() {
-			err := ioutil.WriteFile(tempDir+"/hello_world.txt", []byte("hello world"), 0644)
+			sourceFile, err := ioutil.ReadFile("../../ep.png")
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = ioutil.WriteFile(tempDir+"/ep.png", sourceFile, 0644)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -98,8 +102,8 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 			// language=HCL
 			`
 	resource "epcc_file" "hello_world"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
@@ -114,8 +118,8 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		fmt.Sprintf(
 			// language=HCL
 			`resource "epcc_file" "hello_world_1"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
@@ -130,14 +134,14 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		fmt.Sprintf(
 			// language=HCL
 			`resource "epcc_file" "hello_world_1"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
 	resource "epcc_file" "hello_world_2"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
@@ -152,14 +156,14 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		fmt.Sprintf(
 			// language=HCL
 			`resource "epcc_file" "hello_world_1"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
 	resource "epcc_file" "hello_world_2"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
@@ -174,14 +178,14 @@ resource "epcc_product" "acc_test_epcc_product_1" {
 		fmt.Sprintf(
 			// language=HCL
 			`resource "epcc_file" "hello_world_1"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 
 	resource "epcc_file" "hello_world_2"{
-		file_name = "%s/hello_world.txt"
-		file_hash = filemd5("%s/hello_world.txt")
+		file_name = "%s/ep.png"
+		file_hash = filemd5("%s/ep.png")
 		public = true
 	}
 

@@ -18,6 +18,7 @@ func init() {
 	cfg.ClientTimeout = 10 * time.Second
 	cfg.RetryLimitTimeout = 30 * time.Second
 	cfg.BetaFeatures = ""
+	cfg.RateLimit = 25
 
 	// If the package is being tested, ignore environment variables.
 	if len(os.Args) > 1 && os.Args[1][:5] == "-test" {
@@ -46,4 +47,5 @@ type Config struct {
 	BetaFeatures      string `envconfig:"EPCC_BETA_API_FEATURES"`
 	ClientTimeout     time.Duration
 	RetryLimitTimeout time.Duration
+	RateLimit         uint16 `envconfig:"EPCC_RATE_LIMIT,default=25"`
 }
