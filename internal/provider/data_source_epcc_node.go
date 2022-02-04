@@ -12,28 +12,34 @@ func dataSourceEpccNode() *schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccNodeRead),
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier of the node.",
 			},
 			"hierarchy_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier of the hierarchy.",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "A name for the node. Names must be unique among sibling nodes in the hierarchy, but otherwise a name can be non-unique. Cannot be null.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "A description of the node.",
 			},
 			"slug": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "A slug for the node. Slugs must be unique among sibling nodes in the hierarchy, but otherwise a slug can be non-unique.",
 			},
 			"parent_id": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The node ID for the parent node. The new node is created as a child of this parent node.",
 			},
 		},
 	}

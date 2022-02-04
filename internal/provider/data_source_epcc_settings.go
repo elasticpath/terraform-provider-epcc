@@ -10,10 +10,10 @@ func dataSourceEpccSettings() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: addDiagToContext(dataSourceEpccSettingsRead),
 		Schema: map[string]*schema.Schema{
-			"page_length":          {Type: schema.TypeInt, Computed: true},
-			"list_child_products":  {Type: schema.TypeBool, Computed: true},
-			"additional_languages": {Type: schema.TypeList, Computed: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"calculation_method":   {Type: schema.TypeString, Computed: true},
+			"page_length":          {Type: schema.TypeInt, Computed: true, Description: "The number of results per page when paginating results"},
+			"list_child_products":  {Type: schema.TypeBool, Computed: true, Description: "Whether to display child products in product listings."},
+			"additional_languages": {Type: schema.TypeList, Computed: true, Elem: &schema.Schema{Type: schema.TypeString}, Description: "You can define additional language codes that are enabled for a project, this applies only to the legacy catalog and does not apply to PCM products, hierarchies, and catalogs."},
+			"calculation_method":   {Type: schema.TypeString, Computed: true, Description: "This option defines the method used to calculate cart and order totals."},
 		},
 	}
 }
