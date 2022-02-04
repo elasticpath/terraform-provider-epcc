@@ -242,7 +242,7 @@ func (c *Client) doRequestInternal(ctx *context.Context, method string, contentT
 	}
 
 	r := retry.Start(c.RetryStrategy, nil)
-	for ; r.Next(); {
+	for r.Next() {
 
 		start := time.Now()
 		if err := c.Limiter.Wait(*ctx); err != nil {
