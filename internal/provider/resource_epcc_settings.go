@@ -19,10 +19,10 @@ func resourceEpccSettings() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"id":                   {Type: schema.TypeString, Computed: true},
-			"page_length":          {Type: schema.TypeInt, Optional: true},
-			"list_child_products":  {Type: schema.TypeBool, Optional: true},
-			"additional_languages": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"calculation_method":   {Type: schema.TypeString, Optional: true},
+			"page_length":          {Type: schema.TypeInt, Optional: true, Description: "The number of results per page when paginating results."},
+			"list_child_products":  {Type: schema.TypeBool, Optional: true, Description: "Whether to display child products in product listings."},
+			"additional_languages": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}, Description: "You can define additional language codes that are enabled for a project, this applies only to the legacy catalog and does not apply to PCM products, hierarchies, and catalogs."},
+			"calculation_method":   {Type: schema.TypeString, Optional: true, Description: "This option defines the method used to calculate cart and order totals."},
 		},
 	}
 }

@@ -11,20 +11,24 @@ func dataSourceEpccHierarchy() *schema.Resource {
 		ReadContext: addDiagToContext(dataSourceEpccHierarchyRead),
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The unique identifier of the hierarchy.",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the hierarchy. The maximum length is 1000 characters.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "A description of the hierarchy.",
 			},
 			"slug": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "A unique slug for the hierarchy.",
 			},
 		},
 	}
