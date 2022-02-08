@@ -12,8 +12,21 @@ func TestAccResourceAuthenticationRealm(t *testing.T) {
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
-			{
-				Config: testAccResourceAuthenticationRealm,
+			{ // language=HCL
+				Config: `
+				data "epcc_customer_authentication_settings" "customer_auth_settings" { 
+					
+				}
+
+				resource "epcc_authentication_realm" "acc_test_realm" {
+				  id = data.epcc_customer_authentication_settings.customer_auth_settings.realm_id
+				  name = "test_realm"
+				  redirect_uris = [
+					"https://google.com/"]
+				  duplicate_email_policy = "allowed"
+				  origin_id = "hello-world"
+				  origin_type = "customer-authentication-settings"
+				}`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("epcc_authentication_realm.acc_test_realm", "name", regexp.MustCompile("test_realm")),
 					resource.TestMatchResourceAttr("epcc_authentication_realm.acc_test_realm", "redirect_uris.#", regexp.MustCompile("1")),
@@ -29,12 +42,5 @@ func TestAccResourceAuthenticationRealm(t *testing.T) {
 
 // language=HCL
 const testAccResourceAuthenticationRealm = `
-resource "epcc_authentication_realm" "acc_test_realm" {
-  name = "test_realm"
-  redirect_uris = [
-    "https://google.com/"]
-  duplicate_email_policy = "allowed"
-  origin_id = "hello-world"
-  origin_type = "customer-authentication-settings"
-}
+
 `
