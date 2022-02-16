@@ -20,6 +20,11 @@ func resourceEpccAuthenticationRealm() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier for the authentication realm.",
+			},
+			"authentication_realm_id": {
+				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The unique identifier for the authentication realm.",
 			},
