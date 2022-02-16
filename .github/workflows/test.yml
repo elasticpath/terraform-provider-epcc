@@ -17,13 +17,13 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
 
     - name: Set up Go
       uses: actions/setup-go@v2.1.3
       with:
-        go-version: '1.15'
+        go-version: '1.17'
       id: go
 
     - name: Check out code into the Go module directory
@@ -46,9 +46,28 @@ jobs:
         echo "If this fails you should run \"terraform fmt -recursive\""
         terraform fmt -recursive -check
 
+    - name: Import GPG key
+      id: import_gpg
+      uses: hashicorp/ghaction-import-gpg@v2.1.0
+      env:
+        # These secrets will need to be configured for the repository:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        PASSPHRASE: ${{ secrets.PASSPHRASE }}
+
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v2
+      with:
+        version: latest
+        args: release --snapshot --rm-dist
+      env:
+        GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+        # GitHub sets this automatically
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Build
       run: |
         go build -v .
+
 
   # run acceptance tests in a matrix with Terraform core versions
   test:
@@ -63,13 +82,13 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '0.15.3'
+          - '1.1.5'
     steps:
 
     - name: Set up Go
       uses: actions/setup-go@v2.1.3
       with:
-        go-version: '1.15'
+        go-version: '1.17'
       id: go
 
     - name: Check out code into the Go module directory
@@ -80,7 +99,7 @@ jobs:
         go mod download
         
     - name: TF acceptance tests
-      timeout-minutes: 10
+      timeout-minutes: 15
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
