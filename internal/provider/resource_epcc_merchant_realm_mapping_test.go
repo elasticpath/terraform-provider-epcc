@@ -26,7 +26,7 @@ func TestAccResourceMerchantRealmMappingPrefix(t *testing.T) {
 			{
 				Config: fmt.Sprintf(testAccResourceMerchantRealmMappingPrefix, myRandSeq),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("epcc_merchant_realm_mapping_prefix.test_merchant_realm_mapping_prefix", "prefix", myRandSeq),
+					resource.TestCheckResourceAttr("epcc_merchant_realm_mapping.mrm", "prefix", myRandSeq),
 				),
 			},
 		},
@@ -35,10 +35,7 @@ func TestAccResourceMerchantRealmMappingPrefix(t *testing.T) {
 
 // language=HCL
 const testAccResourceMerchantRealmMappingPrefix = `
-data "epcc_merchant_realm_mappings" "test_merchant_realm_mappings" {
-}
-resource "epcc_merchant_realm_mapping_prefix" "test_merchant_realm_mapping_prefix" {
-  merchant_realm_mapping_id = data.epcc_merchant_realm_mappings.test_merchant_realm_mappings.merchant_realm_mapping_id
+resource "epcc_merchant_realm_mapping" "mrm" {
   prefix = "%s"
 }
 `

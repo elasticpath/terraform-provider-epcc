@@ -44,9 +44,9 @@ func TestProvider(t *testing.T) {
 		}
 
 		count := 0
-		for _, schema := range resource.Schema {
+		for _, resSchema := range resource.Schema {
 
-			if schema.Description == "" {
+			if resSchema.Description == "" {
 				count++
 				totalBadCount++
 			}

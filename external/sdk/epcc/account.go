@@ -22,6 +22,9 @@ type Account struct {
 
 func (accounts) Get(ctx *context.Context, client *Client, accountId string) (*AccountData, ApiErrors) {
 	path := fmt.Sprintf("/v2/accounts/%s", accountId)
+	if accountId == "" {
+		return nil, FromError(fmt.Errorf("account id should not be empty [%s]", accountId))
+	}
 
 	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
 	if apiError != nil {

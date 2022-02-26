@@ -7,7 +7,7 @@ on:
     paths-ignore:
       - 'README.md'
   # For systems with an upstream API that could drift unexpectedly (like most SaaS systems, etc.),
-  # we recommend testing at a regular interval not necessarily tied to code changes. This will 
+  # we recommend testing at a regular interval not necessarily tied to code changes. This will
   # ensure you are alerted to something breaking due to an API change, even if the code did not
   # change.
   # schedule:
@@ -46,24 +46,6 @@ jobs:
         echo "If this fails you should run \"terraform fmt -recursive\""
         terraform fmt -recursive -check
 
-    - name: Import GPG key
-      id: import_gpg
-      uses: hashicorp/ghaction-import-gpg@v2.1.0
-      env:
-        # These secrets will need to be configured for the repository:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        PASSPHRASE: ${{ secrets.PASSPHRASE }}
-
-    - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v2
-      with:
-        version: latest
-        args: release --snapshot --rm-dist
-      env:
-        GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-        # GitHub sets this automatically
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Build
       run: |
         go build -v .
@@ -97,7 +79,7 @@ jobs:
     - name: Get dependencies
       run: |
         go mod download
-        
+
     - name: TF acceptance tests
       timeout-minutes: 15
       env:

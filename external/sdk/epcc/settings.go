@@ -73,5 +73,5 @@ type SettingsData struct {
 //}
 //
 //type ProfileList struct {
-//	Data []Profile
+//	Data []OidcProfile
 //}

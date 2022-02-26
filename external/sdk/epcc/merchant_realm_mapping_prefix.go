@@ -7,17 +7,19 @@ import (
 	"fmt"
 )
 
-var MerchantRealmMappingPrefixes merchantRealmMappingPrefixes
+var MerchantRealmMappings merchantRealmMappings
 
-type merchantRealmMappingPrefixes struct{}
+type merchantRealmMappings struct{}
 
-type MerchantRealmMappingPrefix struct {
-	Id     string `json:"id,omitempty"`
-	Type   string `json:"type"`
-	Prefix string `json:"prefix"`
+type MerchantRealmMappingsStruct struct {
+	ID      string  `json:"id"`
+	Prefix  *string `json:"prefix"`
+	RealmID string  `json:"realm_id,omitempty"`
+	StoreID string  `json:"store_id,omitempty"`
+	Type    string  `json:"type"`
 }
 
-func (merchantRealmMappingPrefixes) Get(ctx *context.Context, client *Client) (*MerchantRealmMappingPrefixData, ApiErrors) {
+func (merchantRealmMappings) Get(ctx *context.Context, client *Client) (*MerchantRealmMappingsData, ApiErrors) {
 	path := fmt.Sprintf("/v2/merchant-realm-mappings")
 
 	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
@@ -25,21 +27,20 @@ func (merchantRealmMappingPrefixes) Get(ctx *context.Context, client *Client) (*
 		return nil, apiError
 	}
 
-	var merchantRealmMappingPrefixes MerchantRealmMappingPrefixData
-	if err := json.Unmarshal(body, &merchantRealmMappingPrefixes); err != nil {
+	var merchantRealmMappings MerchantRealmMappingsData
+	if err := json.Unmarshal(body, &merchantRealmMappings); err != nil {
 		return nil, FromError(err)
 	}
 
-	return &merchantRealmMappingPrefixes, nil
+	return &merchantRealmMappings, nil
 }
 
-// Update updates a merchantRealmMappingPrefix.
-func (merchantRealmMappingPrefixes) Update(ctx *context.Context, client *Client, id, prefix *string) (*MerchantRealmMappingPrefixData, ApiErrors) {
+func (merchantRealmMappings) Update(ctx *context.Context, client *Client, id, prefix *string) (*MerchantRealmMappingsData, ApiErrors) {
 
-	merchantRealmMappingPrefixData := MerchantRealmMappingPrefixData{
-		Data: MerchantRealmMappingPrefix{
+	merchantRealmMappingPrefixData := MerchantRealmMappingsData{
+		Data: MerchantRealmMappingsStruct{
 			Type:   "merchant-realm-mappings",
-			Prefix: *prefix,
+			Prefix: prefix,
 		},
 	}
 
@@ -55,7 +56,7 @@ func (merchantRealmMappingPrefixes) Update(ctx *context.Context, client *Client,
 	if apiError != nil {
 		return nil, apiError
 	}
-	var updatedMerchantRealmMappingPrefix MerchantRealmMappingPrefixData
+	var updatedMerchantRealmMappingPrefix MerchantRealmMappingsData
 	if err := json.Unmarshal(body, &updatedMerchantRealmMappingPrefix); err != nil {
 		return nil, FromError(err)
 	}
@@ -63,6 +64,6 @@ func (merchantRealmMappingPrefixes) Update(ctx *context.Context, client *Client,
 	return &updatedMerchantRealmMappingPrefix, nil
 }
 
-type MerchantRealmMappingPrefixData struct {
-	Data MerchantRealmMappingPrefix `json:"data"`
+type MerchantRealmMappingsData struct {
+	Data MerchantRealmMappingsStruct `json:"data"`
 }

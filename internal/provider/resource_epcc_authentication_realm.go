@@ -27,6 +27,7 @@ func resourceEpccAuthenticationRealm() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The unique identifier for the authentication realm.",
+				ForceNew:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
@@ -60,6 +61,39 @@ func resourceEpccAuthenticationRealm() *schema.Resource {
 }
 
 func resourceEpccAuthenticationRealmDelete(ctx context.Context, d *schema.ResourceData, m interface{}) {
+
+	// When we delete a realm we will reset it to the initial state
+	client := m.(*epcc.Client)
+
+	originType := d.Get("origin_type")
+
+	authenticationRealmId := d.Id()
+
+	authenticationRealm := &epcc.Realm{
+		Id:                   authenticationRealmId,
+		Type:                 "authentication-realm",
+		Name:                 "Authentication Realm (Cleared by Terraform)",
+		RedirectUris:         make([]interface{}, 0),
+		DuplicateEmailPolicy: "allowed",
+	}
+
+	switch originType {
+	// Try and reset the name to the right state
+	case "account_authentication_settings":
+		authenticationRealm.Name = "Account Management Realm"
+	case "customer-authentication-settings":
+		authenticationRealm.Name = "Buyer Organization"
+	case "merchant-realm-mappings":
+		authenticationRealm.Name = "Merchant Organization"
+	}
+
+	_, apiError := epcc.Realms.Update(&ctx, client, authenticationRealmId, authenticationRealm)
+
+	if apiError != nil {
+		ReportAPIError(ctx, apiError)
+		return
+	}
+
 	d.SetId("")
 }
 
@@ -74,14 +108,6 @@ func resourceEpccAuthenticationRealmUpdate(ctx context.Context, d *schema.Resour
 		Name:                 d.Get("name").(string),
 		RedirectUris:         d.Get("redirect_uris").([]interface{}),
 		DuplicateEmailPolicy: d.Get("duplicate_email_policy").(string),
-		Relationships: &epcc.RealmRelationships{
-			Origin: &epcc.RealmRelationshipsOrigin{
-				Data: &epcc.RealmRelationshipsOriginData{
-					Id:   d.Get("origin_id").(string),
-					Type: d.Get("origin_type").(string),
-				},
-			},
-		},
 	}
 
 	updatedAuthenticationRealmData, apiError := epcc.Realms.Update(&ctx, client, authenticationRealmId, authenticationRealm)
@@ -132,33 +158,33 @@ func resourceEpccAuthenticationRealmRead(ctx context.Context, d *schema.Resource
 func resourceEpccAuthenticationRealmCreate(ctx context.Context, d *schema.ResourceData, m interface{}) {
 
 	client := m.(*epcc.Client)
-	realmId := d.Get("id").(string)
+	realmId := d.Get("authentication_realm_id").(string)
 
-	authenticationRealm, err := epcc.Realms.Get(&ctx, client, realmId)
+	_, err := epcc.Realms.Get(&ctx, client, realmId)
 
 	if err != nil {
 		ReportAPIError(ctx, err)
 		return
 	}
 
-	if err := d.Set("name", authenticationRealm.Data.Name); err != nil {
-		addToDiag(ctx, diag.FromErr(err))
+	// Save original values
+
+	updatedAuthenticationRealm := &epcc.Realm{
+		Id:                   realmId,
+		Type:                 "authentication-realm",
+		Name:                 d.Get("name").(string),
+		RedirectUris:         d.Get("redirect_uris").([]interface{}),
+		DuplicateEmailPolicy: d.Get("duplicate_email_policy").(string),
+	}
+
+	_, apiError := epcc.Realms.Update(&ctx, client, realmId, updatedAuthenticationRealm)
+
+	if apiError != nil {
+		ReportAPIError(ctx, apiError)
 		return
 	}
-	if err := d.Set("redirect_uris", authenticationRealm.Data.RedirectUris); err != nil {
-		addToDiag(ctx, diag.FromErr(err))
-		return
-	}
-	if err := d.Set("duplicate_email_policy", authenticationRealm.Data.DuplicateEmailPolicy); err != nil {
-		addToDiag(ctx, diag.FromErr(err))
-		return
-	}
-	if err := d.Set("origin_id", authenticationRealm.Data.Relationships.Origin.Data.Id); err != nil {
-		addToDiag(ctx, diag.FromErr(err))
-		return
-	}
-	if err := d.Set("origin_type", authenticationRealm.Data.Relationships.Origin.Data.Type); err != nil {
-		addToDiag(ctx, diag.FromErr(err))
-		return
-	}
+
+	d.SetId(realmId)
+
+	resourceEpccAuthenticationRealmRead(ctx, d, m)
 }
