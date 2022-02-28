@@ -33,7 +33,7 @@ type RealmRelationshipsOriginData struct {
 
 func (realms) Get(ctx *context.Context, client *Client, realmId string) (*RealmData, ApiErrors) {
 
-	if (realmId == "") {
+	if realmId == "" {
 		return nil, FromError(fmt.Errorf("Realm id should not be empty [%s]", realmId))
 	}
 

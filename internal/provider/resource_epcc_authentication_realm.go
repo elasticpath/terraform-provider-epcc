@@ -26,7 +26,7 @@ func resourceEpccAuthenticationRealm() *schema.Resource {
 			"authentication_realm_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The unique identifier for the authentication realm.",
+				Description: "The unique identifier for the authentication realm. You must supply this value and retrieve it from another linked resource or data source.",
 				ForceNew:    true,
 			},
 			"name": {
