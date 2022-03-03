@@ -56,11 +56,9 @@ func dataSourceEpccAuthenticationRealmRead(ctx context.Context, d *schema.Resour
 	}
 
 	d.Set("id", authenticationRealm.Data.Id)
-	d.Set("type", authenticationRealm.Data.Type)
 	d.Set("name", authenticationRealm.Data.Name)
 	d.Set("redirect_uris", authenticationRealm.Data.RedirectUris)
 	d.Set("duplicate_email_policy", authenticationRealm.Data.DuplicateEmailPolicy)
-	d.Set("relationships", authenticationRealm.Data.Relationships)
 	d.Set("origin_id", authenticationRealm.Data.Relationships.Origin.Data.Id)
 	d.Set("origin_type", authenticationRealm.Data.Relationships.Origin.Data.Type)
 	d.SetId(authenticationRealm.Data.Id)

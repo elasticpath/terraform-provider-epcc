@@ -21,6 +21,12 @@ type OidcProfile struct {
 	RealmId      string `json:"-"`
 }
 
+type OidcProfileLinks struct {
+	CallbackEndpoint      string `json:"callback-endpoint,omitempty"`
+	AuthorizationEndpoint string `json:"authorization-endpoint,omitempty"`
+	ClientDiscoveryUrl    string `json:"client-discovery-url,omitempty"`
+}
+
 func (oidcProfiles) Get(ctx *context.Context, client *Client, realmId, profileId string) (*ProfileData, ApiErrors) {
 	path := fmt.Sprintf("/v2/authentication-realms/%s/oidc-profiles/%s", realmId, profileId)
 
@@ -118,7 +124,8 @@ func (oidcProfiles) Update(ctx *context.Context, client *Client, profile *OidcPr
 }
 
 type ProfileData struct {
-	Data OidcProfile `json:"data"`
+	Data  OidcProfile       `json:"data"`
+	Links *OidcProfileLinks `json:"links,omitempty"`
 }
 
 // ProfileMeta contains extra data for an profile
