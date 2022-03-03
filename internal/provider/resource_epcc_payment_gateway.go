@@ -22,8 +22,9 @@ func (r PaymentGatewayResourceProvider) Resource() *schema.Resource {
 		DeleteContext: addDiagToContext(r.delete),
 		Schema: map[string]*schema.Schema{
 			"slug": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The slug of the payment gateway.",
 			},
 			"enabled": {
 				Type:        schema.TypeBool,

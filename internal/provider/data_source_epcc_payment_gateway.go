@@ -17,8 +17,9 @@ func (r PaymentGatewayDataSourceProvider) DataSource() *schema.Resource {
 		ReadContext: addDiagToContext(r.read),
 		Schema: map[string]*schema.Schema{
 			"slug": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The slug of the payment gateway.",
 			},
 			"enabled": {
 				Type:        schema.TypeBool,

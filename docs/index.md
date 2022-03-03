@@ -57,9 +57,10 @@ $terraform plan
 
 ### Optional
 
-- **additional_headers** (Map of String)
-- **api_base_url** (String)
-- **beta_features** (String)
-- **client_id** (String)
-- **client_secret** (String, Sensitive)
-- **enable_authentication** (Boolean)
+- **additional_headers** (Map of String) A set of additional HTTP Headers to send on all requests
+- **api_base_url** (String) The **API base URL** for the store, this value is available in Commerce Manager under "Your API keys"
+- **beta_features** (String) The value to use for the `EP-Beta_Features` header value which controls access to [Beta APIs](https://documentation.elasticpath.com/commerce-cloud/docs/api/basics/api-contract.html#beta-apis)
+- **client_id** (String) The **Client ID** API key for the store, this value is available in Commerce Manager under "Your API keys"
+- **client_secret** (String, Sensitive) The **Client Secret** API key for the store, this value is available in Commerce Manager under "Your API keys"
+- **enable_authentication** (Boolean) Controls whether or not to authenticate before making a request. Disabling this may be appropriate if you are using additional_headers to supply an authentication token.
+- **rate_limit** (Number) Controls the maximum number of requests this provider will make per second, which conforms to the [Rate Limits](https://documentation.elasticpath.com/commerce-cloud/docs/api/basics/rate-limits.html) of EPCC.

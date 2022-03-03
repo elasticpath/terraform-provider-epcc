@@ -32,6 +32,11 @@ type RealmRelationshipsOriginData struct {
 }
 
 func (realms) Get(ctx *context.Context, client *Client, realmId string) (*RealmData, ApiErrors) {
+
+	if realmId == "" {
+		return nil, FromError(fmt.Errorf("Realm id should not be empty [%s]", realmId))
+	}
+
 	path := fmt.Sprintf("/v2/authentication-realms/%s", realmId)
 
 	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)

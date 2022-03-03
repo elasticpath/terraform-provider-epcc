@@ -16,9 +16,9 @@ Represents the EPCC API [Node and Product Relationship](https://documentation.el
 
 ### Required
 
-- **hierarchy_id** (String)
-- **node_id** (String)
-- **product_id** (String)
+- **hierarchy_id** (String) The unique identifier of the hierarchy.
+- **node_id** (String) The unique identifier of the node in the hierarchy.
+- **product_id** (String) The unique identifier of the product.
 
 ### Read-Only
 

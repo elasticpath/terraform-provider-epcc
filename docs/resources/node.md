@@ -16,16 +16,16 @@ Represents the EPCC API [Node Object](https://documentation.elasticpath.com/comm
 
 ### Required
 
-- **hierarchy_id** (String)
-- **name** (String)
+- **hierarchy_id** (String) The unique identifier of the hierarchy.
+- **name** (String) A name for the node. Names must be unique among sibling nodes in the hierarchy, but otherwise a name can be non-unique. Cannot be null.
 
 ### Optional
 
-- **description** (String)
-- **parent_id** (String)
-- **slug** (String)
+- **description** (String) A description of the node.
+- **parent_id** (String) The node ID for the parent node. The new node is created as a child of this parent node.
+- **slug** (String) A slug for the node. Slugs must be unique among sibling nodes in the hierarchy, but otherwise a slug can be non-unique.
 
 ### Read-Only
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier of the node.
 

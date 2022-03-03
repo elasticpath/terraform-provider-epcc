@@ -17,7 +17,7 @@ func TestAccResourceUserAuthenticationInfo(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "name", regexp.MustCompile("John Doe")),
 					resource.TestMatchResourceAttr("epcc_user_authentication_info.acc_test_user_authentication_info", "email", regexp.MustCompile("john.doe@banks.com")),
-					resource.TestMatchResourceAttr("epcc_realm.acc_test_realm_for_user_authentication_info", "name", regexp.MustCompile("test_realm")),
+					resource.TestMatchResourceAttr("epcc_authentication_realm.acc_test_realm_for_user_authentication_info", "name", regexp.MustCompile("test_realm")),
 				),
 			},
 		},
@@ -26,19 +26,22 @@ func TestAccResourceUserAuthenticationInfo(t *testing.T) {
 
 // language=HCL
 const testAccResourceUserAuthenticationInfo = `
-resource "epcc_realm" "acc_test_realm_for_user_authentication_info" {
+
+data "epcc_customer_authentication_settings" "customer_auth_settings" {
+}
+
+resource "epcc_authentication_realm" "acc_test_realm_for_user_authentication_info" {
   name = "test_realm"
+  authentication_realm_id = data.epcc_customer_authentication_settings.customer_auth_settings.realm_id
   redirect_uris = [
     "https://google.com/"
   ]
   duplicate_email_policy = "allowed"
-  origin_id = "hello-world"
-  origin_type = "customer-authentication-settings"
 }
 
 resource "epcc_user_authentication_info" "acc_test_user_authentication_info" {
   name = "John Doe"
   email = "john.doe@banks.com"
-  realm_id = epcc_realm.acc_test_realm_for_user_authentication_info.id
+  realm_id = epcc_authentication_realm.acc_test_realm_for_user_authentication_info.id
 }
 `

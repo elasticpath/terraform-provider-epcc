@@ -16,15 +16,15 @@ Represents the EPCC API [*PCM* Catalog Rule Object](https://documentation.elasti
 
 ### Required
 
-- **catalog** (String)
-- **name** (String)
+- **catalog** (String) The unique identifier of the catalog for this rule. If you want to display a catalog that contains V2 Products, Brands, Categories, and Collections, specify `legacy`
+- **name** (String) The name of the rule without spaces.
 
 ### Optional
 
-- **customers** (Set of String)
-- **description** (String)
+- **customers** (Set of String) The list of customers who are eligible to see this catalog. If empty, the rule matches all customers.
+- **description** (String) The purpose for this rule.
 
 ### Read-Only
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier of the catalog rule.
 

@@ -18,10 +18,10 @@ Note: The `epcc_settings` resource behaves different from normal resources, in t
 
 ### Optional
 
-- **additional_languages** (List of String)
-- **calculation_method** (String)
-- **list_child_products** (Boolean)
-- **page_length** (Number)
+- **additional_languages** (List of String) You can define additional language codes that are enabled for a project, this applies only to the legacy catalog and does not apply to PCM products, hierarchies, and catalogs.
+- **calculation_method** (String) This option defines the method used to calculate cart and order totals.
+- **list_child_products** (Boolean) Whether to display child products in product listings.
+- **page_length** (Number) The number of results per page when paginating results.
 
 ### Read-Only
 

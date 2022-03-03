@@ -7,11 +7,11 @@ import (
 	"fmt"
 )
 
-var Profiles profiles
+var OidcProfiles oidcProfiles
 
-type profiles struct{}
+type oidcProfiles struct{}
 
-type Profile struct {
+type OidcProfile struct {
 	Id           string `json:"id"`
 	Type         string `json:"type"`
 	Name         string `json:"name"`
@@ -21,7 +21,13 @@ type Profile struct {
 	RealmId      string `json:"-"`
 }
 
-func (profiles) Get(ctx *context.Context, client *Client, realmId, profileId string) (*ProfileData, ApiErrors) {
+type OidcProfileLinks struct {
+	CallbackEndpoint      string `json:"callback-endpoint,omitempty"`
+	AuthorizationEndpoint string `json:"authorization-endpoint,omitempty"`
+	ClientDiscoveryUrl    string `json:"client-discovery-url,omitempty"`
+}
+
+func (oidcProfiles) Get(ctx *context.Context, client *Client, realmId, profileId string) (*ProfileData, ApiErrors) {
 	path := fmt.Sprintf("/v2/authentication-realms/%s/oidc-profiles/%s", realmId, profileId)
 
 	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
@@ -37,8 +43,8 @@ func (profiles) Get(ctx *context.Context, client *Client, realmId, profileId str
 	return &profiles, nil
 }
 
-// GetAll fetches all profiles
-func (profiles) GetAll(ctx *context.Context, client *Client, realmId string) (*ProfileList, ApiErrors) {
+// GetAll fetches all oidcProfiles
+func (oidcProfiles) GetAll(ctx *context.Context, client *Client, realmId string) (*ProfileList, ApiErrors) {
 	path := fmt.Sprintf("/v2/authentication-realms/%s/oidc-profiles", realmId)
 
 	body, apiError := client.DoRequest(ctx, "GET", path, "", nil)
@@ -55,7 +61,7 @@ func (profiles) GetAll(ctx *context.Context, client *Client, realmId string) (*P
 }
 
 // Create creates a profile
-func (profiles) Create(ctx *context.Context, client *Client, profile *Profile) (*ProfileData, ApiErrors) {
+func (oidcProfiles) Create(ctx *context.Context, client *Client, profile *OidcProfile) (*ProfileData, ApiErrors) {
 	profileData := ProfileData{
 		Data: *profile,
 	}
@@ -80,7 +86,7 @@ func (profiles) Create(ctx *context.Context, client *Client, profile *Profile) (
 }
 
 // Delete deletes a profile.
-func (profiles) Delete(ctx *context.Context, client *Client, profileID, realmId string) ApiErrors {
+func (oidcProfiles) Delete(ctx *context.Context, client *Client, profileID, realmId string) ApiErrors {
 	path := fmt.Sprintf("/v2/authentication-realms/%s/oidc-profiles/%s", realmId, profileID)
 
 	if _, err := client.DoRequest(ctx, "DELETE", path, "", nil); err != nil {
@@ -91,7 +97,7 @@ func (profiles) Delete(ctx *context.Context, client *Client, profileID, realmId 
 }
 
 // Update updates a profile.
-func (profiles) Update(ctx *context.Context, client *Client, profile *Profile) (*ProfileData, ApiErrors) {
+func (oidcProfiles) Update(ctx *context.Context, client *Client, profile *OidcProfile) (*ProfileData, ApiErrors) {
 
 	profileData := ProfileData{
 		Data: *profile,
@@ -118,7 +124,8 @@ func (profiles) Update(ctx *context.Context, client *Client, profile *Profile) (
 }
 
 type ProfileData struct {
-	Data Profile `json:"data"`
+	Data  OidcProfile       `json:"data"`
+	Links *OidcProfileLinks `json:"links,omitempty"`
 }
 
 // ProfileMeta contains extra data for an profile
@@ -130,5 +137,5 @@ type ProfileDataList struct {
 }
 
 type ProfileList struct {
-	Data []Profile
+	Data []OidcProfile
 }

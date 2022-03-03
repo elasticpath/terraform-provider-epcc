@@ -16,16 +16,16 @@ Represents the EPCC API [File Object](https://documentation.elasticpath.com/comm
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier for the file.
 
 ### Optional
 
-- **file_name** (String)
-- **public** (Boolean)
+- **file_name** (String) The name of the file
+- **public** (Boolean) Whether the file is public.
 
 ### Read-Only
 
-- **file_link** (String)
-- **file_size** (Number)
-- **mime_type** (String)
+- **file_link** (String) A link to the file
+- **file_size** (Number) The size of the file
+- **mime_type** (String) The MIME type of the file
 

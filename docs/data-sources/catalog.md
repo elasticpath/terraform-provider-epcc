@@ -16,7 +16,7 @@ Represents the EPCC API [*PCM* Catalog Object](https://documentation.elasticpath
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The id of the catalog.
 
 ### Read-Only
 

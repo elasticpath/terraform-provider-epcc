@@ -16,14 +16,14 @@ Represents the EPCC API [Hierarchy Object](https://documentation.elasticpath.com
 
 ### Required
 
-- **name** (String)
+- **name** (String) The name of the hierarchy. The maximum length is 1000 characters.
 
 ### Optional
 
-- **description** (String)
-- **slug** (String)
+- **description** (String) A description of the hierarchy.
+- **slug** (String) A unique slug for the hierarchy.
 
 ### Read-Only
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier of the hierarchy.
 

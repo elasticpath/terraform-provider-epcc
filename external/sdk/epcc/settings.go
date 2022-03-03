@@ -62,16 +62,3 @@ func (settings) Update(ctx *context.Context, client *Client, settings Settings) 
 type SettingsData struct {
 	Data Settings `json:"data"`
 }
-
-//
-//// ProfileMeta contains extra data for an profile
-//type ProfileMeta struct {
-//	Timestamps Timestamps `json:"timestamps,omitempty"`
-//}
-//
-//type ProfileDataList struct {
-//}
-//
-//type ProfileList struct {
-//	Data []Profile
-//}

@@ -16,10 +16,10 @@ Represents the EPCC API [PriceBook Object](https://documentation.elasticpath.com
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier of the price book.
 
 ### Read-Only
 
-- **description** (String)
-- **name** (String)
+- **description** (String) The purpose for the price book, such as flash sale pricing or preferred customer pricing.
+- **name** (String) A unique name for the price book.
 

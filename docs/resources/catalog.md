@@ -16,15 +16,15 @@ Represents the EPCC API [*PCM* Catalog Object](https://documentation.elasticpath
 
 ### Required
 
-- **name** (String)
+- **name** (String) The name of the catalog.
 
 ### Optional
 
-- **description** (String)
-- **hierarchies** (Set of String)
-- **pricebook** (String)
+- **description** (String) A description of the catalog, such as the purpose for the catalog.
+- **hierarchies** (Set of String) The unique identifiers of the hierarchies to associate with this catalog.
+- **pricebook** (String) The unique identifier of the price book to associate with this catalog.
 
 ### Read-Only
 
-- **id** (String) The ID of this resource.
+- **id** (String) The id of the catalog.
 

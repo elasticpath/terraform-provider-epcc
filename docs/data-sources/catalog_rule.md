@@ -16,7 +16,7 @@ Represents the EPCC API [*PCM* Catalog Rule Object](https://documentation.elasti
 
 ### Required
 
-- **id** (String) The ID of this resource.
+- **id** (String) The unique identifier of the catalog rule.
 
 ### Read-Only
 
