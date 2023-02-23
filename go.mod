@@ -8,6 +8,6 @@ require (
 	github.com/hashicorp/terraform-plugin-log v0.2.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.10.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	golang.org/x/time v0.0.0-20191024005414-555d28b269f0
+	golang.org/x/time v0.3.0
 	gopkg.in/retry.v1 v1.0.3
 )
